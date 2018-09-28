@@ -1,0 +1,226 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SmartRegistry.Web.Models
+@model SmartRegistry.Web.ViewModels.CoursesViewModels.CourseViewModel
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@*
+    @{
+        ViewData["Title"] = "Details";
+    }
+
+    <h2>Details</h2>
+
+    <div>
+        <h4>Course</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Code)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Code)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.CreatedBy)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CreatedBy)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CreatedAt)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.LastUpdatedBy)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.LastUpdatedBy)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.LastUpdatedAt)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.LastUpdatedAt)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.IsDeleted)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.DeletedBy)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DeletedBy)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.DeletedAt)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DeletedAt)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Department)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Department.Code)
+            </dd>
+        </dl>
+    </div>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+
+<link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.css" rel="stylesheet" />
+<link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.css" rel="stylesheet" />
+
+@section Scripts {
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/jquery.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/moment.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/theme-chooser.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            let calendar = $("#calendar").fullCalendar({
+                weekends: true, //false // will hide Saturdays and Sundays
+                dayClick: function (date, jsEvent, view, resourceObj) {
+
+                    alert(`Date: ${date.format()}`);
+
+                    //alert('Date: ' + date.format());
+                    //alert('Resource ID: ' + resourceObj.id);
+                    //console.log('Resource ID: ' + resourceObj.id);
+                },
+                //addResource: {
+                //    id: 'e',
+                //    title: 'Room E'
+                //},
+                businessHours: true
+            });
+
+            //var calendar = $('#calendar').fullCalendar('getCalendar');
+
+            //calendar.on('dayClick', function(date, jsEvent, view) {
+            //    console.log('clicked on ' + date.format());
+            //});
+        });
+    </script>
+}
+
+@*<div class="container">*@
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="panel-group">
+                <div class="panel-primary">
+                    <div class="panel-heading">
+                        <h2 class="text-center">@Model.Course.Name Department</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="panel-primary">
+                                        <div class="panel-heading">
+                                            <h2 class="text-center">Semester Schedule</h2>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="calendar"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="panel-primary">
+                                        <div class="panel-heading">
+                                            <h2 class="text-center">Announcements</h2>
+                                        </div>
+                                        <div class="panel-body">
+                                            @if (Model.Announcements != null && Model.Announcements.Any())
+                                            {
+                                                <ul class="list-group list-group-flush">
+                                                    @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                    {
+                                                        <li class="list-group-item">
+                                                            <div>
+                                                                <h4>
+                                                                    @announcement.Title<span class="pull-right">
+                                                                        @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                                                                        {
+                                                                            var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
+                                                                            <i>@user</i>
+                                                                        }
+                                                                    </span>
+                                                                </h4>
+                                                                <p class="col-md-12">@announcement.Message </p>
+                                                                @*<a href="#" class="btn btn-primary">Read more</a>*@ <a class="btn"></a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                </ul>
+
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-md-offset-1">
+                                <div class="row">
+                                    <div class="panel-primary">
+                                        <div class="panel-heading">
+                                            <h2 class="text-center">Subjects @Model.Course.Name offers</h2>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                @*<ul class="list-group">
+                                                        <li class="list-group-item">
+                                                            <a href="#">Subject #1</a>
+                                                        </li>
+                                                        <li class="list-group-item">
+                                                            <a href="#">Subject #2</a>
+                                                        </li>
+                                                    </ul>*@
+
+                                                @if (Model.Subjects != null && Model.Subjects.Any())
+                                                {
+                                                    <ul class="list-group list-group-flush">
+                                                        @foreach (var subject in Model.Subjects.OrderBy(d => d.Name))
+                                                        {
+                                                        <li class="list-group-item">
+                                                            <a href="/Subjects/Details/@subject.Id">@subject.Name (@subject.Code)</a>
+                                                        </li>
+                                                        }
+                                                        @*<li class="list-group-item">
+                                                        <a href="#">Computer System's Engineering</a>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <a href="#">IT Support</a>
+                                                    </li>*@
+                                                    </ul>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@*</div>*@

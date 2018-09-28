@@ -1,0 +1,64 @@
+﻿@model SmartRegistry.Web.Models.Department
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+
+            <h2>Create</h2>
+
+            <h4>Department</h4>
+            <hr />
+            <div class="row">
+                <div class="col-md-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Code" class="control-label"></label>
+                            <input asp-for="Code" class="form-control" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FacultyId" class="control-label"></label>
+                            <select asp-for="FacultyId" class ="form-control" asp-items="ViewBag.FacultyId"></select>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <a asp-action="Index">Back to List</a>
+            </div>
+
+        </div>
+        <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+
+    </footer>
+
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

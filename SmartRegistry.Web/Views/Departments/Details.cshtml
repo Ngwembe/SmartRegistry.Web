@@ -1,0 +1,124 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SmartRegistry.Web.Models
+@model SmartRegistry.Web.ViewModels.DepartmentViewModels.DepartmentViewModel
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*<div class="container">
+    <div class="row">*@
+        <div class="col-md-12">
+
+            <div class="panel-group">
+                <div class="col-md-12">
+                    <div class="panel-default">
+                        <div class="row">
+                            <h2 class="well text-center">@Model?.Department.Name</h2>
+                            <p class="text-center">@Model?.Description</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="panel-primary">
+                                <div class="panel-heading">
+                                    <h2 class="text-center">Announcements</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+
+                                        @if (Model.Announcements != null && Model.Announcements.Any())
+                                        {
+                                            <ul class="list-group list-group-flush">
+                                                @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                {
+                                                    <li class="list-group-item">
+                                                        <div>
+                                                            <h4>
+                                                                @announcement.Title<span class="pull-right">
+                                                                    @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                                                                    {
+                                                                        var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
+                                                                        <i>@user</i>
+                                                                    }
+                                                                </span>
+                                                            </h4>
+                                                            <p class="col-md-12">@announcement.Message </p>
+                                                            <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+
+                                        }
+
+                                        @*<ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #1</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #2</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #3</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                            </ul>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                            <div class="panel-primary">
+                                <div class="panel-heading">
+                                    <h2 class="text-center">List of Courses available under @Model?.Department.Name</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+
+                                        @if (Model.Courses != null && Model.Courses.Any())
+                                        {
+                                            <ul class="list-group list-group-flush">
+                                                @foreach (var course in Model.Courses.OrderBy(d => d.Name))
+                                                {
+                                                    <li class="list-group-item">
+                                                        <a href="/Courses/Details/@course.Id">@course.Name (@course.Code)</a>
+                                                    </li>
+                                                }
+                                                @*<li class="list-group-item">
+                                                        <a href="#">Computer System's Engineering</a>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <a href="#">IT Support</a>
+                                                    </li>*@
+                                            </ul>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @*</div>
+</div>*@
+

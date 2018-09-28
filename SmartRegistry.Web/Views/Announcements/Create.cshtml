@@ -1,0 +1,146 @@
+﻿@model SmartRegistry.Web.Models.Announcement
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/select2/select2-develop/dist/js/select2.min.js"></script>
+    <link href="~/lib/select2/select2-develop/dist/css/select2.min.css" rel="stylesheet"/>
+    <link href="~/lib/select2/select2-bootstrap-theme/dist/select2.css" rel="stylesheet"/>
+
+    <script type="text/javascript">
+        $(function() {
+            $('#chkOwner').select2({
+                placeholder: '--- Select owner ---',
+                ajax: {
+                    url: '/Announcements/GetPossibleAnnouncementOwners',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: function(params) {
+                        var query = {
+                            category: $('#chkCategory').val(),
+                            searchKey: params.term
+                        }
+                        return query;
+                    },
+                    success: function(data) {
+                        console.log(data);
+                    },
+                    processResults: function(data, params) {
+                        var results = [];
+
+                        $.each(data,
+                            function(index, person) {
+                                results.push(person);
+                            });
+
+                        return {
+                            results: results //.items
+                        };
+                    }
+                }
+            });
+
+            $('#chkOwnerWrapper').hide();
+                //.on('change',
+                //    function(e) {
+                //        let owner = $(this);
+                //        //console.log(owner);
+                //        console.log(`Selected Category: ${owner.val()}`);
+                //    });
+
+            $('#chkCategory').select2({
+                placeholder: '--- Select category ---',
+                ajax: {
+                    url: '/Announcements/GetCategories',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: function(params) {
+                        var query = {
+                            category: $('#chkCategory').val(),
+                            searchKey: params.term
+                        }
+                        return query;
+                    },
+                    success: function(data) {
+                        //console.log(data);
+                    },
+                    processResults: function(data, params) {
+                        var results = [];
+
+                        $.each(data,
+                            function(index, person) {
+                                results.push(person);
+                            });
+
+                        return {
+                            results: results //.items
+                        };
+                    }
+                }
+            });
+            
+            $('#chkCategory').on('change',
+                function (e) {
+                    e.preventDefault();
+
+                    console.log("Catgory selected");
+                    var value = $(this).val();
+                    if(value !== "")
+                        $('#chkOwnerWrapper').show();
+                });
+
+        });
+    </script>
+}
+
+<h2>Create</h2>
+
+<h4>Announcement</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LecturerId" class="control-label"></label>
+                <select asp-for="LecturerId" class="form-control" asp-items="ViewBag.LecturerId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Message" class="control-label"></label>
+                <textarea asp-for="Message" class="form-control" cols="8" rows="5"></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+            <div class="form-group" >
+                <label asp-for="AnnouncementTypeId" class="control-label"></label>
+                @*<select asp-for="AnnouncementTypeId" class="form-control" asp-items="ViewBag.AnnouncementId"></select>*@
+                <select id="chkCategory" asp-for="AnnouncementTypeId" class="form-control"></select>
+                <span asp-validation-for="AnnouncementTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="chkOwnerWrapper" >
+                <label asp-for="AnnouncementTypeOwnerId" class="control-label"></label>
+                @*<select asp-for="AnnouncementTypeOwnerId" class="form-control" asp-items="ViewBag.AnnouncementId"></select>*@
+                <select id="chkOwner" asp-for="AnnouncementTypeOwnerId" class="form-control"></select>
+                <span asp-validation-for="AnnouncementTypeOwnerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+

@@ -1,0 +1,153 @@
+﻿@*@model IEnumerable<Attendance.Domain.Attended>*@
+@model SmartRegistry.Web.ViewModels.DashboardViewModels.DashboardOverviewViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="hidden" id="overallScheduleStats" value='@Model.AllSchedules'/>
+            <div id="overallSchedules"></div>
+        </div>
+    </div>
+</div>
+
+<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.css" rel="stylesheet" />
+<link href="~/lib/morris/morris-0.5.1/css/morris.css" rel="stylesheet" />
+@section Scripts
+{
+    <script src="~/lib/jquery-ui-1.12.1.custom/js/jquery-ui.js"></script>
+    <script src="~/lib/morris/morris-0.5.1/js/morris.min.js"></script>
+    <script src="~/lib/morris/morris-0.5.1/js/raphael.min.js"></script>
+
+
+    <script type="text/javascript">
+
+        $(function() {
+            var response = $('#overallScheduleStats').val();
+            console.log(response);
+
+            Morris.Donut({
+                element: 'overallSchedules',
+                //data: [
+                //    {value: 70, label: 'foo'},
+                //    {value: 15, label: 'bar'},
+                //    {value: 10, label: 'baz'},
+                //    {value: 5, label: 'A really really long label'}
+                //],
+                data: JSON.parse(response),
+                xKey: "value",
+                yKeys: ['label'],
+                labels: ['label']
+                //formatter: function (x) { return x + "%"}
+            })
+                //.on('click', function (i, row) {
+                //console.log(i, row);
+                //})
+                ;
+
+            //foreach(prop in value)
+            //{
+            //    console.log(`${prop} - ${value[prop]}`);
+            //};
+
+            //$.each(value, function(i, prop) {
+            //    console.log(`${prop} - ${value[prop]}`);    
+            //});
+
+
+            //var overallScheduleStats = JSON.parse($('#overallScheduleStats').val());
+            //console.log(overallScheduleStats);
+        });
+
+    </script>
+}
+
+
+
+@*<table class="table">
+        <thead>
+            <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.HasAttended)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CreatedBy)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CreatedAt)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LastUpdatedBy)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LastUpdatedAt)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsDeleted)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DeletedBy)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DeletedAt)
+                    </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Schedule)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Student)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HasAttended)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastUpdatedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeletedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeletedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Schedule.LectureRoom)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Student.FirstName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>*@

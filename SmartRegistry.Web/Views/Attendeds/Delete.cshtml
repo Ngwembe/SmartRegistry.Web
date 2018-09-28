@@ -1,0 +1,81 @@
+﻿@model SmartRegistry.Web.Models.Attended
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Attended</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.HasAttended)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.HasAttended)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedAt)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedAt)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdatedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdatedBy)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdatedAt)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdatedAt)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsDeleted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsDeleted)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DeletedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DeletedBy)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DeletedAt)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DeletedAt)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Schedule)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Schedule.LectureRoom)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Student)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Student.FirstName)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

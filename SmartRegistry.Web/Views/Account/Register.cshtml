@@ -1,0 +1,166 @@
+﻿@model SmartRegistry.Web.ViewModels.AccountViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register To Smart Attendance";
+}
+
+<div id="wrapper">
+
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="content-page">
+        <!-- Start content -->
+        <div class="content">
+            <div class="container">
+
+
+
+                <!-- end row -->
+                @*<div class="row">
+                        <div class="col-lg-12">
+                            <div class="card-box">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <form>
+                                            <div class="form-group search-box">
+                                                <input type="text" id="search-input" class="form-control product-search" placeholder="Search here...">
+                                                <button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div class="col-sm-2">
+                                        <a class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30" onclick="advancedSearch()"><i class="md md-add"></i> Advanced Search</a>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <a asp-area="" asp-controller="Patient" asp-action="Create" class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30"> Add New Patient</a>
+                                    </div>
+
+                                    <div class="col-sm-8" id="advanced-search">
+                                        <form>
+                                            <div class="form-group search-box">
+
+                                                <input for="checkbox5" type="checkbox"> ID Number
+
+                                                <input type="checkbox" name="sameaddress" value="" id=""> First Name
+
+                                                <input type="checkbox" name="sameaddress" value="" id=""> Patient ID
+
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover mails m-0 table table-actions-bar" id="tblPatients">
+                                        <thead>
+                                        <tr>
+                                            <th>Patient ID</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                            <th>Contact No.</th>
+
+                                            <th>Edit Patient</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div> <!-- end table responsive -->
+                            </div> <!-- end card-box -->
+
+                        </div> <!-- end col -->
+
+
+                    </div>*@
+                <!-- end row -->
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-10 col-md-offset-1">
+                            @*<div class="col-md-4">*@
+                            <div class="well">
+                                <h2 class="text-center">@ViewData["Title"]</h2>
+                            </div>
+                            <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                                <h4>Create a new account.</h4>
+                                <hr />
+                                @*<div asp-validation-summary="All" class="text-danger"></div>*@
+                                <div class="form-group">
+                                    <label asp-for="FirstName"></label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="LastName"></label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Email"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Password"></label>
+                                    <input asp-for="Password" class="form-control" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ConfirmPassword"></label>
+                                    <input asp-for="ConfirmPassword" class="form-control" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Gender"></label>
+                                    @*<input asp-for="Gender" class="form-control" />*@
+                                    <select asp-for="Gender" class="col-md-4 form-control">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                    <span asp-validation-for="Gender" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="DOB"></label>
+                                    <input asp-for="DOB" class="form-control" type="date" />
+                                    <span asp-validation-for="DOB" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label asp-for="IsStudent">
+                                            <input asp-for="IsStudent" class="checkbox checkbox-inline" />
+                                            @Html.DisplayNameFor(m => m.IsStudent)?
+                                        </label>
+                                    </div>
+                                    <span asp-validation-for="IsStudent" class="text-danger"></span>
+
+                                </div>
+                                <button type="submit" class="btn btn-default">Register</button>
+                            </form>
+                            @*</div>*@
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- container -->
+
+        </div> <!-- content -->
+
+        <footer class="footer text-right">
+            @{
+                <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+            }
+
+        </footer>
+
+    </div>
+
+</div>
+
+
+
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

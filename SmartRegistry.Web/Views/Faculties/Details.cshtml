@@ -1,0 +1,194 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using SmartRegistry.Web.Models
+@model SmartRegistry.Web.ViewModels.FacultiesViewModels.FacultyViewModel
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@*@{
+        ViewData["Title"] = "Index";
+    }*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="panel-group">
+                <div class="col-md-12">
+                    <div class="panel-default">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col-md-12 well">
+                                    <div class="col-md-11">
+                                        <h2 class="text-center">@Model?.Faculty.Name</h2>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <a class="btn btn-primary" asp-controller="Faculties" asp-action="Edit" asp-route-id="@Model?.Faculty.Id">Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-center">@Model?.Description</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="panel-primary">
+                                <div class="panel-heading">
+                                    <h2 class="text-center">Announcements</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        @if (Model.Announcements != null && Model.Announcements.Any())
+                                        {
+                                            <ul class="list-group list-group-flush">
+                                                @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                {
+
+                                                    <li class="list-group-item">
+                                                        <div>
+                                                            <h4>
+                                                                @announcement.Title<span class="pull-right">
+                                                                    @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                                                                    {
+                                                                        var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
+                                                                        <i>@user</i>
+                                                                    }
+
+                                                                </span>
+                                                            </h4>
+                                                            <p class="col-md-12">@announcement.Message</p>
+                                                            <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
+                                                        </div>
+                                                    </li>
+                                                    @*<li class="list-group-item">
+                                                            <div>
+                                                                <h4>Announcement #2</h4>
+                                                                <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                                <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                            </div>
+                                                        </li>
+                                                        <li class="list-group-item">
+                                                            <div>
+                                                                <h4>Announcement #3</h4>
+                                                                <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                                <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                            </div>
+                                                        </li>*@
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h4 class="text-center">There are no announcements available at the moment. Welcome to the @Model?.Faculty.Name's.</h4>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @*<ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #1</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #2</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #3</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                            </ul>*@
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="panel-primary">
+                                    <div class="panel-heading">
+                                        <h2 class="text-center">Announcements</h2>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #1</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #2</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #3</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                        <div class="col-md-4">
+
+                            <div class="panel-primary">
+                                <div class="panel-heading">
+                                    <h2 class="text-center">List of Departments @Model?.Faculty.Name consists of</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+
+                                        @if (Model.Departments != null && Model.Departments.Any())
+                                        {
+                                            <ul class="list-group list-group-flush">
+                                                @foreach (var dept in Model.Departments.OrderBy(d => d.Name))
+                                                {
+                                                    <li class="list-group-item">
+                                                        <a href="/Departments/Details/@dept.Id">@dept.Name</a>
+                                                    </li>
+                                                }
+                                                @*<li class="list-group-item">
+                                                        <a href="#">Computer System's Engineering</a>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <a href="#">IT Support</a>
+                                                    </li>*@
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h4 class="text-center">There are no departments available. Continue visiting @ViewData["Institution"]'s platform to get updates.</h4>
+                                                </div>
+                                            </div>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

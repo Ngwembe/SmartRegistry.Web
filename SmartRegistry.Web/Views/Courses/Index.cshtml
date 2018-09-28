@@ -1,0 +1,143 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SmartRegistry.Web.Models
+
+@model IEnumerable<SmartRegistry.Web.Models.Course>
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject SignInManager<ApplicationUser> _SignInManager
+
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <p>
+                <a class="btn btn-primary" asp-action="Create">Create a course</a>
+            </p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Code)
+                        </th>
+                        @*<th>
+                        @Html.DisplayNameFor(model => model.CreatedBy)
+                    </th>*@
+                        <th>
+                            @Html.DisplayNameFor(model => model.CreatedAt)
+                        </th>
+
+                        @if (_SignInManager != null && _SignInManager.IsSignedIn(this.User))
+                        {
+                            var user = await _UserManager.GetUserAsync(this.User);//_UserManager.GetUserId(this.User);
+
+                            if (user != null && (await _UserManager.IsInRoleAsync(user, "Admin")) || (await _UserManager.IsInRoleAsync(user, "System Admin")))
+                            {
+                                @*<th>
+                                @Html.DisplayNameFor(model => model.LastUpdatedBy)
+                            </th>*@
+                                <th>
+                                    @Html.DisplayNameFor(model => model.LastUpdatedAt)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.IsDeleted)
+                                </th>
+                                @*<th>
+                                @Html.DisplayNameFor(model => model.DeletedBy)
+                            </th>*@
+                                <th>
+                                    @Html.DisplayNameFor(model => model.DeletedAt)
+                                </th>
+                            }
+                        }
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Department)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Code)
+                            </td>
+                            @*<td>
+                            @Html.DisplayFor(modelItem => item.CreatedBy)
+                        </td>*@
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreatedAt)
+                            </td>
+                            @*<td>
+                            @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastUpdatedAt)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsDeleted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DeletedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DeletedAt)
+                        </td>*@
+                            @if (_SignInManager != null && _SignInManager.IsSignedIn(this.User))
+                            {
+                                var user = await _UserManager.GetUserAsync(this.User);
+
+                                if (user != null && (await _UserManager.IsInRoleAsync(user, "Admin")) || (await _UserManager.IsInRoleAsync(user, "System Admin")))
+                                {
+                                    @*<td>
+                                    @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+                                </td>*@
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LastUpdatedAt)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.IsDeleted)
+                                    </td>
+                                    @*<td>
+                                    @Html.DisplayFor(modelItem => item.DeletedBy)
+                                </td>*@
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DeletedAt)
+                                    </td>
+                                }
+                            }
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Department.Code)
+                            </td>
+                            <td>
+                                <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+
+    </footer>
+
+</div>

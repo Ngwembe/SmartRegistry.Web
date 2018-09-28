@@ -1,0 +1,1858 @@
+﻿@model SmartRegistry.Web.ViewModels.PatientPayloadViewModel
+
+@section Scripts{
+
+    @*<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.4.4.min.js"></script>*@
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
+    <script src='https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.js'></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var current_fs, next_fs, previous_fs;
+            var left, opacity, scale;
+            var animating;
+            $(".add-patient").validate({
+                errorClass: 'invalid',
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element.next('span').children());
+                },
+                highlight: function (element) {
+                    $(element).next('span').show();
+                },
+                unhighlight: function (element) {
+                    $(element).next('span').hide();
+                }
+            });
+
+            $(".next").click(function () {
+
+                //$(".add-patient").validate({
+                //    errorClass: 'invalid',
+                //    errorElement: 'span',
+                //    errorPlacement: function (error, element) {
+                //        error.insertAfter(element.next('span').children());
+                //    },
+                //    highlight: function (element) {
+                //        $(element).next('span').show();
+                //    },
+                //    unhighlight: function (element) {
+                //        $(element).next('span').hide();
+                //    }
+                //});
+
+                ////console.log("Next has been clicked");
+
+                //if ((!$('.add-patient').valid())) {
+
+                //    console.log("Form not valid");
+                //    return true;
+                //}
+
+                if (animating) return false;
+                animating = true;
+                current_fs = $(this).parent();
+                next_fs = $(this).parent().next();
+                $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+                next_fs.show();
+                current_fs.animate({
+                    opacity: 0
+                }, {
+                        step: function (now, mx) {
+                            scale = 1 - (1 - now) * 0.2;
+                            left = (now * 50) + "%";
+                            opacity = 1 - now;
+                            current_fs.css({
+                                'transform': 'scale(' + scale + ')'
+                            });
+                            next_fs.css({
+                                'left': left,
+                                'opacity': opacity
+                            });
+                        },
+                        duration: 800,
+                        complete: function () {
+                            current_fs.hide();
+                            animating = false;
+                        },
+                        easing: 'easeInOutExpo'
+                    });
+            });
+
+            $(".previous").click(function () {
+                if (animating) return false;
+                animating = true;
+                current_fs = $(this).parent();
+                previous_fs = $(this).parent().prev();
+                $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+                previous_fs.show();
+                current_fs.animate({
+                    opacity: 0
+                }, {
+                        step: function (now, mx) {
+                            scale = 0.8 + (1 - now) * 0.2;
+                            left = ((1 - now) * 50) + "%";
+                            opacity = 1 - now;
+                            current_fs.css({
+                                'left': left
+                            });
+                            previous_fs.css({
+                                'transform': 'scale(' + scale + ')',
+                                'opacity': opacity
+                            });
+                        },
+                        duration: 800,
+                        complete: function () {
+                            current_fs.hide();
+                            animating = false;
+                        },
+                        easing: 'easeInOutExpo'
+                    });
+            });
+
+            $(".submit").click(function () {
+                $(".add-patient").validate({
+                    errorClass: 'invalid',
+                    errorElement: 'span',
+                    errorPlacement: function (error, element) {
+                        error.insertAfter(element.next('span').children());
+                    },
+                    highlight: function (element) {
+                        $(element).next('span').show();
+                    },
+                    unhighlight: function (element) {
+                        $(element).next('span').hide();
+                    }
+                });
+                if ((!$('.add-patient').valid())) {
+                    return false;
+                }
+                if (animating) return false;
+                animating = true;
+                current_fs = $(this).parent();
+                next_fs = $(this).parent().next();
+                $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+                next_fs.show();
+                current_fs.animate({
+                    opacity: 0
+                }, {
+                        step: function (now, mx) {
+                            scale = 1 - (1 - now) * 0.2;
+                            left = (now * 50) + "%";
+                            opacity = 1 - now;
+                            current_fs.css({
+                                'transform': 'scale(' + scale + ')'
+                            });
+                            next_fs.css({
+                                'left': left,
+                                'opacity': opacity
+                            });
+                        },
+                        duration: 800,
+                        complete: function () {
+                            current_fs.hide();
+                            animating = false;
+                        },
+                        easing: 'easeInOutExpo'
+                    });
+            });
+
+            // process the form
+            $("form.add-patient").on('submit', function (e) {
+                e.preventDefault();
+                var form = $(this);
+                var action = form.attr("action");
+                var data = form.serializeArray();
+
+                console.log("Doing the AJAX POST request");
+                console.log("Sending data:");
+
+                console.log(JSON.stringify(getFormData(data)));
+
+                // send ajax
+                $.ajax({
+
+                    //headers: {
+                    //    'Accept': 'application/json',
+                    //    'content-Type': 'application/json'
+                    //},
+                    //url: 'https://admissions-dot-medipark-hospital.appspot.com/v1/Patient/create',
+                    url: "/Patient/Create",
+                    crossDomain: true,
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    type: 'POST',
+                    data: JSON.stringify(getFormData(data)),
+                    success: function (data) {
+                        // you can see the result from the console
+                        // tab of the developer tools
+                        console.log(data);
+                    },
+                    error: function (jqXhr, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+            //utility function
+            function getFormData(data) {
+                var unindexed_array = data;
+                var indexed_array = {};
+
+                $.map(unindexed_array, function (n, i) {
+                    indexed_array[n['name']] = n['value'];
+                });
+
+                return indexed_array;
+            }
+        });
+    </script>
+
+    <script>
+        var resizefunc = [];
+    </script>
+}
+
+
+<!-- Begin page -->
+<div id="wrapper">
+
+
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="content-page">
+        <!-- Start content -->
+        <div class="content">
+            <div class="container">
+
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="page-title-box">
+                            <h4 class="page-title">Patients </h4>
+                            <ol class="breadcrumb p-0 m-0">
+                                <li>
+                                    <a href="#">Medipark</a>
+                                </li>
+
+                                <li class="active">
+                                    Patients
+                                </li>
+                            </ol>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+
+                <div class="row">
+                    <!--<div class="col-lg-12">
+                        <div class="card-box">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <form>
+                                        <div class="form-group form-inline search-box">
+                                            <input type="text" id="search-input" class="form-control product-search" placeholder="Search here...">
+                                            <button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-sm-2">
+                                    <a href="" class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30" data-animation="fadein" data-overlayColor="#36404a" data-toggle="modal" data-target="#custom-modal"><i class="md md-add"></i> Advanced Search</a>
+                               </div>
+                                <div class="col-sm-2">
+                                     <a href="" class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30" data-animation="fadein" data-overlayColor="#36404a" data-toggle="modal" data-target="#custom-modal"><i class="md md-add"></i> Add New Patient</a>
+                                </div>
+                            </div>
+
+
+                        </div>-->
+                    <!-- end card-box -->
+
+
+
+                </div> <!-- end col -->
+
+                <div class="col-lg-12">
+                    <div class="add-patient-container">
+
+
+                        @if (Model == null || Model.PatientId <= 0)
+                        {
+                            <h4 class="custom-modal-title">Add New Patient</h4>
+
+                            <div class="custom-modal-text text-left">
+
+                                <!-- Modal -info -->
+                                <form class="add-patient" asp-action="Create" asp-controller="Patient" method="post" id="add-patient">
+                                    <ul id="progressbar">
+                                        <li class="active">Personal  Information</li>
+                                        <li>Contact Information</li>
+                                        <li>Next of kin </li>
+                                        @*<li>Payment Information</li>
+                                            <li>Person Responsible for Account</li>*@
+                                        <li>Terms & Conditions</li>
+                                    </ul>
+
+                                    <input type="hidden" asp-for="PatientId" name="patientId" value="@Model.PatientId" />
+
+                                    <!-- USER INFORMATION FIELD SET -->
+                                    <fieldset>
+                                        <h2 class="fs-title">Personal Information</h2>
+                                        <h3 class="fs-subtitle"></h3>
+                                        <!-- Begin What's Your First Name Field -->
+                                        <div class="col-lg-8">
+                                            <div class="form-group form-inline">
+                                                <label for="title">Title <span>*</span></label>
+                                                <select name="title" class="form-control" id="title" placeholder="">
+                                                    @if (Model.Title == null)
+                                                    {
+                                                        <option>--Select option--</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@Model.Title">@Model.Title</option>
+                                                    }
+                                                    <option value="title">Title</option>
+                                                    <option value="mr">Mr</option>
+                                                    <option value="mrs">Mrs</option>
+                                                    <option value="miss">Miss</option>
+                                                    <option value="ms">Ms</option>
+                                                    <option value="prof">Prof</option>
+                                                    <option value="dr">Dr</option>
+                                                    <option value="rev">Rev</option>
+                                                    <option value="hon">Hon</option>
+
+                                                </select>
+
+                                                <span class="error1" style="display: none;">
+                                                    <i class="error-log fa fa-exclamation-triangle"></i>
+                                                </span>
+                                            </div>
+                                            <!-- End What's Your First Name Field -->
+
+                                            <div class="form-group form-inline">
+                                                <label for="firstName">First Name <span>*</span></label>
+                                                <input asp-for="FirstName" type="text" name="firstName" class="form-control" id="firstName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="middleName">Middle Name</label>
+                                                <input asp-for="MiddleName" type="text" name="middleName" class="form-control" id="middleName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="lastName">Last Name <span>*</span></label>
+                                                <input asp-for="LastName" type="text" name="lastName" class="form-control" id="lastName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="genderId">Gender <span>*</span></label>
+                                                <select asp-for="GenderId" name="genderId" class="form-control" id="gender" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="0">Male</option>
+                                                    <option value="1">Female</option>
+                                                    <option value="2">Other</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="dateOfBirth">Date of Birth <span>*</span></label>
+                                                <input asp-for="DateOfBirth" type="date" name="dateOfBirth" class="form-control" id="dateOfBirth" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="idNumber">ID Number <span>*</span></label>
+                                                <input asp-for="IdNumber" type="text" name="idNumber" class="form-control" id="idNumber" placeholder="Enter ID number">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="age">Age</label>
+                                                <input type="number" name="age" class="form-control" id="age" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="idType">Identity Type <span>*</span></label>
+
+                                                <select asp-for="IdentityType" name="identityType" class="form-control" id="identityType" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="male">ID Document</option>
+                                                    <option value="female">Passport</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="maritialStatus">Maritial Status <span>*</span></label>
+
+                                                <select asp-for="MaritalStatus" name="maritialStatus" class="form-control" id="maritialstatus" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="single">Single</option>
+                                                    <option value="married">Married</option>
+                                                    <option value="devorced">Devorced</option>
+                                                    <option value="widowed">Widowed</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="ethnicity">Ethnicity <span>*</span></label>
+
+                                                <select asp-for="Ethnicity" name="ethnicity" class="form-control" id="ethnicity" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="black">Black</option>
+                                                    <option value="white">White</option>
+                                                    <option value="coloured">Coloured</option>
+                                                    <option value="indian">Indian</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="religion">Religion <span>*</span></label>
+
+                                                <select asp-for="Religion" name="religion" class="form-control" id="religion" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="male">Christianity</option>
+                                                    <option value="female">Islam</option>
+                                                    <option value="female">Buddhism</option>
+                                                    <option value="female">Judaism</option>
+                                                    <option value="female">Atheism</option>
+                                                    <option value="female">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="uploader" onclick="$('#filePhoto').click()">Add Picture</div>
+                                            <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                            <div>
+                                                <p>Scan and upload</p>
+                                                <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                                <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12"></div>
+                                        <!-- End Total Number of Constituents in Your Database Field -->
+                                        <input type="button" data-page="1" name="next" class="next action-button" value="Save & Continue" />
+
+                                    </fieldset>
+
+
+
+                                    <!-- ACQUISITION FIELD SET -->
+                                    <fieldset>
+                                        <h2 class="fs-title">Contact Information</h2>
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <label for="homeTel">Home Telephone</label>
+                                                <input asp-for="Telephone" type="text" class="form-control" name="telephone" id="homeTel" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="workTel">Work Telephone</label>
+                                                <input asp-for="WorkTel" type="text" class="form-control" id="workTel" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="prefferedContact">Preffered Contact Method</label>
+                                                <select name="prefferedContact" class="form-control" id="prefferedContact" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="male">Phone</option>
+                                                    <option value="female">Email</option>
+                                                    <option value="female">Post</option>
+
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="occupation">Residential Address:</label>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="buildingHome">Building/House <span>*</span></label>
+                                                <input asp-for="ResAddress1" type="text" class="form-control" id="building-house" name="resAddress1" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="streetName">Street Name <span>*</span></label>
+                                                <input asp-for="ResAddress2" type="text" class="form-control" name="resAddress2" id="street-name" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="buildingHome">Country <span>*</span></label>
+                                                <input type="text" class="form-control" id="buildingHome" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="suburbTown">Suburb/Town <span>*</span></label>
+                                                <input asp-for="ResSurbub" type="text" class="form-control" name="resSurbub" id="suburbTown" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="postalCode">Postal Code <span>*</span></label>
+                                                <input asp-for="ResPostCode" type="text" class="form-control" id="postal-code" name="resPostCode" placeholder="">
+
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="Country">Country <span>*</span></label>
+                                                <input asp-for="Country" type="text" class="form-control" name="country" id="country" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="occupation">Postal Address:</label>
+                                            </div>
+
+
+                                            <div class="form-group form-inline">
+                                                <input type="radio" name="sameaddress" value="" id="same-address"> Same as Residential Address
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="postalBox">Postal Box <span>*</span></label>
+                                                <input type="text" name="postalBox" class="form-control" id="postal-box" placeholder="">
+
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="postalCode">Postal Code <span>*</span></label>
+                                                <input asp-for="ResPostCode" type="text" class="form-control" name="resPostCode" id="postal-code" placeholder="">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <label for="cellNumber">Cell Number <span>*</span></label>
+                                                <input asp-for="Cellphone" type="text" class="form-control" name="cellphone" id="cell-number" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="email">Email <span>*</span></label>
+                                                <input asp-for="Email" type="email" class="form-control" name="email" id="email" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="contactHours">Preferred Contact Hours</label>
+                                                <select name="contactHours" class="form-control" id="contact-methods" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="anytime">Anytime</option>
+                                                    <option value="workinghours">Working Hours</option>
+                                                    <option value="afterhours">After Hours</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+
+                                        </div>
+                                        <!-- End Calc of Total Number of Donors Fields -->
+                                        <input type="button" data-page="2" name="previous" class="previous action-button" value="Previous" />
+                                        <input type="button" data-page="2" name="next" class="next action-button" value="Save & Continue" />
+
+                                    </fieldset>
+
+
+
+                                    <!-- Next of kin field -->
+                                    <fieldset>
+                                        <h2 class="fs-title">Next of kin</h2>
+                                        <h3 class="fs-subtitle"></h3>
+
+                                        <div class="col-lg-6">
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokName">Name <span>*</span></label>
+                                                <input asp-for="NokName" type="text" class="form-control" id="nokName" name="nokName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokSurname">Surname <span>*</span></label>
+                                                <input asp-for="NokSurname" type="text" class="form-control" id="nokSurname" name="nokSurname" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokContact">Contact Number <span>*</span></label>
+                                                <input asp-for="NokContact" type="text" class="form-control" id="nokContact" name="nokContact" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="">Residential Address:</label>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokBuildingHome">Building/House <span>*</span></label>
+                                                <input asp-for="NokBuildingHome" type="text" class="form-control" id="nokbuilding-house" name="nokBuildingHome" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokStreetName">Street Name <span>*</span></label>
+                                                <input asp-for="NokStreetName" type="text" class="form-control" id="nok-street-name" name="nokStreetName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokCountry">Country <span>*</span></label>
+                                                <input asp-for="NokCountry" type="text" class="form-control" id="nok-country" name="nokCountry" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokSurburbTown">Suburb/Town <span>*</span></label>
+                                                <input asp-for="NokSurburbTown" type="text" class="form-control" id="nok-surburb-town" name="nokSurburbTown" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="nokPostalCode">Postal Code <span>*</span></label>
+                                                <input asp-for="NokPostalCode" type="text" class="form-control" id="nok-postal-code" name="nokPostalCode" placeholder="">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <label for="nokEmail">Email <span>*</span></label>
+                                                <input asp-for="NokEmail" type="email" class="form-control" id="nok-email" name="nokEmail" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokRelationship">Relationship</label>
+                                                <select asp-for="NokRelationship" name="nokRelationship" class="form-control" id="nok-ralationship" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="mother">Mother</option>
+                                                    <option value="father">Father</option>
+                                                    <option value="son">Son</option>
+                                                    <option value="daughter">Daughter</option>
+                                                    <option value="grandparent">Grandparent</option>
+                                                    <option value="cousin">Cousin</option>
+                                                    <option value="aunt">Aunt</option>
+                                                    <option value="uncle">Uncle</option>
+                                                    <option value="inlaws">In-laws</option>
+                                                    <option value="brother">Brother</option>
+                                                    <option value="sister">Sister</option>
+                                                    <option value="relative">Relative</option>
+                                                    <option value="other">Other</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12"></div>
+                                        <!-- End Next of kin Field -->
+                                        <input type="button" data-page="3" name="previous" class="previous action-button" value="Previous" />
+                                        <input type="button" data-page="3" name="next" class="next action-button" value="Save & Continue" />
+
+                                    </fieldset>
+
+
+
+                                    <!-- Payment Information -->
+                                    @*<fieldset>
+                                            <h2 class="fs-title">Payment Information</h2>
+                                            <h3 class="fs-subtitle"></h3>
+                                            <div class="col-lg-6">
+
+                                                <div class="form-group form-inline">
+                                                    <label for="paymentOptions">Payment Option <span>*</span></label>
+                                                    <select name="paymentOptions" class="form-control" id="medicalaidoption" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="medicalaid">Medial Aid</option>
+                                                        <option value="cash">Cash</option>
+                                                        <option value="creditcard">Credit Card</option>
+                                                        <option value="mva">MVA</option>
+                                                        <option value="compnayorders">Company Orders</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group form-inline">
+                                                    <label for="medicalAidScheme">Medical Aid Scheme <span>*</span></label>
+                                                    <input type="text" class="form-control" name="medicalAidScheme" id="medical-aid-scheme" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="medicalAidSchemeOption">Medical Aid Scheme Option <span>*</span></label>
+                                                    <input name="medicalAidSchemeOption" type="text" class="form-control" id="medical-aid-scheme-option" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="medicalaidschemenumber">Medical Aid Scheme Number <span>*</span></label>
+                                                    <input type="number" class="form-control" id="medical-aid-scheme-number" placeholder="">
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Main Member Details</label>
+
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="membername">Member Name <span>*</span></label>
+                                                    <input type="text" class="form-control" id="member-name" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="membername">Member Surname <span>*</span></label>
+                                                    <input type="text" class="form-control" id="member-surname" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="memberid">Member ID Number <span>*</span></label>
+                                                    <input type="text" class="form-control" id="member-id-number" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Dependant Information</label>
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="Patientcode">Patient Dependant Code <span>*</span></label>
+                                                    <select name="" class="form-control" id="Patient-code" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="00">00</option>
+                                                        <option value="01">01</option>
+                                                        <option value="02">02</option>
+                                                        <option value="03">03</option>
+                                                        <option value="04">04</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="uploader" onclick="$('#filePhoto').click()">Scan & Upload Medical Aid</div>
+                                                <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                            </div>
+
+                                            <div class="clearfix"></div>
+
+                                             End Average Gift Size Percent Change Field 2
+                                            <input type="button" data-page="4" name="previous" class="previous action-button" value="Previous" />
+                                            <input type="button" data-page="4" name="next" class="next action-button" value="Save & Continue" />
+
+                                        </fieldset>*@
+
+
+
+                                    <!-- person responsible -->
+                                    @*<fieldset>
+                                            <h2 class="fs-title">PERSON RESPONSIBLE FOR ACCOUNT</h2>
+                                            <h3 class="fs-subtitle"></h3>
+                                            <div class="col-lg-6">
+                                                <div class="form-group form-inline">
+                                                    <label for="title">Title <span>*</span></label>
+                                                    <select name="title" class="form-control" id="title" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="title">Title</option>
+                                                        <option value="mr">Mr</option>
+                                                        <option value="mrs">Mrs</option>
+                                                        <option value="miss">Miss</option>
+                                                        <option value="ms">Ms</option>
+                                                        <option value="prof">Prof</option>
+                                                        <option value="dr">Dr</option>
+                                                        <option value="rev">Rev</option>
+                                                        <option value="hon">Hon</option>
+
+                                                    </select>
+
+                                                    <span class="error1" style="display: none;">
+                                                        <i class="error-log fa fa-exclamation-triangle"></i>
+                                                    </span>
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accName">Name <span>*</span></label>
+                                                    <input type="text" class="form-control" id="accName" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accSurname">Surname <span>*</span></label>
+                                                    <input type="text" class="form-control" id="accSurname" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accIdnumber">ID Number <span>*</span></label>
+                                                    <input type="text" class="form-control" id="accIdnumber" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Billing Address </label>
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Building/House <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-building-house" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Street Name <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-street-name" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Country <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-street-name" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Suburb/Town <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-street-name" placeholder="">
+                                                </div>
+                                                <div class="form-group form-inline">
+                                                    <label for="accpostalCode">Postal Code <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-postal-code" placeholder="">
+
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accCountry">Country <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-country" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Employment Details</label>
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmployer">Employer <span>*</span></label>
+                                                    <input type="text" class="form-control" id="employer" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmployerAdd">Employer Address <span>*</span></label>
+                                                    <input type="text" class="form-control" id="employer-address" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="occupation">Occupation <span>*</span></label>
+                                                    <input type="text" class="form-control" id="occupation" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmployerContact">Employer Contact<span>*</span></label>
+                                                    <input type="text" class="form-control" id="employer-contact" placeholder="">
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group form-inline">
+                                                    <label for="copy">Copy from </label>
+                                                    <select name="copy" class="form-control" id="copy" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="Patient">Patient</option>
+                                                        <option value="Main Member">Main Member</option>
+
+
+                                                    </select>
+
+                                                    <span class="error1" style="display: none;">
+                                                        <i class="error-log fa fa-exclamation-triangle"></i>
+                                                    </span>
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accContactNum">Contact Number <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-contact-number" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmail">Email Address <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-email" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="title">Statement & letters sent via <span>*</span> </label>
+                                                    <select name="title" class="form-control" id="title" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="phone">Phone</option>
+                                                        <option value="email">Email</option>
+                                                        <option value="post">post</option>
+
+
+                                                    </select>
+
+                                                    <span class="error1" style="display: none;">
+                                                        <i class="error-log fa fa-exclamation-triangle"></i>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                            <div class="clearfix"></div>
+                                            <input type="button" data-page="5" name="previous" class="previous action-button" value="Previous" />
+                                            <input type="button" data-page="5" name="next" class="next action-button" value="Save & Continue" />
+
+                                        </fieldset>*@
+
+                                    <fieldset>
+                                        <h2 class="fs-title">Terms & Conditions</h2>
+                                        <h3 class="fs-subtitle"></h3>
+
+                                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+
+                                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <input type="radio" name="sameaddress" value="" id="same-address"> Yes, I accept the terms and conditions
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <input type="radio" name="sameaddress" value="" id="same-address">No, I don t accept the terms and conditions
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="siganture">Signature </label>
+                                                <input type="text" class="form-control" id="signature" placeholder="">
+                                            </div>
+
+
+                                            <div class="form-group form-inline">
+                                                <label for="date">Signature </label>
+                                                <input type="date" class="form-control" id="date" placeholder="">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6"></div>
+                                        <div class="clearfix"></div>
+
+                                        <input type="button" data-page="5" name="previous" class="previous action-button" value="Previous" />
+                                        <input id="submit" class="hs-button primary large action-button next" type="submit" value="Submit">
+
+                                    </fieldset>
+                                </form>
+                            </div>
+                        }
+                        else if (Model != null && Model.PatientId > 0)
+                        {
+                            <h4 class="custom-modal-title">Update Patient</h4>
+
+                            <div class="custom-modal-text text-left">
+
+                                <!-- Modal -info -->
+                                <form class="add-patient" asp-action="Edit" asp-controller="Patient" method="post" id="add-patient">
+                                    <ul id="progressbar">
+                                        <li class="active">Personal  Information</li>
+                                        <li>Contact Information</li>
+                                        <li>Next of kin </li>
+                                        @*<li>Payment Information</li>
+                                            <li>Person Responsible for Account</li>*@
+                                        <li>Terms & Conditions</li>
+                                    </ul>
+
+                                    <input type="hidden" asp-for="PatientId" name="patientId" value="@Model.PatientId" />
+                                    <input type="hidden" asp-for="PersonId" name="personId" value="@Model.PersonId" />
+
+                                    <!-- USER INFORMATION FIELD SET -->
+                                    <fieldset>
+                                        <h2 class="fs-title">Personal Information</h2>
+                                        <h3 class="fs-subtitle"></h3>
+                                        <!-- Begin What's Your First Name Field -->
+                                        <div class="col-lg-8">
+                                            <div class="form-group form-inline">
+                                                <label for="title">Title <span>*</span></label>
+                                                <select name="title" class="form-control" id="title" placeholder="">
+                                                    @if (Model.Title == null)
+                                                    {
+                                                        <option>--Select option--</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@Model.Title">@Model.Title</option>
+                                                    }
+                                                    <option value="title">Title</option>
+                                                    <option value="mr">Mr</option>
+                                                    <option value="mrs">Mrs</option>
+                                                    <option value="miss">Miss</option>
+                                                    <option value="ms">Ms</option>
+                                                    <option value="prof">Prof</option>
+                                                    <option value="dr">Dr</option>
+                                                    <option value="rev">Rev</option>
+                                                    <option value="hon">Hon</option>
+
+                                                </select>
+
+                                                <span class="error1" style="display: none;">
+                                                    <i class="error-log fa fa-exclamation-triangle"></i>
+                                                </span>
+                                            </div>
+                                            <!-- End What's Your First Name Field -->
+
+                                            <div class="form-group form-inline">
+                                                <label for="firstName">First Name <span>*</span></label>
+                                                <input asp-for="FirstName" type="text" name="firstName" class="form-control" id="firstName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="middleName">Middle Name</label>
+                                                <input asp-for="MiddleName" type="text" name="middleName" class="form-control" id="middleName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="lastName">Last Name <span>*</span></label>
+                                                <input asp-for="LastName" type="text" name="lastName" class="form-control" id="lastName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="genderId">Gender <span>*</span></label>
+                                                <select asp-for="GenderId" name="genderId" class="form-control" id="gender" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="0">Male</option>
+                                                    <option value="1">Female</option>
+                                                    <option value="2">Other</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="dateOfBirth">Date of Birth <span>*</span></label>
+                                                <input asp-for="DateOfBirth" type="date" name="dateOfBirth" class="form-control" id="dateOfBirth" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="idNumber">ID Number <span>*</span></label>
+                                                <input asp-for="IdNumber" type="text" name="idNumber" class="form-control" id="idNumber" placeholder="Enter ID number">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="age">Age</label>
+                                                <input type="number" name="age" class="form-control" id="age" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="idType">Identity Type <span>*</span></label>
+
+                                                <select asp-for="IdentityType" name="identityType" class="form-control" id="identityType" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="male">ID Document</option>
+                                                    <option value="female">Passport</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="maritialStatus">Maritial Status <span>*</span></label>
+
+                                                <select asp-for="MaritalStatus" name="maritialStatus" class="form-control" id="maritialstatus" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="single">Single</option>
+                                                    <option value="married">Married</option>
+                                                    <option value="devorced">Devorced</option>
+                                                    <option value="widowed">Widowed</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="ethnicity">Ethnicity <span>*</span></label>
+
+                                                <select asp-for="Ethnicity" name="ethnicity" class="form-control" id="ethnicity" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="black">Black</option>
+                                                    <option value="white">White</option>
+                                                    <option value="coloured">Coloured</option>
+                                                    <option value="indian">Indian</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="religion">Religion <span>*</span></label>
+
+                                                <select asp-for="Religion" name="religion" class="form-control" id="religion" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="male">Christianity</option>
+                                                    <option value="female">Islam</option>
+                                                    <option value="female">Buddhism</option>
+                                                    <option value="female">Judaism</option>
+                                                    <option value="female">Atheism</option>
+                                                    <option value="female">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="uploader" onclick="$('#filePhoto').click()">Add Picture</div>
+                                            <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                            <div>
+                                                <p>Scan and upload</p>
+                                                <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                                <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12"></div>
+                                        <!-- End Total Number of Constituents in Your Database Field -->
+                                        <input type="button" data-page="1" name="next" class="next action-button" value="Save & Continue" />
+
+                                    </fieldset>
+
+
+
+                                    <!-- ACQUISITION FIELD SET -->
+                                    <fieldset>
+                                        <h2 class="fs-title">Contact Information</h2>
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <label for="homeTel">Home Telephone</label>
+                                                <input asp-for="Telephone" type="text" class="form-control" name="telephone" id="homeTel" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="workTel">Work Telephone</label>
+                                                <input asp-for="WorkTel" type="text" class="form-control" id="workTel" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="prefferedContact">Preffered Contact Method</label>
+                                                <select name="prefferedContact" class="form-control" id="prefferedContact" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="male">Phone</option>
+                                                    <option value="female">Email</option>
+                                                    <option value="female">Post</option>
+
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="occupation">Residential Address:</label>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="buildingHome">Building/House <span>*</span></label>
+                                                <input asp-for="ResAddress1" type="text" class="form-control" id="building-house" name="resAddress1" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="streetName">Street Name <span>*</span></label>
+                                                <input asp-for="ResAddress2" type="text" class="form-control" name="resAddress2" id="street-name" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="buildingHome">Country <span>*</span></label>
+                                                <input type="text" class="form-control" id="buildingHome" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="suburbTown">Suburb/Town <span>*</span></label>
+                                                <input asp-for="ResSurbub" type="text" class="form-control" name="resSurbub" id="suburbTown" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="postalCode">Postal Code <span>*</span></label>
+                                                <input asp-for="ResPostCode" type="text" class="form-control" id="postal-code" name="resPostCode" placeholder="">
+
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="Country">Country <span>*</span></label>
+                                                <input asp-for="Country" type="text" class="form-control" name="country" id="country" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="occupation">Postal Address:</label>
+                                            </div>
+
+
+                                            <div class="form-group form-inline">
+                                                <input type="radio" name="sameaddress" value="" id="same-address"> Same as Residential Address
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="postalBox">Postal Box <span>*</span></label>
+                                                <input type="text" name="postalBox" class="form-control" id="postal-box" placeholder="">
+
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="postalCode">Postal Code <span>*</span></label>
+                                                <input asp-for="ResPostCode" type="text" class="form-control" name="resPostCode" id="resPostCode" placeholder="">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <label for="cellNumber">Cell Number <span>*</span></label>
+                                                <input asp-for="Cellphone" type="text" class="form-control" name="cellphone" id="cellphone" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="email">Email <span>*</span></label>
+                                                <input asp-for="Email" type="email" class="form-control" name="email" id="email" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="contactHours">Preferred Contact Hours</label>
+                                                <select name="contactHours" class="form-control" id="contact-methods" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="anytime">Anytime</option>
+                                                    <option value="workinghours">Working Hours</option>
+                                                    <option value="afterhours">After Hours</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+
+                                        </div>
+                                        <!-- End Calc of Total Number of Donors Fields -->
+                                        <input type="button" data-page="2" name="previous" class="previous action-button" value="Previous" />
+                                        <input type="button" data-page="2" name="next" class="next action-button" value="Save & Continue" />
+
+                                    </fieldset>
+
+
+
+                                    <!-- Next of kin field -->
+                                    <fieldset>
+                                        <h2 class="fs-title">Next of kin</h2>
+                                        <h3 class="fs-subtitle"></h3>
+
+                                        <div class="col-lg-6">
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokName">Name <span>*</span></label>
+                                                <input asp-for="NokName" type="text" class="form-control" id="nokName" name="nokName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokSurname">Surname <span>*</span></label>
+                                                <input asp-for="NokSurname" type="text" class="form-control" id="nokSurname" name="nokSurname" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokContact">Contact Number <span>*</span></label>
+                                                <input asp-for="NokContact" type="text" class="form-control" id="nokContact" name="nokContact" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="">Residential Address:</label>
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokBuildingHome">Building/House <span>*</span></label>
+                                                <input asp-for="NokBuildingHome" type="text" class="form-control" id="nokbuilding-house" name="nokBuildingHome" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokStreetName">Street Name <span>*</span></label>
+                                                <input asp-for="NokStreetName" type="text" class="form-control" id="nok-street-name" name="nokStreetName" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokCountry">Country <span>*</span></label>
+                                                <input asp-for="NokCountry" type="text" class="form-control" id="nok-country" name="nokCountry" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokSurburbTown">Suburb/Town <span>*</span></label>
+                                                <input asp-for="NokSurburbTown" type="text" class="form-control" id="nok-surburb-town" name="nokSurburbTown" placeholder="">
+                                            </div>
+                                            <div class="form-group form-inline">
+                                                <label for="nokPostalCode">Postal Code <span>*</span></label>
+                                                <input asp-for="NokPostalCode" type="text" class="form-control" id="nok-postal-code" name="nokPostalCode" placeholder="">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <label for="nokEmail">Email <span>*</span></label>
+                                                <input asp-for="NokEmail" type="email" class="form-control" id="nok-email" name="nokEmail" placeholder="">
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="nokRelationship">Relationship</label>
+                                                <select asp-for="NokRelationship" name="nokRelationship" class="form-control" id="nok-ralationship" placeholder="">
+                                                    <option>--Select option--</option>
+                                                    <option value="mother">Mother</option>
+                                                    <option value="father">Father</option>
+                                                    <option value="son">Son</option>
+                                                    <option value="daughter">Daughter</option>
+                                                    <option value="grandparent">Grandparent</option>
+                                                    <option value="cousin">Cousin</option>
+                                                    <option value="aunt">Aunt</option>
+                                                    <option value="uncle">Uncle</option>
+                                                    <option value="inlaws">In-laws</option>
+                                                    <option value="brother">Brother</option>
+                                                    <option value="sister">Sister</option>
+                                                    <option value="relative">Relative</option>
+                                                    <option value="other">Other</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12"></div>
+                                        <!-- End Next of kin Field -->
+                                        <input type="button" data-page="3" name="previous" class="previous action-button" value="Previous" />
+                                        <input type="button" data-page="3" name="next" class="next action-button" value="Save & Continue" />
+
+                                    </fieldset>
+
+
+
+                                    <!-- Payment Information -->
+                                    @*<fieldset>
+                                            <h2 class="fs-title">Payment Information</h2>
+                                            <h3 class="fs-subtitle"></h3>
+                                            <div class="col-lg-6">
+
+                                                <div class="form-group form-inline">
+                                                    <label for="paymentOptions">Payment Option <span>*</span></label>
+                                                    <select name="paymentOptions" class="form-control" id="medicalaidoption" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="medicalaid">Medial Aid</option>
+                                                        <option value="cash">Cash</option>
+                                                        <option value="creditcard">Credit Card</option>
+                                                        <option value="mva">MVA</option>
+                                                        <option value="compnayorders">Company Orders</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group form-inline">
+                                                    <label for="medicalAidScheme">Medical Aid Scheme <span>*</span></label>
+                                                    <input type="text" class="form-control" name="medicalAidScheme" id="medical-aid-scheme" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="medicalAidSchemeOption">Medical Aid Scheme Option <span>*</span></label>
+                                                    <input name="medicalAidSchemeOption" type="text" class="form-control" id="medical-aid-scheme-option" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="medicalaidschemenumber">Medical Aid Scheme Number <span>*</span></label>
+                                                    <input type="number" class="form-control" id="medical-aid-scheme-number" placeholder="">
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Main Member Details</label>
+
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="membername">Member Name <span>*</span></label>
+                                                    <input type="text" class="form-control" id="member-name" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="membername">Member Surname <span>*</span></label>
+                                                    <input type="text" class="form-control" id="member-surname" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="memberid">Member ID Number <span>*</span></label>
+                                                    <input type="text" class="form-control" id="member-id-number" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Dependant Information</label>
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="Patientcode">Patient Dependant Code <span>*</span></label>
+                                                    <select name="" class="form-control" id="Patient-code" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="00">00</option>
+                                                        <option value="01">01</option>
+                                                        <option value="02">02</option>
+                                                        <option value="03">03</option>
+                                                        <option value="04">04</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="uploader" onclick="$('#filePhoto').click()">Scan & Upload Medical Aid</div>
+                                                <input type="file" name="userprofile_picture" id="filePhoto" style="display:block;width:255px;" />
+                                            </div>
+
+                                            <div class="clearfix"></div>
+
+                                             End Average Gift Size Percent Change Field 2
+                                            <input type="button" data-page="4" name="previous" class="previous action-button" value="Previous" />
+                                            <input type="button" data-page="4" name="next" class="next action-button" value="Save & Continue" />
+
+                                        </fieldset>*@
+
+
+
+                                    <!-- person responsible -->
+                                    @*<fieldset>
+                                            <h2 class="fs-title">PERSON RESPONSIBLE FOR ACCOUNT</h2>
+                                            <h3 class="fs-subtitle"></h3>
+                                            <div class="col-lg-6">
+                                                <div class="form-group form-inline">
+                                                    <label for="title">Title <span>*</span></label>
+                                                    <select name="title" class="form-control" id="title" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="title">Title</option>
+                                                        <option value="mr">Mr</option>
+                                                        <option value="mrs">Mrs</option>
+                                                        <option value="miss">Miss</option>
+                                                        <option value="ms">Ms</option>
+                                                        <option value="prof">Prof</option>
+                                                        <option value="dr">Dr</option>
+                                                        <option value="rev">Rev</option>
+                                                        <option value="hon">Hon</option>
+
+                                                    </select>
+
+                                                    <span class="error1" style="display: none;">
+                                                        <i class="error-log fa fa-exclamation-triangle"></i>
+                                                    </span>
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accName">Name <span>*</span></label>
+                                                    <input type="text" class="form-control" id="accName" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accSurname">Surname <span>*</span></label>
+                                                    <input type="text" class="form-control" id="accSurname" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accIdnumber">ID Number <span>*</span></label>
+                                                    <input type="text" class="form-control" id="accIdnumber" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Billing Address </label>
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Building/House <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-building-house" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Street Name <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-street-name" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Country <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-street-name" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accbuildingHome">Suburb/Town <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-street-name" placeholder="">
+                                                </div>
+                                                <div class="form-group form-inline">
+                                                    <label for="accpostalCode">Postal Code <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-postal-code" placeholder="">
+
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accCountry">Country <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-country" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="">Employment Details</label>
+                                                </div>
+
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmployer">Employer <span>*</span></label>
+                                                    <input type="text" class="form-control" id="employer" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmployerAdd">Employer Address <span>*</span></label>
+                                                    <input type="text" class="form-control" id="employer-address" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="occupation">Occupation <span>*</span></label>
+                                                    <input type="text" class="form-control" id="occupation" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmployerContact">Employer Contact<span>*</span></label>
+                                                    <input type="text" class="form-control" id="employer-contact" placeholder="">
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group form-inline">
+                                                    <label for="copy">Copy from </label>
+                                                    <select name="copy" class="form-control" id="copy" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="Patient">Patient</option>
+                                                        <option value="Main Member">Main Member</option>
+
+
+                                                    </select>
+
+                                                    <span class="error1" style="display: none;">
+                                                        <i class="error-log fa fa-exclamation-triangle"></i>
+                                                    </span>
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accContactNum">Contact Number <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-contact-number" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="accEmail">Email Address <span>*</span></label>
+                                                    <input type="text" class="form-control" id="acc-email" placeholder="">
+                                                </div>
+
+                                                <div class="form-group form-inline">
+                                                    <label for="title">Statement & letters sent via <span>*</span> </label>
+                                                    <select name="title" class="form-control" id="title" placeholder="">
+                                                        <option>--Select option--</option>
+                                                        <option value="phone">Phone</option>
+                                                        <option value="email">Email</option>
+                                                        <option value="post">post</option>
+
+
+                                                    </select>
+
+                                                    <span class="error1" style="display: none;">
+                                                        <i class="error-log fa fa-exclamation-triangle"></i>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                            <div class="clearfix"></div>
+                                            <input type="button" data-page="5" name="previous" class="previous action-button" value="Previous" />
+                                            <input type="button" data-page="5" name="next" class="next action-button" value="Save & Continue" />
+
+                                        </fieldset>*@
+
+                                    <fieldset>
+                                        <h2 class="fs-title">Terms & Conditions</h2>
+                                        <h3 class="fs-subtitle"></h3>
+
+                                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+
+                                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                                        <div class="col-lg-6">
+                                            <div class="form-group form-inline">
+                                                <input type="radio" name="sameaddress" value="" id="same-address"> Yes, I accept the terms and conditions
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <input type="radio" name="sameaddress" value="" id="same-address">No, I don t accept the terms and conditions
+                                            </div>
+
+                                            <div class="form-group form-inline">
+                                                <label for="siganture">Signature </label>
+                                                <input type="text" class="form-control" id="signature" placeholder="">
+                                            </div>
+
+
+                                            <div class="form-group form-inline">
+                                                <label for="date">Signature </label>
+                                                <input type="date" class="form-control" id="date" placeholder="">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6"></div>
+                                        <div class="clearfix"></div>
+
+                                        <input type="button" data-page="5" name="previous" class="previous action-button" value="Previous" />
+                                        <input id="submit" class="hs-button primary large action-button next" type="submit" value="Submit">
+
+                                    </fieldset>
+                                </form>
+                            </div>
+                        }
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+            <!-- end row -->
+
+
+        </div> <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        2018 © Medipark
+    </footer>
+
+</div>
+
+
+<!-- ============================================================== -->
+<!-- End Right content here -->
+<!-- ============================================================== -->
+<!-- Right Sidebar -->
+<div class="side-bar right-bar">
+    <a href="javascript:void(0);" class="right-bar-toggle">
+        <i class="mdi mdi-close-circle-outline"></i>
+    </a>
+    <h4 class="">Settings</h4>
+    <div class="setting-list nicescroll">
+        <div class="row m-t-20">
+            <div class="col-xs-8">
+                <h5 class="m-0">Notifications</h5>
+                <p class="text-muted m-b-0"><small>Do you need them?</small></p>
+            </div>
+            <div class="col-xs-4 text-right">
+                <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+            </div>
+        </div>
+
+        <div class="row m-t-20">
+            <div class="col-xs-8">
+                <h5 class="m-0">API Access</h5>
+                <p class="m-b-0 text-muted"><small>Enable/Disable access</small></p>
+            </div>
+            <div class="col-xs-4 text-right">
+                <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+            </div>
+        </div>
+
+        <div class="row m-t-20">
+            <div class="col-xs-8">
+                <h5 class="m-0">Auto Updates</h5>
+                <p class="m-b-0 text-muted"><small>Keep up to date</small></p>
+            </div>
+            <div class="col-xs-4 text-right">
+                <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+            </div>
+        </div>
+
+        <div class="row m-t-20">
+            <div class="col-xs-8">
+                <h5 class="m-0">Online Status</h5>
+                <p class="m-b-0 text-muted"><small>Show your status to all</small></p>
+            </div>
+            <div class="col-xs-4 text-right">
+                <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Right-bar -->
+<!-- END wrapper -->
+<!-- Modal -->
+<div class="modal fade" id="custom-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <h4 class="custom-modal-title">Add New Patient</h4>
+            <div class="custom-modal-text text-left">
+
+
+                <!-- Modal -info -->
+                <form class="steps" accept-charset="UTF-8" enctype="multipart/form-data" novalidate="">
+                    <ul id="progressbar">
+                        <li class="active">User Information</li>
+                        <li>Work Information</li>
+                        <li>Next of kin </li>
+                        <li>Pre-Bookings</li>
+                        <li>Bed & Ward occupancy</li>
+
+                    </ul>
+
+
+
+                    <!-- USER INFORMATION FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Basic Information</h2>
+                        <h3 class="fs-subtitle"></h3>
+                        <!-- Begin What's Your First Name Field -->
+                        <div class="form-group form-inline">
+
+                            <label for="title">Title</label>
+                            <select name="title" class="form-control" id="title" placeholder="">
+                                <option value="title">Title</option>
+                                <option value="mr">Mr</option>
+                                <option value="mrs">Mrs</option>
+                                <option value="miss">Miss</option>
+
+                            </select>
+
+                            <span class="error1" style="display: none;">
+                                <i class="error-log fa fa-exclamation-triangle"></i>
+                            </span>
+                        </div>
+                        <!-- End What's Your First Name Field -->
+
+                        <div class="form-group form-inline">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" placeholder="Enter first name">
+                        </div>
+
+
+                        <div class="form-group form-inline">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" placeholder="Enter last name">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="dateOfBirth" placeholder="Enter last name">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="genderId">Gender</label>
+                            <select name="genderId" class="form-control" id="gender" placeholder="">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group form-inline">
+                            <label for="middleName">Middle Name</label>
+                            <input type="text" class="form-control" id="middleName" placeholder="Middle Name">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="initials">Initials</label>
+                            <input type="text" class="form-control" id="initials" placeholder="Initials">
+                        </div>
+
+                        <!-- End Total Number of Constituents in Your Database Field -->
+                        <input type="button" data-page="1" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- ACQUISITION FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Work Information</h2>
+
+                        <div class="form-group form-inline">
+                            <label for="occupation">Occupation</label>
+                            <input type="text" class="form-control" id="occupation" placeholder="Occupation">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="creatorId">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Email">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="busAddress">Business Address</label>
+                            <input type="text" class="form-control" id="busAddress" placeholder="Business Address">
+                        </div>
+
+
+                        <div class="form-group form-inline">
+                            <label for="busPostCode">Business Postal Code</label>
+                            <input type="text" class="form-control" id="busPostCode" placeholder="Business Postal Code">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="busName">Business Name</label>
+                            <input type="text" class="form-control" id="busName" placeholder="Business Name">
+                        </div>
+
+                        <!-- End Calc of Total Number of Donors Fields -->
+                        <input type="button" data-page="2" name="previous" class="previous action-button" value="Previous" />
+                        <input type="button" data-page="2" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- Cultivation FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Next of kin</h2>
+                        <h3 class="fs-subtitle"></h3>
+                        <div class="form-group form-inline">
+
+                            <label for="title">Title</label>
+                            <select name="title" class="form-control" id="title" placeholder="">
+                                <option value="title">Title</option>
+                                <option value="mr">Mr</option>
+                                <option value="mrs">Mrs</option>
+                                <option value="miss">Miss</option>
+
+                            </select>
+
+                            <span class="error1" style="display: none;">
+                                <i class="error-log fa fa-exclamation-triangle"></i>
+                            </span>
+                        </div>
+                        <!-- End What's Your First Name Field -->
+
+                        <div class="form-group form-inline">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" placeholder="Enter first name">
+                        </div>
+
+
+                        <div class="form-group form-inline">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" placeholder="Enter last name">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="dateOfBirth">Contact number</label>
+                            <input type="number" class="form-control" id="dateOfBirth" placeholder="Enter number">
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label for="genderId">Gender</label>
+                            <select name="genderId" class="form-control" id="gender" placeholder="">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+
+                            </select>
+
+                        </div>
+
+
+
+
+                        <!-- End Average Gift Size Perchent Change Field -->
+                        <input type="button" data-page="3" name="previous" class="previous action-button" value="Previous" />
+                        <input type="button" data-page="3" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- Cultivation2 FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Pre Pre-Bookings</h2>
+                        <h3 class="fs-subtitle"></h3>
+
+
+                        <!-- End Average Gift Size Percent Change Field 2 -->
+                        <input type="button" data-page="4" name="previous" class="previous action-button" value="Previous" />
+                        <input type="button" data-page="4" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- RETENTION FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Bed & Ward Occupancy</h2>
+                        <h3 class="fs-subtitle"></h3>
+
+
+
+                        <!-- End Retention Rate Percent -->
+                        <!-- End Final Calc -->
+                        <input type="button" data-page="5" name="previous" class="previous action-button" value="Previous" />
+                        <input id="submit" class="hs-button primary large action-button next" type="submit" value="Submit">
+
+                    </fieldset>
+
+                    <fieldset>
+                        <h2 class="fs-title">It's on the way!</h2>
+                        <h3 class="fs-subtitle">Thank you for trying out our marketing grader, please go check your email for your fundraising report card and some helpful tips to improve it!</h3>
+                        <div class="explanation btn btn-small modal-trigger" data-modal-id="modal-3">What Is This?</div>
+                    </fieldset>
+
+                </form>
+            </div>
+        </div>
+    </div>
+

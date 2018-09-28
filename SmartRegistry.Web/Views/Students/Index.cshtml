@@ -1,0 +1,123 @@
+﻿@model IEnumerable<SmartRegistry.Web.Models.Student>
+
+@*@using Microsoft.AspNetCore.Identity*@
+@*@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager*@
+
+@{
+    ViewData["Title"] = "Index";
+}
+    <br />
+    <h2 class="text-capitalize text-center">STUDENTS CURRENTLY REGISTERED ON THE SYSTEM</h2>
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    </p><br/>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            @*<th>
+                @Html.DisplayNameFor(model => model.SensorId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AccountId)
+            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Age)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DOB)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsComplete)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastUpdatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastUpdatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeletedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeletedAt)
+            </th>*@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            @*<td>
+            @Html.DisplayFor(modelItem => item.SensorId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AccountId)
+        </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => (DateTime.Now.Date - item.DOB.Date).TotalDays)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DOB)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsComplete)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gender)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedAt)
+            </td>*@
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

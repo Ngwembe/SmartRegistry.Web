@@ -1,0 +1,403 @@
+﻿@model IEnumerable<SmartRegistry.Web.Models.Schedule>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@*<h2>Index</h2>*@
+
+<div class="container">
+    <div class="row">
+        @*<p>
+            <a asp-action="Create" class="btn btn-primary">Create New</a>
+        </p>*@
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LectureRoom)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsConfirmed)
+                    </th>
+                    @*<th>
+                        @Html.DisplayNameFor(model => model.CreatedBy)
+                    </th>*@
+                    <th>
+                        @Html.DisplayNameFor(model => model.CreatedAt)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Subject)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LectureRoom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsConfirmed)
+                    </td>
+                    @*<td>
+                        @Html.DisplayFor(modelItem => item.CreatedBy)
+                    </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedAt)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subject.Code)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div id="calendar"></div>
+            </div>
+            @*<div class="col-md-2">
+                <div class="border">
+                    <div class="panel-primary">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Schedule</h2>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form">
+                                <div class="form-group">
+                                    <label class="label-control">Lecture Room</label>
+                                    <input type="text" placeholder="Enter lecture room" class="form-control"/>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-control">Title</label>
+                                    <input type="text" placeholder="Enter title" class="form-control"/>
+                                </div>
+                                <input type="submit" value="Add Schedule" class="btn btn-primary"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="eventView">
+        <div class="fade in" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p id="eventViewHeader" class="text-center text-capitalize"></p>
+                    </div>
+                    <div class="modal-body">
+                        <h2 class="text-center" id="eventViewVenue"></h2>
+                        <p id="eventViewBody"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary pull-right" id="btnConfirmLecture">Confirm</a>
+                        <a href="#" class="btn pull-left close" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="createModal"></div>
+</div>
+
+<link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.css" rel="stylesheet" />
+<link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+
+<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.structure.css" rel="stylesheet" />
+<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.theme.css" rel="stylesheet" />
+
+@section Scripts {
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/jquery.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/moment.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/theme-chooser.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script src="~/lib/jquery-ui-1.12.1.custom/js/jquery-ui.js"></script>
+
+    <script type="text/javascript">
+        $(function() {
+
+            //$('.date').datepicker({
+            //    beforeShowDay: $.datepicker.noWeekends,
+            //    dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
+            //});
+
+            /*
+            let calendar = $("#calendar").fullCalendar({
+                weekends: true, //false // will hide Saturdays and Sundays
+                businessHours: true,
+                dayClick: function (date, jsEvent, view, resourceObj) {
+                    alert(`Date: ${date.format()}`);
+                    //alert('Date: ' + date.format());
+                    //alert('Resource ID: ' + resourceObj.id);
+                    //console.log('Resource ID: ' + resourceObj.id);
+                },
+                //addResource: {
+                //    id: 'e',
+                //    title: 'Room E'
+                //},
+            });
+            */
+
+            var events = [];
+
+            getSchedules = function() {
+                $.ajax({
+                    type: "GET",
+                    url: "/Schedules/GetSchedules",
+                    success: function (data) {
+                        console.log("EVENTS");
+                        console.log(data);
+
+                        $.each(data,
+                            function(i, event) {
+                                //console.log(event);
+                                events.push({
+                                    //id: event.id,
+                                    //title: `${event.subject.code} AT ${event.lectureRoom}`,
+                                    //start: moment(event.scheduleFor,"yyyy-dd-mm HH:ii:ss"),
+                                    //end: event.scheduleTo != null ? moment(event.scheduleTo, "yyyy-dd-mm HH:ii:ss") : null,
+                                    //allDay: false,
+                                    //lectureRoom: event.lectureRoom,
+                                    //isConfirmed: event.isConfirmed
+                                    id: event.id,
+                                    title: `${event.subject.code} AT ${event.lectureRoom}`,
+                                    start: moment(event.scheduleFor),
+                                    end: event.scheduleTo != null ? moment(event.scheduleTo) : null,
+                                    allDay: false,
+                                    lectureRoom: event.lectureRoom,
+                                    isConfirmed: event.isConfirmed
+                                });
+                            });
+
+                        generateCalendar(events);
+
+                    },
+                    error: function(err) {
+                        alert(err);
+                    }
+                });
+            };
+
+            getSchedules();
+
+            var $selectedSchedule = null;
+
+            function generateCalendar(events) {
+                $('#calendar').fullCalendar('destroy');
+
+                $('#calendar').fullCalendar({
+                    //weekends: true, //false // will hide Saturdays and Sundays
+                    businessHours: true,
+                    contentHeight: 400,
+                    dafaultDate: new Date(),
+                    timeFormat: 'h(:mm)a',
+                    //default: { hours: 1, minutes: 30 },
+                    slotDuration: '01:30:00',
+                    allDaySlot: false,
+                    allDayDefault: false,
+                    nowIndicator: true,
+                    selectOverlap: false,
+                    eventStartEditable: true,
+                    eventDurationEditable: true,
+                    editable: true,
+                    eventResize: function(event) {
+                        var start = $.fullCalendar.formatDate(event.start, "DD-MM-YYYY HH:mm:ss a");
+                        var end = $.fullCalendar.formatDate(event.end, "DD-MM-YYYY HH:mm:ss a");
+
+                        var title = event.title;
+                        var id = event.id;
+                        var isConfirmed = event.isConfirmed;
+                        var lectureRoom = event.lectureRoom;
+                        //console.log(`START: ${start} \nEND: ${end} \nTITLE: ${title} \nID: ${id} \nLecture Room: ${lectureRoom} \nIs Confirmed: ${isConfirmed}`);
+                        //Id,LectureRoom,IsConfirmed,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,SubjectId
+                        /*
+                             id: event.id,
+                             title: `${event.subject.code} AT ${event.lectureRoom}`,
+                             start: moment(event.scheduleFor),
+                             end: event.scheduleTo != null ? moment(event.scheduleTo) : null,
+                             allDay: false,
+                             lectureRoom: event.lectureRoom,
+                             isConfirmed: event.isConfirmed
+                         */
+                        var scheduler = {
+                            id: id,
+                            scheduleFor: start,
+                            scheduleTo: end,
+                            lectureRoom: lectureRoom,
+                            subjectId: id,
+                            isConfirmed: isConfirmed
+                        };
+
+                        console.log(scheduler);
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/Schedules/Edit",
+                            data: {id: id, schedule: scheduler},
+                            //data: JSON.stringify({
+                            //    id: id,
+                            //    scheduleFor: start,
+                            //    scheduleTo: end,
+                            //    lectureRoom: lectureRoom,
+                            //    subjectId: id,
+                            //    isConfirmed: isConfirmed
+                            //}),
+                            async:true,
+                            success: function (response) {
+                                alert('Updated successfully!!!');
+                            }
+                        });
+                    },
+                    //duration: {hours: 1, minutes: 30},
+                    header: {
+                        left: 'prev,next,today',
+                        center: 'title',
+                        right: 'month,basicWeek,basicDay,agenda'
+                    },
+                    selectable: true,
+                    selectHelper: true,
+                    select: function(start, end, allDay) {
+
+                        //var add = prompt("Set a new schedule?");
+
+                        //if (add) {
+                        //var lectureRoom = prompt("Enter Lecture Room");
+
+                        //if (lectureRoom) {
+
+                            var selectedDate = {
+                                startDate: new Date(start),
+                                endDate: new Date(end),
+                                //isAllDay: allDay,
+                                //title: add,
+                                //lectureRoom: lectureRoom
+                            };
+
+                            var startDate = new Date(start);
+                            var endDate = new Date(end);
+
+                            //startDate = `${startDate.getDate()}/${startDate.getMonth()}/${startDate.getFullYear()}`;
+                            //endDate = `${endDate.getDate()}/${endDate.getMonth()}/${endDate.getFullYear()}`;
+
+                            //console.log('Start: ' + startDate);
+                            //console.log('End: ' + endDate);
+
+                            //console.log("Getting partial view...");
+                            //return;
+
+                            return $.ajax({
+                                type: "POST",
+                                url: "/Schedules/GetCreateModalPartialView",
+                                data: {
+                                    scheduleFor: new Date(start).toJSON(),
+                                    scheduleTo: new Date(end).toJSON()
+                                    //,title: add,
+                                    //lectureRoom: lectureRoom
+                                },
+
+                                //JSON.stringify(selectedDate),//{startDate: selectedDate.startDate, endDate: selectedDate.endDate}, // //.serialize(),
+                                success: function(data) {
+                                    $('#createModal').empty().html(data);
+
+                                    $('.date').datepicker({
+                                        beforeShowDay: $.datepicker.noWeekends,
+                                        dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
+                                    });
+
+                                    $('#createEventViewModal').modal('show');
+                                },
+                                error: function(err) {
+                                    console.log(err);
+                                }
+                            });
+                        //}
+                        //}
+
+                    },
+                    eventLimit: true,
+                    eventColor: '#378006',
+                    events: events,
+                    eventClick: function(calEvent, jsEvent, view) {
+                        $selectedSchedule = calEvent;
+
+                        $('#eventView #eventViewHeader').text(calEvent.title);
+                        $('#eventViewVenue')
+                            .text(calEvent.lectureRoom != null ? calEvent.lectureRoom : 'Venue not confirmed');
+
+                        let $description = $('<div/>');
+
+                        $description.append($('<p/>')
+                            .html(`<b>Start:</b> ${calEvent.start.format('DD-MMM-YYYY HH:mm a')} `));
+
+                        if (calEvent.end != null) {
+                            $description.append($('<p/>')
+                                .html(`<b>End:</b> ${calEvent.end.format('DD-MMM-YYYY HH:mm a')} `));
+                        }
+                        //$description.append($('<p/>').html(`<b>Descrption:</b> ${calEvent.Description}`));
+                        if (calEvent.isConfirmed) {
+                            $description.append($('<p/>')
+                                .html(`<b class='text-center'>Schedule Confirmed:</b> ${calEvent.isConfirmed
+                                    } <i class='glyphicon glyphicon-ok-sign'></i>`));
+                        } else {
+                            $description.append($('<p/>')
+                                .html(`<b class='text-center'>Schedule Confirmed:</b> ${calEvent.isConfirmed
+                                    } <i class='glyphicon glyphicon-wrong'></i>`));
+                        }
+
+                        if ($selectedSchedule.isConfirmed)
+                            $('#btnConfirmLecture').hide();
+                        else
+                            $('#btnConfirmLecture').show();
+
+                        $('#eventView #eventViewBody').empty().html($description);
+                        $('#eventView').modal('show');
+                    }
+                });
+                //$('.draggable').data('duration', '01:30');
+            }
+
+            $('#btnConfirmLecture').on('click',
+                function(e) {
+                    e.preventDefault();
+
+                    if (confirm("Are you sure you want to confirm the schedule?")) {
+                        $.ajax({
+                            type: "GET",
+                            url: "/Schedules/ConfirmSchedule",
+                            data: { scheduleId: $selectedSchedule.id },
+                            success: function(data) {
+                                //TODO: Show confirmation success
+                                $('#eventView').modal('hide');
+                                getSchedules();
+                            },
+                            error: function(err) {
+                                alert(err);
+                            }
+                        });
+                    }
+                });
+        });
+
+    </script>
+}

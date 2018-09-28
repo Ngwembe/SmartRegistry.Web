@@ -1,0 +1,502 @@
+﻿<link href="~/lib/morris/morris-0.5.1/css/morris.css" rel="stylesheet" />
+<link href="~/lib/highcharts/css/highcharts.css" rel="stylesheet" />
+
+
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#" data-toggle="collapse" data-target="#dailyView">Daily</a></li>
+                                <li><a href="#" data-toggle="collapse" data-target="#weeklyView">Weekly</a></li>
+                                <li><a href="#" data-toggle="collapse" data-target="#monthlyView">Monthly</a></li>
+                                <li class="hidden"><a href="#" data-toggle="collapse" data-target="#semesterlyView">Semesterly</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="views">
+                        <div class="row">
+                            <div class="collapse" id="dailyView" data-parent="#views">
+                                <div id="dailyViewChart" style="height: 450px;"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="collapse" id="weeklyView" data-parent="#views">
+                                <div id="weeklyViewChart" style="height: 450px;"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="collapse" id="monthlyView" data-parent="#views">
+                                @*<h2 class="text-center">Monthly Attendance Summary for {Subject Name here}</h2>*@
+                                <div id="monthlyViewChart" style="height: 450px;"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="collapse" id="semesterlyView" data-parent="#views">
+                                <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
+                                <div id="semesterlyViewChart" style="height: 450px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+
+    </footer>
+
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/morris/morris-0.5.1/js/morris.min.js"></script>
+    <script src="~/lib/morris/morris-0.5.1/js/raphael.min.js"></script>
+    <script src="~/lib/highcharts/js/highcharts.js"></script>
+
+
+    <script type="text/javascript">
+
+
+
+        $(function () {
+
+            //$('[data-toggle="collapse"]').click(function () {
+            //    $('.collapse.in').collapse('hide')
+            //});
+
+            $.ajax({
+                type: "GET",
+                url: "/Dashboard/GetWeeklyStats",
+                data: { subjectId: 1 },
+                //async: true,
+                success: function (data) {
+                    console.log("Weekly Stats");
+                    console.log(data);
+                    //renderDonut(data);
+                }
+            });
+
+            //****************     DAILY     *****************
+
+            $.ajax({
+                type: "GET",
+                url: "/Dashboard/GetDailyStats",
+                async: true,
+                data: { scheduleId: 1},
+                success: function (response) {
+                    console.log("DAILY STATS RETURNED:");
+
+                    var stats = JSON.parse(response);
+                    console.log(stats);
+
+                    let chart = Highcharts.chart('dailyViewChart', {
+                        legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle',
+                            labelFormatter: function () {
+                                return this.y + '<br>' + this.name;
+                            }
+                        },
+                        series: [{
+                            type: 'pie',
+                            size: '80%',
+                            innerSize: '60%',
+                            showInLegend: true,
+                            dataLabels: {
+                                //enabled: true,
+                                formatter: function () {
+                                    return this.point.name;
+                                }
+                            },
+                            //data: [{
+                            //    name: 'Incomplete',
+                            //    y: 257763,
+                            //    color: '#138999'
+                            //}, {
+                            //    name: 'Applied for',
+                            //    y: 45251,
+                            //    color: '#429b9e'
+                            //}, {
+                            //    name: 'Ready to apply for',
+                            //    y: 145896,
+                            //    color: '#6dd3ed'
+                            //}]
+                            data: [{
+                                name: stats.attended.label,
+                                y: stats.attended.value
+                                //,color: '#71f442'
+                            }, {
+                                    name: stats.unattended.label,
+                                    y: stats.unattended.value
+                                //,color: '#429b9e'
+                            }]
+                        }]
+                    });
+
+                    chart.setTitle({ text: `<b>Daily Attendance Summary for ${stats.subjectName}</b>`});
+                }
+            });
+
+            //Highcharts.chart('dailyViewChart', {
+            //    legend: {
+            //        layout: 'vertical',
+            //        align: 'right',
+            //        verticalAlign: 'middle',
+            //        labelFormatter: function () {
+            //            return this.y + '<br>' + this.name;
+            //        }
+            //    },
+            //    series: [{
+            //        type: 'pie',
+            //        size: '80%',
+            //        innerSize: '60%',
+            //        showInLegend: true,
+            //        dataLabels: {
+            //            //enabled: true,
+            //            formatter: function() {
+            //                return this.point.name;
+            //            }
+            //        },
+            //        //data: [{
+            //        //    name: 'Incomplete',
+            //        //    y: 257763,
+            //        //    color: '#138999'
+            //        //}, {
+            //        //    name: 'Applied for',
+            //        //    y: 45251,
+            //        //    color: '#429b9e'
+            //        //}, {
+            //        //    name: 'Ready to apply for',
+            //        //    y: 145896,
+            //        //    color: '#6dd3ed'
+            //        //}]
+            //        data: [{
+            //            name: 'Attended',
+            //            y: 65
+            //            //,color: '#71f442'
+            //        }, {
+            //            name: 'Absent',
+            //            y: 35
+            //            //,color: '#429b9e'
+            //        }]
+            //    }]
+            //});
+
+
+            //var data = [{
+            //    name: 'Incomplete',
+            //    //parent: 'all',
+            //    //value: 257763,
+            //    y: 257763,
+            //    color: '#138999'
+            //}, {
+            //    name: 'Applied for',
+            //    //parent: 'all',
+            //    //value: 45251,
+            //    y: 45251,
+            //    color: '#429b9e'
+            //}, {
+            //    name: 'Ready to apply for',
+            //    //parent: 'all',
+            //    //value: 145896,
+            //    y: 145896,
+            //    color: '#6dd3ed'
+            //}];
+            //var chart = Highcharts.chart('dailyViewChart', {
+            //    chart: {
+            //        //type: 'sunburst'
+            //        type: 'pie'
+            //    },
+            //    legend: {
+            //        layout: 'vertical',
+            //        align: 'right',
+            //        verticalAlign: 'middle'
+            //    },
+            //    series: [{
+            //            data: data
+            //        },
+            //        // series for creating the legend
+            //        {
+            //            type: 'area',
+            //            name: '$'+data.filter(x=>x.name=='Incomplete')[0].value+' Incomplete',
+            //            color: '#138999'
+            //        }, {
+            //            type: 'area',
+            //            name: '$'+data.filter(x=>x.name=='Applied for')[0].value+' Applied for',
+            //            color: '#429b9e'
+            //        }, {
+            //            type: 'area',
+            //            name: '$'+ data.filter(x=>x.name=='Ready to apply for')[0].value+ ' Ready to apply for ',
+            //            color: '#6dd3ed'
+            //        }
+            //    ]
+
+
+            //});
+
+
+
+            //Morris.Donut({
+            //    element: 'dailyViewChart',
+            //    data: [
+            //        { value: 70, label: 'foo' },
+            //        { value: 15, label: 'bar' },
+            //        { value: 10, label: 'baz' },
+            //        { value: 05, label: 'A really really long label' }
+            //    ],
+            //    xKey: "value",
+            //    yKeys: ['label'],
+            //    labels: ['label']
+            //    //formatter: function (x) { return x + "%"}
+            //});
+
+            //Morris.Donut({
+            //    element: 'dailyViewChart',
+            //    data: [
+            //        {value: 70, label: 'foo'},
+            //        {value: 15, label: 'bar'},
+            //        {value: 10, label: 'baz'},
+            //        {value: 5, label: 'A really really long label'}
+            //    ]
+            //    ,xKey: "value",
+            //    yKeys: ['label'],
+            //    labels: ['label']
+            //    //formatter: function (x) { return x + "%"}
+            //});
+
+            //****************      WEEKLY      **********************
+            Highcharts.chart('weeklyViewChart', {
+                chart: {
+                    type: 'area'
+                },
+                title: {
+                    text: '<b>Weekly Attendance Summary for {Subject Name here}</b>'
+                },
+                subtitle: {
+                    text: 'Week # of semester # summary'
+                    //text: 'Sources: <a href="https://thebulletin.org/2006/july/global-nuclear-stockpiles-1945-2006">' +
+                    //'thebulletin.org</a> &amp; <a href="https://www.armscontrol.org/factsheets/Nuclearweaponswhohaswhat">' +
+                    //'armscontrol.org</a>'
+                },
+                xAxis: {
+                    allowDecimals: false,
+                    labels: {
+                        formatter: function () {
+                            return this.value; // clean, unformatted number for year
+                        }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Overall Attendance Statistics'
+                    },
+                    labels: {
+                        formatter: function () {
+                            return this.value / 1000 + 'k';
+                        }
+                    }
+                },
+                tooltip: {
+                    pointFormat: '{series.name} had attended <b>{point.y:,.0f}</b><br/> in {point.x}'
+                },
+                plotOptions: {
+                    area: {
+                        pointStart: 2018,
+                        marker: {
+                            enabled: false,
+                            symbol: 'circle',
+                            radius: 2,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Attended',
+                    data: [
+                        //null, null, null, null, null, 6, 11, 32, 110, 235,
+                        //369, 640, 1005, 1436, 2063, 3057, 4618, 6444, 9822, 15468,
+                        //20434, 24126, 27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342,
+                        //26662, 26956, 27912, 28999, 28965, 27826, 25579, 25722, 24826, 24605,
+                        //24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344, 23586, 22380,
+                        //21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950, 10871, 10824,
+                        //10577, 10527, 10475, 10421, 10358, 10295, 10104, 9914, 9620, 9326,
+                        //5113, 5113, 4954, 4804, 4761, 4717, 4368, 4018
+                        null, null, null, null, null, 6, 11, 32, 110, 235,
+                        369, 640, 1005, 1436, 2063, 3057, 4618, 6444, 9822, 15468,
+                        20434, 24126, 27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342,
+                        26662, 26956, 27912, 28999, 28965, 27826, 25579, 25722, 24826, 24605,
+                        24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344, 23586, 22380,
+                        21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950, 10871, 10824,
+                        10577, 10527, 10475, 10421, 10358, 10295, 10104, 9914, 9620, 9326,
+                        5113, 5113, 4954, 4804, 4761, 4717, 4368, 4018
+                    ]
+                }, {
+                    name: 'Missed',
+                    data: [null, null, null, null, null, null, null, null, null, null,
+                        5, 25, 50, 120, 150, 200, 426, 660, 869, 1060,
+                        1605, 2471, 3322, 4238, 5221, 6129, 7089, 8339, 9399, 10538,
+                        11643, 13092, 14478, 15915, 17385, 19055, 21205, 23044, 25393, 27935,
+                        30062, 32049, 33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000,
+                        37000, 35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
+                        21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
+                        12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
+                    ]
+                }]
+            });
+
+            //****************      MONTHLY      **********************
+            Highcharts.chart('monthlyViewChart', {
+                chart: {
+                    type: 'area'
+                },
+                title: {
+                    text: 'Monthly Attendance Summary for {Subject Name here}'
+                },
+                subtitle: {
+                    text: 'Week # of semester # summary'
+                    //text: 'Sources: <a href="https://thebulletin.org/2006/july/global-nuclear-stockpiles-1945-2006">' +
+                    //'thebulletin.org</a> &amp; <a href="https://www.armscontrol.org/factsheets/Nuclearweaponswhohaswhat">' +
+                    //'armscontrol.org</a>'
+                },
+                xAxis: {
+                    allowDecimals: false,
+                    labels: {
+                        formatter: function () {
+                            return this.value; // clean, unformatted number for year
+                        }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Overall Attendance Statistics'
+                    },
+                    labels: {
+                        formatter: function () {
+                            return this.value / 1000 + 'k';
+                        }
+                    }
+                },
+                tooltip: {
+                    pointFormat: '{series.name} had attended <b>{point.y:,.0f}</b><br/> in {point.x}'
+                },
+                plotOptions: {
+                    area: {
+                        pointStart: 2018,
+                        marker: {
+                            enabled: false,
+                            symbol: 'circle',
+                            radius: 2,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Attended',
+                    data: [
+                        25000, 27362, 12937, 40200, 13959, 4935, 8659, 32365, 3567, 23452,
+                        369, 640, 34358, 1436, 2063, 3057, 4618, 6444, 9822, 15468,
+                        20434, 24126, 27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342,
+                        26662, 26956, 27912, 28999, 12849, 27826, 25579, 25722, 24826, 24605,
+                        24304, 23464, 23708, 24099, 14357, 14237, 24401, 24344, 23586, 22380,
+                        21004, 17287, 14747, 13076, 7555, 9144, 11009, 10950, 10871, 10824,
+                        10577, 10527, 10475, 10421, 17358, 13295, 10104, 9914, 9620, 9326,
+                        5113, 5113, 4954, 4804, 4761, 7717, 4368, 4018
+                    ]
+                }, {
+                    name: 'Missed',
+                    data: [12534, 7375, 14925, 18349, 11946, 21429, 23195, 8459, 14183, 36543,
+                        34926, 25693, 21580, 12693, 15702, 22560, 42986, 6698, 37159, 10760,
+                        8605, 4471, 7322, 6238, 7221, 9129, 9089, 7339, 9399, 10538,
+                        11643, 13092, 14478, 15915, 17385, 19055, 21205, 23044, 25393, 27935,
+                        30062, 32049, 33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000,
+                        37000, 35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
+                        21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
+                        12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
+                    ]
+                }]
+            });
+
+
+        });
+
+        var renderDonut = function (data) {
+            var beta = JSON.parse(data);
+            console.log(beta);
+
+            var arr = [];
+
+            //for (r in beta) {
+            //    //console.log(`${beta[r].label}: ${beta[r].value}`);
+
+            //    console.log(r);
+            //    arr.push(`${beta[r].label}` `${beta[r].value}`);
+            //}
+
+            console.log(arr);
+
+            return;
+
+            return Morris.Donut({
+                element: 'myfirstchart',
+                //data: [
+                //    {value: 70, label: 'foo'},
+                //    {value: 15, label: 'bar'},
+                //    {value: 10, label: 'baz'},
+                //    {value: 5, label: 'A really really long label'}
+                //],
+                //data: JSON.parse(data),
+                data: d,
+                xKey: "value",
+                yKeys: ['attended', 'unattended'],
+                labels: ['attended', 'unattended']
+                //formatter: function (x) { return x + "%"}
+            });
+        }
+                
+        //new Morris.Line({
+        //    // ID of the element in which to draw the chart.
+        //    element: 'dailyViewChart',
+        //    // Chart data records -- each entry in this array corresponds to a point on
+        //    // the chart.
+        //    data: [
+        //        { year: '2008', value: 20 },
+        //        { year: '2009', value: 10 },
+        //        { year: '2010', value: 5 },
+        //        { year: '2011', value: 5 },
+        //        { year: '2012', value: 20 }
+        //    ],
+        //    // The name of the data record attribute that contains x-values.
+        //    xkey: 'year',
+        //    // A list of names of data record attributes that contain y-values.
+        //    ykeys: ['value'],
+        //    // Labels for the ykeys -- will be displayed when you hover over the
+        //    // chart.
+        //    labels: ['Value']
+        //});
+
+    </script>
+}
+
+

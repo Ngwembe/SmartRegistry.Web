@@ -1,5 +1,3 @@
-using System;
-
 namespace SmartRegistry.Web.Models
 {
     public class ErrorViewModel

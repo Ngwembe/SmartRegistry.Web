@@ -1,0 +1,62 @@
+﻿@model SmartRegistry.Web.ViewModels.MailsViewModel.MailSenderViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="well">
+                    <h2 class="text-center">Notification Hub (Email Sender)</h2>
+                </div>
+                <form method="post" asp-controller="Mail" asp-action="Create">
+                    <div class="form-group">
+                        @*<label>From</label>*@
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label asp-for="SenderName"></label>
+                                <input type="text" class="form-control" asp-for="SenderName" placeholder="Enter sender name" readonly="readonly"/>
+                                <span asp-validation-for="SenderName"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SenderEmailAddress"></label>
+                                <input type="text" class="form-control" asp-for="SenderEmailAddress" placeholder="Enter sender eamil address" readonly="readonly"/>
+                                <span asp-validation-for="SenderEmailAddress"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @*<label>To</label>*@
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label asp-for="RecipientName"></label>
+                                <input type="text" class="form-control" asp-for="RecipientName" placeholder="Enter recipient's' name"/>
+                                <span asp-validation-for="RecipientName"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="RecipientEmailAddress"></label>
+                                <input type="text" class="form-control" asp-for="RecipientEmailAddress" placeholder="Enter recipient's' email address"/>
+                                <span asp-validation-for="RecipientEmailAddress"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="collapse">
+                            <label>Bcc</label>
+                            <input type="text" class="form-control" asp-for="Bcc"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Subject"></label>
+                        <input type="text" class="form-control" asp-for="Subject"/>
+                        <span asp-validation-for="Subject"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Content"></label>
+                        <textarea class="form-control" asp-for="Content" placeholder="Compose email here" cols="5" rows="8"></textarea>
+                        <span asp-validation-for="Content"></span>
+                    </div>
+                    <input type="submit" value="Send" class="btn btn-primary"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

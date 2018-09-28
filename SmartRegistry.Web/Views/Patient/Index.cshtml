@@ -1,0 +1,566 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*@section styles{ 
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />  
+  
+    <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />  
+    <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+}*@
+
+@section Scripts{
+    <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>  
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script> 
+
+    <script type="text/javascript">
+
+        $(function () {
+            var params = {
+                firstName: 'check 4',
+                lastName: 'check 4',
+                exactSearch: true
+            };
+
+            /*
+            $('#tblPatients').DataTable({
+                "ajax": {
+                    "type": 'GET',
+                    "url": 'http://localhost:50566/v1/Patient',
+                    "dataType": 'json',
+                    "data": params
+                },
+                model: "PatientSearchViewModel",
+                "destroy": true,
+                "columns": [
+                    { "data": 'PatientId' },
+                    { "data": 'FirstName' },
+                    { "data": 'LastName' },
+                    { "data": 'Email' },
+                    { "data": 'HomeTel' }
+                ]
+            });
+            */
+
+           
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:50566/v1/Patient',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                //data: params,
+                success: function (res) {
+                    console.log(res);
+
+                    $('#tblPatients').DataTable({
+                        "data": res,//JSON.stringify(res),
+                        //"bJQueryUI": true,
+                        //"destroy": true,
+                        "columns": [
+                            { "data": 'PatientId' },
+                            { "data": 'FirstName' },
+                            { "data": 'LastName' },
+                            { "data": 'Email' },
+                            { "data": 'HomeTel' },
+                            {
+                                "data": 'PatientId',
+                                render: function(data, type, row) {
+                                    //return `<a asp-area="" asp-controller="Patient" asp-action="Create" class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30"> Edit Patient</a>`;
+                                    return `<a asp-area="" asp-controller="Patient" asp-action="Edit" class="table-action-btn h3"><i class="mdi mdi-pencil-box-outline text-success"  data-toggle="modal" data-target="#edit-patient"></i></a>`;
+                                }
+                            }
+                        ]
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+            /*
+            $('#tblPatients').DataTable({
+                "processing": true, // for show progress bar  
+                "serverSide": true, // for process server side  
+                "filter": true, // this is for disable filter (search box)  
+                "orderMulti": false, // for disable multiple column at once 
+                "ajax": {  
+                    "url": 'http://localhost:50566/v1/Patient',  
+                    "type": "GET"
+                }, 
+                "destroy": true,
+                "columns": [
+                    //{ "data": "PatientId", "name": "Customer ID", "autoWidth": true },
+                    //{ "data": "FirstName", "name": "First Name", "autoWidth": true },
+                    //{ "data": "LastName", "name": "Last Name", "autoWidth": true },
+                    //{ "data": "Email", "name": "Email", "autoWidth": true },
+                    //{ "data": "HomeTel", "name": "HomeTel", "autoWidth": true }
+
+                    { "data": 'PatientId' },
+                    { "data": 'FirstName' },
+                    { "data": 'LastName' },
+                    { "data": 'Email' },
+                    { "data": 'HomeTel' }
+                ]
+            });
+            */
+           
+        });
+
+    </script>
+}
+
+<!-- Begin page -->
+<div id="wrapper">
+
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="content-page">
+        <!-- Start content -->
+        <div class="content">
+            <div class="container">
+
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="page-title-box">
+                            <h4 class="page-title">Patients </h4>
+                            <ol class="breadcrumb p-0 m-0">
+                                <li>
+                                    <a href="#">Medipark</a>
+                                </li>
+
+                                <li class="active">
+                                    Patients
+                                </li>
+                            </ol>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card-box">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <form>
+                                        <div class="form-group search-box">
+                                            <input type="text" id="search-input" class="form-control product-search" placeholder="Search here...">
+                                            <button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <a class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30" onclick="advancedSearch()"><i class="md md-add"></i> Advanced Search</a>
+                                </div>
+                                <div class="col-sm-2">
+                                    @*<a href="add-patient.html" class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30"> Add New Patient</a>*@
+                                    <a asp-area="" asp-controller="Patient" asp-action="Create" class="btn btn-success btn-rounded btn-md waves-effect waves-light m-b-30"> Add New Patient</a>
+                                </div>
+
+                                <div class="col-sm-8" id="advanced-search">
+                                    <form>
+                                        <div class="form-group search-box">
+
+                                            <input for="checkbox5" type="checkbox"> ID Number
+
+                                            <input type="checkbox" name="sameaddress" value="" id=""> First Name
+
+                                            <input type="checkbox" name="sameaddress" value="" id=""> Patient ID
+
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover mails m-0 table table-actions-bar" id="tblPatients">
+                                    @*<table class="table table-hover table-striped" id="tblPatients">*@
+                                    <thead>
+                                        <tr>
+                                            <th>Patient ID</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                            <th>Contact No.</th>
+
+                                            <th>Edit Patient</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div> <!-- end table responsive -->
+                        </div> <!-- end card-box -->
+
+                        @*<div class="text-right">
+                            <ul class="pagination pagination-split m-t-0">
+                                <li class="disabled">
+                                    <a href="#"><i class="fa fa-angle-left"></i></a>
+                                </li>
+                                <li>
+                                    <a href="#">1</a>
+                                </li>
+                                <li class="active">
+                                    <a href="#">2</a>
+                                </li>
+                                <li>
+                                    <a href="#">3</a>
+                                </li>
+                                <li>
+                                    <a href="#">4</a>
+                                </li>
+                                <li>
+                                    <a href="#">5</a>
+                                </li>
+                                <li>
+                                    <a href="#"><i class="fa fa-angle-right"></i></a>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    </div> <!-- end col -->
+
+
+                </div>
+                <!-- end row -->
+
+
+            </div> <!-- container -->
+
+        </div> <!-- content -->
+
+        <footer class="footer text-right">
+            2018 © Medipark
+        </footer>
+
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- End Right content here -->
+    <!-- ============================================================== -->
+    <!-- Right Sidebar -->
+    <div class="side-bar right-bar">
+        <a href="javascript:void(0);" class="right-bar-toggle">
+            <i class="mdi mdi-close-circle-outline"></i>
+        </a>
+        <h4 class="">Settings</h4>
+        <div class="setting-list nicescroll">
+            <div class="row m-t-20">
+                <div class="col-xs-8">
+                    <h5 class="m-0">Notifications</h5>
+                    <p class="text-muted m-b-0"><small>Do you need them?</small></p>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+                </div>
+            </div>
+
+            <div class="row m-t-20">
+                <div class="col-xs-8">
+                    <h5 class="m-0">API Access</h5>
+                    <p class="m-b-0 text-muted"><small>Enable/Disable access</small></p>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+                </div>
+            </div>
+
+            <div class="row m-t-20">
+                <div class="col-xs-8">
+                    <h5 class="m-0">Auto Updates</h5>
+                    <p class="m-b-0 text-muted"><small>Keep up to date</small></p>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+                </div>
+            </div>
+
+            <div class="row m-t-20">
+                <div class="col-xs-8">
+                    <h5 class="m-0">Online Status</h5>
+                    <p class="m-b-0 text-muted"><small>Show your status to all</small></p>
+                </div>
+                <div class="col-xs-4 text-right">
+                    <input type="checkbox" checked data-plugin="switchery" data-color="#7fc1fc" data-size="small" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Right-bar -->
+
+</div>
+<!-- END wrapper -->
+<!-- Modal -->
+<div class="modal fade" id="custom-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <h4 class="custom-modal-title">Add New Patient</h4>
+            <div class="custom-modal-text text-left">
+
+
+                <!-- Modal -info -->
+                <form class="steps" accept-charset="UTF-8" enctype="multipart/form-data" novalidate="">
+                    <ul id="progressbar">
+                        <li class="active">User Information</li>
+                        <li>Work Information</li>
+                        <li>Next of kin </li>
+                        <li>Pre-Bookings</li>
+                        <li>Bed & Ward occupancy</li>
+
+                    </ul>
+
+
+
+                    <!-- USER INFORMATION FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Basic Information</h2>
+                        <h3 class="fs-subtitle"></h3>
+                        <!-- Begin What's Your First Name Field -->
+                        <div class="hs_firstname field hs-form-field">
+
+                            <label for="title">Title</label>
+                            <select name="title" class="form-control" id="title" placeholder="">
+                                <option value="title">Title</option>
+                                <option value="mr">Mr</option>
+                                <option value="mrs">Mrs</option>
+                                <option value="miss">Miss</option>
+
+                            </select>
+
+                            <span class="error1" style="display: none;">
+                                <i class="error-log fa fa-exclamation-triangle"></i>
+                            </span>
+                        </div>
+                        <!-- End What's Your First Name Field -->
+
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" placeholder="Enter first name">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" placeholder="Enter last name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="dateOfBirth" placeholder="Enter last name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genderId">Gender</label>
+                            <select name="genderId" class="form-control" id="gender" placeholder="">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="middleName">Middle Name</label>
+                            <input type="text" class="form-control" id="middleName" placeholder="Middle Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="initials">Initials</label>
+                            <input type="text" class="form-control" id="initials" placeholder="Initials">
+                        </div>
+
+                        <!-- End Total Number of Constituents in Your Database Field -->
+                        <input type="button" data-page="1" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- ACQUISITION FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Work Information</h2>
+
+                        <div class="form-group">
+                            <label for="occupation">Occupation</label>
+                            <input type="text" class="form-control" id="occupation" placeholder="Occupation">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="creatorId">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="busAddress">Business Address</label>
+                            <input type="text" class="form-control" id="busAddress" placeholder="Business Address">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="busPostCode">Business Postal Code</label>
+                            <input type="text" class="form-control" id="busPostCode" placeholder="Business Postal Code">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="busName">Business Name</label>
+                            <input type="text" class="form-control" id="busName" placeholder="Business Name">
+                        </div>
+
+                        <!-- End Calc of Total Number of Donors Fields -->
+                        <input type="button" data-page="2" name="previous" class="previous action-button" value="Previous" />
+                        <input type="button" data-page="2" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- Cultivation FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Next of kin</h2>
+                        <h3 class="fs-subtitle"></h3>
+                        <div class="hs_firstname field hs-form-field">
+
+                            <label for="title">Title</label>
+                            <select name="title" class="form-control" id="title" placeholder="">
+                                <option value="title">Title</option>
+                                <option value="mr">Mr</option>
+                                <option value="mrs">Mrs</option>
+                                <option value="miss">Miss</option>
+
+                            </select>
+
+                            <span class="error1" style="display: none;">
+                                <i class="error-log fa fa-exclamation-triangle"></i>
+                            </span>
+                        </div>
+                        <!-- End What's Your First Name Field -->
+
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" placeholder="Enter first name">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" placeholder="Enter last name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateOfBirth">Contact number</label>
+                            <input type="number" class="form-control" id="dateOfBirth" placeholder="Enter number">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genderId">Gender</label>
+                            <select name="genderId" class="form-control" id="gender" placeholder="">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+
+                            </select>
+
+                        </div>
+
+
+
+
+                        <!-- End Average Gift Size Perchent Change Field -->
+                        <input type="button" data-page="3" name="previous" class="previous action-button" value="Previous" />
+                        <input type="button" data-page="3" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- Cultivation2 FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Pre Pre-Bookings</h2>
+                        <h3 class="fs-subtitle"></h3>
+
+
+                        <!-- End Average Gift Size Percent Change Field 2 -->
+                        <input type="button" data-page="4" name="previous" class="previous action-button" value="Previous" />
+                        <input type="button" data-page="4" name="next" class="next action-button" value="Next" />
+
+                    </fieldset>
+
+
+
+                    <!-- RETENTION FIELD SET -->
+                    <fieldset>
+                        <h2 class="fs-title">Bed & Ward Occupancy</h2>
+                        <h3 class="fs-subtitle"></h3>
+
+
+
+                        <!-- End Retention Rate Percent -->
+                        <!-- End Final Calc -->
+                        <input type="button" data-page="5" name="previous" class="previous action-button" value="Previous" />
+                        <input id="submit" class="hs-button primary large action-button next" type="submit" value="Submit">
+
+                    </fieldset>
+
+                    <fieldset>
+                        <h2 class="fs-title">It's on the way!</h2>
+                        <h3 class="fs-subtitle">Thank you for trying out our marketing grader, please go check your email for your fundraising report card and some helpful tips to improve it!</h3>
+                        <div class="explanation btn btn-small modal-trigger" data-modal-id="modal-3">What Is This?</div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var resizefunc = [];
+    </script>
+
+    <!-- jQuery  -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/modals.js"></script>
+    <script src="/js/detect.js"></script>
+    <script src="/js/fastclick.js"></script>
+    <script src="/js/jquery.blockUI.js"></script>
+    <script src="/js/waves.js"></script>
+    <script src="/js/jquery.slimscroll.js"></script>
+    <script src="/js/jquery.scrollTo.min.js"></script>
+    @*<script src="../plugins/switchery/switchery.min.js"></script>*@
+
+    <!-- App js -->
+    <script src="/js/jquery.core.js"></script>
+    <script src="/js/jquery.app.js"></script>
+
+    <!-- Modal-Effect -->
+    <script src="../plugins/custombox/js/custombox.min.js"></script>
+    <script src="../plugins/custombox/js/legacy.min.js"></script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
+    <script src='https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.js'></script>
+
+
+
+    </html>
+
