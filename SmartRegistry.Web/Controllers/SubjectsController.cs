@@ -11,7 +11,7 @@ using SmartRegistry.Web.Models;
 
 namespace SmartRegistry.Web.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class SubjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -52,7 +52,7 @@ namespace SmartRegistry.Web.Controllers
         }
 
         // GET: Subjects/Create
-        [Authorize]
+        //[Authorize]
         public IActionResult Create()
         {
             ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Code");
@@ -64,7 +64,7 @@ namespace SmartRegistry.Web.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Code,CourseId,LecturerId")] Subject subject)
         {

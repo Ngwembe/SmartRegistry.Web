@@ -121,72 +121,77 @@
     </script>
 }
 
-@*<div class="container">*@
-    <div class="row">
 
-        <div class="col-md-12">
-            <div class="panel-group">
-                <div class="panel-primary">
-                    <div class="panel-heading">
-                        <h2 class="text-center">@Model.Course.Name Department</h2>
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="panel-primary">
-                                        <div class="panel-heading">
-                                            <h2 class="text-center">Semester Schedule</h2>
-                                        </div>
-                                        <div class="panel-body">
-                                            <div id="calendar"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br/>
-                                <div class="row">
-                                    <div class="panel-primary">
-                                        <div class="panel-heading">
-                                            <h2 class="text-center">Announcements</h2>
-                                        </div>
-                                        <div class="panel-body">
-                                            @if (Model.Announcements != null && Model.Announcements.Any())
-                                            {
-                                                <ul class="list-group list-group-flush">
-                                                    @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
-                                                    {
-                                                        <li class="list-group-item">
-                                                            <div>
-                                                                <h4>
-                                                                    @announcement.Title<span class="pull-right">
-                                                                        @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
-                                                                        {
-                                                                            var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
-                                                                            <i>@user</i>
-                                                                        }
-                                                                    </span>
-                                                                </h4>
-                                                                <p class="col-md-12">@announcement.Message </p>
-                                                                @*<a href="#" class="btn btn-primary">Read more</a>*@ <a class="btn"></a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
-                                                            </div>
-                                                        </li>
-                                                    }
-                                                </ul>
+    <div class="content-page">
+        <!-- Start content -->
+        <div class="content">
+            <div class="container">
 
-                                            }
-                                        </div>
-                                    </div>
+                <div class="row">
+
+                
+                        <div class="panel-group">
+                            <div class="panel-primary">
+                                <div class="panel-heading">
+                                    <h2 class="text-center">@Model.Course.Name Department</h2>
                                 </div>
-                            </div>
-                            <div class="col-md-3 col-md-offset-1">
-                                <div class="row">
-                                    <div class="panel-primary">
-                                        <div class="panel-heading">
-                                            <h2 class="text-center">Subjects @Model.Course.Name offers</h2>
-                                        </div>
-                                        <div class="panel-body">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
                                             <div class="row">
-                                                @*<ul class="list-group">
+                                                <div class="panel-primary">
+                                                    <div class="panel-heading">
+                                                        <h2 class="text-center">Semester Schedule</h2>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <div id="calendar"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <div class="row">
+                                                <div class="panel-primary">
+                                                    <div class="panel-heading">
+                                                        <h2 class="text-center">Announcements</h2>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        @if (Model.Announcements != null && Model.Announcements.Any())
+                                                        {
+                                                            <ul class="list-group list-group-flush">
+                                                                @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                                {
+                                                                    <li class="list-group-item">
+                                                                        <div>
+                                                                            <h4>
+                                                                                @announcement.Title<span class="pull-right">
+                                                                                    @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                                                                                    {
+                                                                                        var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
+                                                                                        <i>@user</i>
+                                                                                    }
+                                                                                </span>
+                                                                            </h4>
+                                                                            <p class="col-md-12">@announcement.Message </p>
+                                                                            @*<a href="#" class="btn btn-primary">Read more</a>*@ <a class="btn"></a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
+                                                                        </div>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-md-offset-1">
+                                            <div class="row">
+                                                <div class="panel-primary">
+                                                    <div class="panel-heading">
+                                                        <h2 class="text-center">Subjects @Model.Course.Name offers</h2>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <div class="row">
+                                                            @*<ul class="list-group">
                                                         <li class="list-group-item">
                                                             <a href="#">Subject #1</a>
                                                         </li>
@@ -195,32 +200,49 @@
                                                         </li>
                                                     </ul>*@
 
-                                                @if (Model.Subjects != null && Model.Subjects.Any())
-                                                {
-                                                    <ul class="list-group list-group-flush">
-                                                        @foreach (var subject in Model.Subjects.OrderBy(d => d.Name))
-                                                        {
-                                                        <li class="list-group-item">
-                                                            <a href="/Subjects/Details/@subject.Id">@subject.Name (@subject.Code)</a>
-                                                        </li>
-                                                        }
-                                                        @*<li class="list-group-item">
-                                                        <a href="#">Computer System's Engineering</a>
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        <a href="#">IT Support</a>
-                                                    </li>*@
-                                                    </ul>
-                                                }
+                                                            @if (Model.Subjects != null && Model.Subjects.Any())
+                                                            {
+                                                                <ul class="list-group list-group-flush">
+                                                                    @foreach (var subject in Model.Subjects.OrderBy(d => d.Name))
+                                                                    {
+                                                                        <li class="list-group-item">
+                                                                            <a href="/Subjects/Details/@subject.Id">@subject.Name (@subject.Code)</a>
+                                                                        </li>
+                                                                    }
+                                                                    @*<li class="list-group-item">
+                                                                <a href="#">Computer System's Engineering</a>
+                                                            </li>
+                                                            <li class="list-group-item">
+                                                                <a href="#">IT Support</a>
+                                                            </li>*@
+                                                                </ul>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                   
                 </div>
+
+                <div>
+                    <a asp-action="Index">Back to List</a>
+                </div>
+
             </div>
-        </div>
+            <!-- container -->
+
+        </div> <!-- content -->
+
+        <footer class="footer text-right">
+            @{
+                <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+            }
+
+        </footer>
+
     </div>
-@*</div>*@

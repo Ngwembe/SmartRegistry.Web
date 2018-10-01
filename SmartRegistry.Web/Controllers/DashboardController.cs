@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SmartRegistry.Web.Data;
 using SmartRegistry.Web.Models;
+using SmartRegistry.Web.ViewModels.DashboardViewModels;
 
 namespace SmartRegistry.Web.Controllers
 {
@@ -42,9 +43,9 @@ namespace SmartRegistry.Web.Controllers
             return View();
         }
 
-        public IActionResult Statistics()
+        public async Task<IActionResult> Statistics()
         {
-            return View();
+            return View(new AdminStatsDashboardViewModel(){SiteVisits = 50, TotalStudents = await _context.Students.CountAsync() });
         }
 
         //GET: Dashboard/Details/5

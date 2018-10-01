@@ -78,96 +78,112 @@
                 <!-- end row -->
 
                 <div class="row">
-                    <div class="col-md-12">
 
-                        <div class="panel-group">
-                            <div class="col-md-12">
-                                <div class="panel-default">
-                                    <div class="row">
-                                        <h2 class="well text-center">Information Technology (Faculty Name)</h2>
-                                        <p class="text-center">The description goes here</p>
-                                    </div>
+
+                    <div class="panel-group">
+                        <div class="col-md-12">
+                            <div class="panel-default">
+                                <div class="row">
+                                    <h2 class="well text-center">Faculties</h2>
+                                    @*<p class="text-center">The description goes here</p>*@
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-8">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
 
 
-                                        <div class="panel-primary">
-                                            <div class="panel-heading">
-                                                <h2 class="text-center">Announcements</h2>
-                                            </div>
-                                            <div class="panel-body">
-                                                <div class="row">
-                                                    <ul class="list-group list-group-flush">
-                                                        <li class="list-group-item">
-                                                            <div>
-                                                                <h4>Announcement #1</h4>
-                                                                <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
-                                                                <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
-                                                            </div>
-                                                        </li>
-                                                        <li class="list-group-item">
-                                                            <div>
-                                                                <h4>Announcement #2</h4>
-                                                                <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
-                                                                <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
-                                                            </div>
-                                                        </li>
-                                                        <li class="list-group-item">
-                                                            <div>
-                                                                <h4>Announcement #3</h4>
-                                                                <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
-                                                                <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                <div class="panel-primary">
+                                    <div class="panel-heading">
+                                        <h2 class="text-center">Announcements</h2>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #1</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #2</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <div>
+                                                        <h4>Announcement #3</h4>
+                                                        <p class="col-md-12">blah blah blah blah blah blah blah blah blah blah blah blah ... </p>
+                                                        <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">30/05/2018</i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-4">
+
+                                @*<div class="panel-primary">
+                                        <div class="panel-heading">
+                                            <h2 class="text-center">List of Departments goes here</h2>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item">
+                                                        <a href="#">Computer Sciences</a>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <a href="#">Computer System's Engineering</a>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <a href="#">IT Support</a>
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </div>
-
-
-
-                                        @*<table class="table table-striped table-bordered table-responsive col-md-12">
-                                <thead class="col-md-12">
-                                    <tr class="col-md-6">
-                                        <th class="col-md-12">Message</th>
-                                    </tr>
-                                    <tr class="col-md-6">
-                                        <th class="col-md-12">Publisher</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>*@
+                                    </div>*@
+                                <div class="panel-primary">
+                                    <div class="panel-heading">
+                                        <h2 class="text-center">List of Faculties available</h2>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            @if (Model.Any())
+                                            {
+                                                <ul class="list-group">
 
-                                        <div class="panel-primary">
-                                            <div class="panel-heading">
-                                                <h2 class="text-center">List of Departments goes here</h2>
-                                            </div>
-                                            <div class="panel-body">
+                                                    @foreach (var faculty in Model.OrderBy(f => f.Name))
+                                                    {
+                                                        <li class="list-group-item">
+                                                            <a href="Faculties/Details/@faculty.Id">@faculty.Name</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                            else
+                                            {
                                                 <div class="row">
-                                                    <ul class="list-group list-group-flush">
-                                                        <li class="list-group-item">
-                                                            <a href="#">Computer Sciences</a>
-                                                        </li>
-                                                        <li class="list-group-item">
-                                                            <a href="#">Computer System's Engineering</a>
-                                                        </li>
-                                                        <li class="list-group-item">
-                                                            <a href="#">IT Support</a>
-                                                        </li>
-                                                    </ul>
+                                                    <div class="col-md-12">
+                                                        <h4 class="text-center">There are no courses available. Continue visiting @ViewData["Institution"]'s platform to get updates.</h4>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            }
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
+
                 </div>
 
             </div> <!-- container -->

@@ -9,7 +9,7 @@ using SmartRegistry.Web.Models;
 
 namespace SmartRegistry.Web.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class StudentsController : Controller
     {
         private readonly ApplicationDbContext _context;
