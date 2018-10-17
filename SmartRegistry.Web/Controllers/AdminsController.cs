@@ -61,6 +61,7 @@ namespace SmartRegistry.Web.Controllers
 
 
         // GET: Admins
+        //#TODO: Update the student's model property [IsComplete] upon assigning the sensor ID
         public async Task<ActionResult> Index()
         {
             await SeedRoles();
@@ -74,14 +75,16 @@ namespace SmartRegistry.Web.Controllers
                 Name = $"{u.FirstName} {u.LastName}"
             }), "Id", "Name");
 
-            ViewData["SensorIds"] = new SelectList(_context.Students.Select(u => new
+            ViewData["SensorIds"] = new SelectList(_context.Sensors.Where(s => !s.IsAssigned).Select(u => new
             {
                 u.Id,
-                Name = $"{u.FirstName} {u.LastName}"
+                Name = $"Unassigned Sensor # {u.Id}"
             }), "Id", "Name");
 
             return View();
         }
+
+
 
         // GET: Admins/Details/5
         public ActionResult Details(int id)

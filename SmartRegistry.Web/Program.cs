@@ -19,6 +19,9 @@ namespace SmartRegistry.Web
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                //.UseKestrel()
+                //.UseContentRoot(Directory.GetCurrentDirectory()) //Like this
+                //.UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
     }

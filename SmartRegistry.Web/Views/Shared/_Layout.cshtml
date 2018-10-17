@@ -17,13 +17,17 @@
         <link href="~/css/pages.css" rel="stylesheet" />
         <link href="~/css/menu.css" rel="stylesheet" />
         <link href="~/css/responsive.css" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        
+        @*<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">*@
+        
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/node-waves/0.7.6/waves.min.css" />
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+        
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
 
         <!-- App js -->
@@ -252,7 +256,8 @@
                         <li class="menu-title">Navigation</li>
 
                         <li class="has_sub">
-                            <a asp-controller="Home" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>
+                            @*<a asp-controller="Home" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>*@
+                            <a asp-controller="Home" asp-action="Index" class="waves-effect"><i class="fas fa-chart-line"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>
                             <ul class="list-unstyled">
                                 <li><a href="dashboard.html">Dashboard </a></li>
                             </ul>
@@ -275,7 +280,7 @@
                         </li>
 
                         <li class="has_sub">
-                            <a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-heart-outline"></i><span> Students</span> <span class="menu-arrow"></span></a>
+                            <a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="fas fa-user-graduate"></i><span> Students</span> <span class="menu-arrow"></span></a>
                             <ul class="list-unstyled">
                                 <li><a href="add-doctor.html">Add Student</a></li>
                                 <li><a href="dashboard.html">Manage Students </a></li>

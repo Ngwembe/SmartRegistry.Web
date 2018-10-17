@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartRegistry.Web.Models
 {
     public class Student
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
 
         public long StudentNumber { get; set; }
 
         public int SensorId { get; set; }   //  Is used to reference the id from the fingerprint sensor
+        public Sensor Sensor { get; set; }
 
         public string AccountId { get; set; }
 

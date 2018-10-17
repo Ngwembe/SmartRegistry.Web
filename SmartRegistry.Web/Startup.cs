@@ -14,6 +14,7 @@ using SmartRegistry.Web.Domain;
 using SmartRegistry.Web.Integration;
 using SmartRegistry.Web.Interfaces;
 using SmartRegistry.Web.Models;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace SmartRegistry.Web
 {
@@ -30,10 +31,14 @@ namespace SmartRegistry.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+                options.UseMySql(Configuration.GetConnectionString("MySQLConnectionLocal")));
+            //options.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
+            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            
             // Automatically perform database migration
-            services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
+            
+            // Important line of code to be uncommented after DEVELOPMENT
+            //services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
 
             //********************************************
 

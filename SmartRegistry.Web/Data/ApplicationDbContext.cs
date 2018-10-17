@@ -31,6 +31,7 @@ namespace SmartRegistry.Web.Data
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<AnnouncementType> AnnouncementTypes { get; set; }
 
+        public DbSet<Sensor> Sensors { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
