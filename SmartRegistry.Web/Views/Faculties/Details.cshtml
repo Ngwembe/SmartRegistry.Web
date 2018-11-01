@@ -123,7 +123,7 @@
                                                     </p>
                                                 </div>
                                                    
-                                                    @*<a asp-controller="Departments" asp-action="Details" asp-route="@department.Id" >
+                                                    @*<a asp-controller="Department" asp-action="Details" asp-route="@department.Id" >
                                                         <div class="inbox-item">
                                                             <p class="inbox-item-text">@department.Name (@department.Code)</p>
                                                         </div>
@@ -152,14 +152,14 @@
                             <div class="col-md-8">
                                 <div class="panel-primary">
                                     <div class="panel-heading">
-                                        <h2 class="text-center">Announcements</h2>
+                                        <h2 class="text-center">Announcement</h2>
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            @if (Model.Announcements != null && Model.Announcements.Any())
+                                            @if (Model.Announcement != null && Model.Announcement.Any())
                                             {
                                                 <ul class="list-group list-group-flush">
-                                                    @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                    @foreach (var announcement in Model.Announcement.OrderBy(a => a.CreatedAt.TimeOfDay))
                                                     {
 
                                                         <li class="list-group-item">
@@ -197,18 +197,18 @@
                             <div class="col-md-4">
                                 <div class="panel-primary">
                                     <div class="panel-heading">
-                                        <h2 class="text-center">List of Departments @Model?.Faculty.Name consists of</h2>
+                                        <h2 class="text-center">List of Department @Model?.Faculty.Name consists of</h2>
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
 
-                                            @if (Model.Departments != null && Model.Departments.Any())
+                                            @if (Model.Department != null && Model.Department.Any())
                                             {
                                                 <ul class="list-group list-group-flush">
-                                                    @foreach (var dept in Model.Departments.OrderBy(d => d.Name))
+                                                    @foreach (var dept in Model.Department.OrderBy(d => d.Name))
                                                     {
                                                         <li class="list-group-item">
-                                                            <a href="/Departments/Details/@dept.Id">@dept.Name</a>
+                                                            <a href="/Department/Details/@dept.Id">@dept.Name</a>
                                                         </li>
                                                     }
                                                 </ul>

@@ -24,14 +24,14 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
 
-        // GET: Departments
+        // GET: Department
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Departments.Include(d => d.Faculty);
+            var applicationDbContext = _context.Department.Include(d => d.Faculty);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Departments/Details/5
+        // GET: Department/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,7 +39,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var department = await _context.Departments
+            var department = await _context.Department
                 .Include(d => d.Faculty)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (department == null)
@@ -47,28 +47,28 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            //var announcements = _context.Announcements.Where(a => a.AnnouncementType == AnnouncementType.Department).ToList();
-            var courses = _context.Courses.Where(c => c.DepartmentId == id).ToList();
+            //var announcements = _context.Announcement.Where(a => a.AnnouncementType == AnnouncementType.Department).ToList();
+            var courses = _context.Course.Where(c => c.DepartmentId == id).ToList();
 
             var departmentVM = new DepartmentViewModel()
             {
                 Description = "This is the department description....",
                 Department = department,
-                //Announcements = announcements,
+                //Announcement = announcements,
                 Courses = courses
             };
 
             return View(departmentVM);
         }
 
-        // GET: Departments/Create
+        // GET: Department/Create
         public IActionResult Create()
         {
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "Code");
+            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code");
             return View();
         }
 
-        // POST: Departments/Create
+        // POST: Department/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -95,11 +95,11 @@ namespace SmartRegistry.Web.Controllers
                     return View(department);
                 }
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "Code", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code", department.FacultyId);
             return View(department);
         }
 
-        // GET: Departments/Edit/5
+        // GET: Department/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -107,16 +107,16 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var department = await _context.Departments.SingleOrDefaultAsync(m => m.Id == id);
+            var department = await _context.Department.SingleOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {
                 return NotFound();
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "Code", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code", department.FacultyId);
             return View(department);
         }
 
-        // POST: Departments/Edit/5
+        // POST: Department/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -148,11 +148,11 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "Id", "Code", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code", department.FacultyId);
             return View(department);
         }
 
-        // GET: Departments/Delete/5
+        // GET: Department/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -160,7 +160,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var department = await _context.Departments
+            var department = await _context.Department
                 .Include(d => d.Faculty)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (department == null)
@@ -171,13 +171,13 @@ namespace SmartRegistry.Web.Controllers
             return View(department);
         }
 
-        // POST: Departments/Delete/5
+        // POST: Department/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var department = await _context.Departments.SingleOrDefaultAsync(m => m.Id == id);
-            //_context.Departments.Remove(department);
+            var department = await _context.Department.SingleOrDefaultAsync(m => m.Id == id);
+            //_context.Department.Remove(department);
             department.IsDeleted = true;
 
             await _context.SaveChangesAsync();
@@ -186,7 +186,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool DepartmentExists(int id)
         {
-            return _context.Departments.Any(e => e.Id == id);
+            return _context.Department.Any(e => e.Id == id);
         }
     }
 }

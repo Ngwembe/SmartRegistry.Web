@@ -296,14 +296,22 @@
                         </li>
 
                         <li class="has_sub">
-                            <a asp-controller="Admins" asp-action="Index" class="waves-effect"><i class="mdi mdi-heart-outline"></i><span> Admins</span> <span class="menu-arrow active"></span></a>
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-heart-outline"></i><span> Admins</span> <span class="menu-arrow active"></span></a>
                             <ul class="list-unstyled">
                                 <li><a href="add-patient.html">Add Admin</a></li>
-                                <li><a href="patients.html">Manage Admins</a></li>
+                                <li><a  asp-controller="Admins" asp-action="Index">Manage Admins</a></li>
 
                             </ul>
                         </li>
 
+                        <li class="has_sub">
+                            <a asp-controller="Schedules" asp-action="Index" class="waves-effect"><i class="mdi mdi-calendar"></i><span> Schedules</span> <span class="menu-arrow active"></span></a>
+                            <ul class="list-unstyled">
+                                <li><a href="add-patient.html">Add Admin</a></li>
+                                <li><a  href="#">Manage Admins</a></li>
+
+                            </ul>
+                        </li>
 
                     </ul>
                 </div>
@@ -318,9 +326,7 @@
         <!-- Left Sidebar End -->
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; 2018 - Feature.OHS.Web</p>
-        </footer>
+        
     </div>
 
     <environment include="Development">

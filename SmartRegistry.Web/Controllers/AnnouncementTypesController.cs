@@ -22,13 +22,13 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
 
-        // GET: AnnouncementTypes
+        // GET: AnnouncementType
         public async Task<IActionResult> Index()
         {
-            return View(await _context.AnnouncementTypes.ToListAsync());
+            return View(await _context.AnnouncementType.ToListAsync());
         }
 
-        // GET: AnnouncementTypes/Details/5
+        // GET: AnnouncementType/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -36,7 +36,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var announcementType = await _context.AnnouncementTypes
+            var announcementType = await _context.AnnouncementType
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (announcementType == null)
             {
@@ -46,13 +46,13 @@ namespace SmartRegistry.Web.Controllers
             return View(announcementType);
         }
 
-        // GET: AnnouncementTypes/Create
+        // GET: AnnouncementType/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: AnnouncementTypes/Create
+        // POST: AnnouncementType/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -73,7 +73,7 @@ namespace SmartRegistry.Web.Controllers
             return View(announcementType);
         }
 
-        // GET: AnnouncementTypes/Edit/5
+        // GET: AnnouncementType/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,7 +81,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var announcementType = await _context.AnnouncementTypes.SingleOrDefaultAsync(m => m.Id == id);
+            var announcementType = await _context.AnnouncementType.SingleOrDefaultAsync(m => m.Id == id);
             if (announcementType == null)
             {
                 return NotFound();
@@ -89,7 +89,7 @@ namespace SmartRegistry.Web.Controllers
             return View(announcementType);
         }
 
-        // POST: AnnouncementTypes/Edit/5
+        // POST: AnnouncementType/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -124,7 +124,7 @@ namespace SmartRegistry.Web.Controllers
             return View(announcementType);
         }
 
-        // GET: AnnouncementTypes/Delete/5
+        // GET: AnnouncementType/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -132,7 +132,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var announcementType = await _context.AnnouncementTypes
+            var announcementType = await _context.AnnouncementType
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (announcementType == null)
             {
@@ -142,13 +142,13 @@ namespace SmartRegistry.Web.Controllers
             return View(announcementType);
         }
 
-        // POST: AnnouncementTypes/Delete/5
+        // POST: AnnouncementType/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var announcementType = await _context.AnnouncementTypes.SingleOrDefaultAsync(m => m.Id == id);
-            //_context.AnnouncementTypes.Remove(announcementType);
+            var announcementType = await _context.AnnouncementType.SingleOrDefaultAsync(m => m.Id == id);
+            //_context.AnnouncementType.Remove(announcementType);
             announcementType.IsDeleted = true;
 
             await _context.SaveChangesAsync();
@@ -157,7 +157,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool AnnouncementTypeExists(int id)
         {
-            return _context.AnnouncementTypes.Any(e => e.Id == id);
+            return _context.AnnouncementType.Any(e => e.Id == id);
         }
     }
 }

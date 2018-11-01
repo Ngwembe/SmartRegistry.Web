@@ -50,6 +50,8 @@ namespace SmartRegistry.Web.Models
 
     public class AnnouncementType
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
         public string Text { get; set; }
         //public int Value { get; set; }

@@ -69,13 +69,13 @@ namespace SmartRegistry.Web.Controllers
            ViewData["Admins"] = await _userManager.GetUsersInRoleAsync("Admin");
             //var systemAdmins = await _userManager.GetUsersInRoleAsync("System Admin");
 
-            ViewData["StudentIds"] = new SelectList(_context.Students.Select(u => new
+            ViewData["StudentIds"] = new SelectList(_context.Student.Select(u => new
             {
                 u.Id,
-                Name = $"{u.FirstName} {u.LastName}"
+                Name = $"{u.FirstName} {u.LastName} ({u.StudentNumber})"
             }), "Id", "Name");
 
-            ViewData["SensorIds"] = new SelectList(_context.Sensors.Where(s => !s.IsAssigned).Select(u => new
+            ViewData["SensorIds"] = new SelectList(_context.Sensor.Where(s => !s.IsAssigned).Select(u => new
             {
                 u.Id,
                 Name = $"Unassigned Sensor # {u.Id}"
@@ -87,24 +87,31 @@ namespace SmartRegistry.Web.Controllers
 
 
         // GET: Admins/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            //var role = new IdentityRole();
+            //var userId = _userManager.GetUserId(HttpContext.User);
+            //var user = await _userManager.FindByIdAsync(userId);
+            //await _userManager.AddToRoleAsync(user, "System Admin");
+
+            return View(nameof(Index));
         }
 
         // GET: Admins/Create
         public ActionResult Create()
         {
-            ViewData["Lecturers"] = new SelectList(_context.Lecturers.Select(u => new
+            var lecturers = new SelectList(_context.Lecturer.Select(u => new
             {
-                 u.Id,
-                Name = $"{u.FirstName} {u.LastName}"                
+                u.Id,
+                Name = $"{u.FirstName} {u.LastName}"
             }), "Id", "Name");
+
+            ViewData["Lecturer"] = lecturers;
 
 
             ViewData["Roles"] =  new SelectList(_roleManager.Roles, "Id", "NormalizedName");
 
-            return View();
+            return View(new Lecturer());
         }
 
         // POST: Admins/Create
@@ -114,7 +121,7 @@ namespace SmartRegistry.Web.Controllers
         {
             try
             {
-                var user = _context.Lecturers.FirstOrDefault(u => u.Id == lecturer.Id);
+                var user = _context.Lecturer.FirstOrDefault(u => u.Id == lecturer.Id);
 
                 if (user == null)
                     return View(lecturer);

@@ -98,49 +98,71 @@
     </script>
 }
 
-<h2>Create</h2>
 
-<h4>Announcement</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+    <div class="content-page">
+        <!-- Start content -->
+        <div class="content">
+            <div class="container">
+
+                <h2>Create</h2>
+
+                <h4>Announcement</h4>
+                <hr />
+                <div class="row">
+                    <div class="col-md-4">
+                        <form asp-action="Create">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="Title" class="control-label"></label>
+                                <input asp-for="Title" class="form-control" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="LecturerId" class="control-label"></label>
+                                <select asp-for="LecturerId" class="form-control" asp-items="ViewBag.LecturerId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Message" class="control-label"></label>
+                                <textarea asp-for="Message" class="form-control" cols="8" rows="5"></textarea>
+                                <span asp-validation-for="Message" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="AnnouncementTypeId" class="control-label"></label>
+                                @*<select asp-for="AnnouncementTypeId" class="form-control" asp-items="ViewBag.AnnouncementId"></select>*@
+                                <select id="chkCategory" asp-for="AnnouncementTypeId" class="form-control"></select>
+                                <span asp-validation-for="AnnouncementTypeId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group" id="chkOwnerWrapper">
+                                <label asp-for="AnnouncementTypeOwnerId" class="control-label"></label>
+                                @*<select asp-for="AnnouncementTypeOwnerId" class="form-control" asp-items="ViewBag.AnnouncementId"></select>*@
+                                <select id="chkOwner" asp-for="AnnouncementTypeOwnerId" class="form-control"></select>
+                                <span asp-validation-for="AnnouncementTypeOwnerId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Create" class="btn btn-default" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div>
+                    <a asp-action="Index">Back to List</a>
+                </div>
+
             </div>
-            <div class="form-group">
-                <label asp-for="LecturerId" class="control-label"></label>
-                <select asp-for="LecturerId" class="form-control" asp-items="ViewBag.LecturerId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Message" class="control-label"></label>
-                <textarea asp-for="Message" class="form-control" cols="8" rows="5"></textarea>
-                <span asp-validation-for="Message" class="text-danger"></span>
-            </div>
-            <div class="form-group" >
-                <label asp-for="AnnouncementTypeId" class="control-label"></label>
-                @*<select asp-for="AnnouncementTypeId" class="form-control" asp-items="ViewBag.AnnouncementId"></select>*@
-                <select id="chkCategory" asp-for="AnnouncementTypeId" class="form-control"></select>
-                <span asp-validation-for="AnnouncementTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group" id="chkOwnerWrapper" >
-                <label asp-for="AnnouncementTypeOwnerId" class="control-label"></label>
-                @*<select asp-for="AnnouncementTypeOwnerId" class="form-control" asp-items="ViewBag.AnnouncementId"></select>*@
-                <select id="chkOwner" asp-for="AnnouncementTypeOwnerId" class="form-control"></select>
-                <span asp-validation-for="AnnouncementTypeOwnerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </form>
+            <!-- container -->
+
+        </div> <!-- content -->
+
+        <footer class="footer text-right">
+            @{
+                <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+            }
+
+        </footer>
+
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 

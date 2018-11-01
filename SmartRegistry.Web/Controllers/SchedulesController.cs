@@ -25,7 +25,7 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
 
-        // GET: Schedules
+        // GET: Schedule
         public IActionResult Index()
         {
             var userId = _userManager.GetUserId(HttpContext.User);
@@ -34,18 +34,18 @@ namespace SmartRegistry.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(userId))
             {
-                schedules = _context.Schedules.Include(s => s.Subject).Where(s => s.CreatedBy == userId && !s.IsDeleted).ToList();
+                schedules = _context.Schedule.Include(s => s.Subject).Where(s => s.CreatedBy == userId && !s.IsDeleted).ToList();
                 return View(schedules.ToList());
             }
 
-            schedules = _context.Schedules.Include(s => s.Subject).Where(s => !s.IsDeleted).ToList();
+            schedules = _context.Schedule.Include(s => s.Subject).Where(s => !s.IsDeleted).ToList();
 
             //if(schedules.Any())
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Code");
+            ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code");
             return View(schedules);
         }
 
-        // GET: Schedules/Details/5
+        // GET: Schedule/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -53,7 +53,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var schedule = await _context.Schedules
+            var schedule = await _context.Schedule
                 .Include(s => s.Subject)
                 .SingleOrDefaultAsync(m => m.Id == id);
 
@@ -65,10 +65,10 @@ namespace SmartRegistry.Web.Controllers
             return View(schedule);
         }
 
-        // GET: Schedules/Create
+        // GET: Schedule/Create
         public IActionResult Create()
         {
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Code");
+            ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code");
             return View();
         }
 
@@ -76,28 +76,40 @@ namespace SmartRegistry.Web.Controllers
         {
             if (schedule == null)
             {
-                ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Code");
+                ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code");
                 return View();
             }
 
 
-            //ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Code");
+            //ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code");
             
             return View(schedule);
         }
 
         public JsonResult GetSchedules()
         {
-            var schedules = _context.Schedules.Include(s => s.Subject)
-                                              .Where(s => !s.IsDeleted)
-                                              .Select(s => new {
-                                                  Id = s.Id,
-                                                  Subject = s.Subject,
-                                                  ScheduleFor = s.ScheduleFor.ToString("dd-MM-yyyy HH:mm:ss"),
-                                                  ScheduleTo = s.ScheduleTo.ToString("dd-MM-yyyy HH:mm:ss"),
-                                                  LectureRoom = s.LectureRoom,
-                                                  IsConfirmed = s.IsConfirmed
-                                                });
+            //var schedules = _context.Schedule.Include(s => s.Subject)
+            //                                  .Where(s => !s.IsDeleted)
+            //                                  .Select(s => new {
+            //                                      Id = s.Id,
+            //                                      Subject = s.Subject,
+            //                                      ScheduleFor = s.ScheduleFor.ToString("dd-MM-yyyy HH:mm:ss"),
+            //                                      ScheduleTo = s.ScheduleTo.ToString("dd-MM-yyyy HH:mm:ss"),
+            //                                      LectureRoom = s.LectureRoom,
+            //                                      IsConfirmed = s.IsConfirmed
+            //                                    });
+
+            var schedules = _context.Schedule.Include(s => s.Subject)
+                .Where(s => !s.IsDeleted)
+                .Select(s => new {
+                    Id = s.Id,
+                    Subject = s.Subject,
+                    ScheduleFor = s.ScheduleFor, //.ToString("dd-MM-yyyy HH:mm:ss a"),
+                    ScheduleTo = s.ScheduleTo, //.ToString("dd-MM-yyyy HH:mm:ss a"),
+                    LectureRoom = s.LectureRoom,
+                    IsConfirmed = s.IsConfirmed
+                });
+
             return new JsonResult(schedules);
 
             //return new JsonResult { Data = schedules.ToList(), JsonResquestBehavior = JsonRequestBehavior.AllowGet };
@@ -105,7 +117,7 @@ namespace SmartRegistry.Web.Controllers
 
         public string ConfirmSchedule(int scheduleId)
         {
-            var schedule = _context.Schedules.FirstOrDefault(s => s.Id == scheduleId);
+            var schedule = _context.Schedule.FirstOrDefault(s => s.Id == scheduleId);
 
             if(schedule == null) return JsonConvert.SerializeObject(new { success = false });
 
@@ -144,6 +156,9 @@ namespace SmartRegistry.Web.Controllers
         //}
 
         //[HttpPost]
+
+        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> GetCreateModalPartialView([Bind("Id,LectureRoom,ScheduleFor,ScheduleTo,IsConfirmed,SubjectId")] Schedule schedule, string startDate, string endDate, string lectureRoom, bool isAllDay = false)
         {
             //var dateToBeCreated = new Schedule()
@@ -166,22 +181,22 @@ namespace SmartRegistry.Web.Controllers
             //return View(schedule);
             //return View("Create", dateToBeCreated);
             var userId = _userManager.GetUserId(HttpContext.User);
-            var lecturer = _context.Lecturers.FirstOrDefault(l => l.AccountId == userId);
+            var lecturer = _context.Lecturer.FirstOrDefault(l => l.AccountId == userId);
 
-            if (lecturer == null) return View();
+            if (lecturer == null) return View(nameof(Index));
 
-            var subjects = await _context.Subjects.Include(s => s.Lecturer).Where(s => s.Lecturer.Id == lecturer.Id).ToListAsync();//.AsEnumerable();
+            var subjects = await _context.Subject.Include(s => s.Lecturer).Where(s => s.Lecturer.Id == lecturer.Id).ToListAsync();//.AsEnumerable();
            
 
             ViewData["SubjectId"] = new SelectList(subjects, "Id", "Code");
             return PartialView("_CreateSchedulePartial", schedule);
         }
 
-        // POST: Schedules/Create
+        // POST: Schedule/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,LectureRoom,ScheduleFor,ScheduleTo,IsConfirmed,SubjectId")] Schedule schedule)
         {
             if (ModelState.IsValid)
@@ -200,11 +215,11 @@ namespace SmartRegistry.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Code", schedule.SubjectId);
+            ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code", schedule.SubjectId);
             return View(schedule);
         }
 
-        // GET: Schedules/Edit/5
+        // GET: Schedule/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -212,16 +227,16 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var schedule = await _context.Schedules.SingleOrDefaultAsync(m => m.Id == id);
+            var schedule = await _context.Schedule.SingleOrDefaultAsync(m => m.Id == id);
             if (schedule == null)
             {
                 return NotFound();
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Code", schedule.SubjectId);
+            ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code", schedule.SubjectId);
             return View(schedule);
         }
 
-        // POST: Schedules/Edit/5
+        // POST: Schedule/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -234,7 +249,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var result = _context.Schedules.FirstOrDefault(s => s.Id == id);
+            var result = _context.Schedule.FirstOrDefault(s => s.Id == id);
             if(result == null) return NotFound();
 
             result.LectureRoom = schedule.LectureRoom;
@@ -266,11 +281,11 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             //}
-            ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Code", schedule.SubjectId);
+            ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code", schedule.SubjectId);
             return View(schedule);
         }
 
-        // GET: Schedules/Delete/5
+        // GET: Schedule/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -278,7 +293,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var schedule = await _context.Schedules
+            var schedule = await _context.Schedule
                 .Include(s => s.Subject)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (schedule == null)
@@ -289,13 +304,13 @@ namespace SmartRegistry.Web.Controllers
             return View(schedule);
         }
 
-        // POST: Schedules/Delete/5
+        // POST: Schedule/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var schedule = await _context.Schedules.SingleOrDefaultAsync(m => m.Id == id);
-            //_context.Schedules.Remove(schedule);
+            var schedule = await _context.Schedule.SingleOrDefaultAsync(m => m.Id == id);
+            //_context.Schedule.Remove(schedule);
             schedule.IsDeleted = true;
 
             await _context.SaveChangesAsync();
@@ -304,7 +319,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool ScheduleExists(int id)
         {
-            return _context.Schedules.Any(e => e.Id == id);
+            return _context.Schedule.Any(e => e.Id == id);
         }
     }
 }

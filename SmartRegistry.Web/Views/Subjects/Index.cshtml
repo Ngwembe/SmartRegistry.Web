@@ -1,4 +1,10 @@
-﻿@model IEnumerable<SmartRegistry.Web.Models.Subject>
+﻿@using Microsoft.AspNetCore.Identity
+@using SmartRegistry.Web.Models
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+
+@model IEnumerable<SmartRegistry.Web.Models.Subject>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,7 +20,7 @@
             <h2>Index</h2>
 
             <p>
-                <a asp-action="Create">Create New</a>
+                <a asp-action="Create" class="btn btn-primary">Create New</a>
             </p>
             <table class="table">
                 <thead>
@@ -26,26 +32,26 @@
                             @Html.DisplayNameFor(model => model.Code)
                         </th>
                         @*<th>
-                        @Html.DisplayNameFor(model => model.CreatedBy)
-                    </th>*@
+                                @Html.DisplayNameFor(model => model.CreatedBy)
+                            </th>
                         <th>
                             @Html.DisplayNameFor(model => model.CreatedAt)
                         </th>
-                        @*<th>
-                        @Html.DisplayNameFor(model => model.LastUpdatedBy)
-                    </th>*@
+                        <th>
+                                @Html.DisplayNameFor(model => model.LastUpdatedBy)
+                            </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.LastUpdatedAt)
                         </th>
                         @*<th>
-                        @Html.DisplayNameFor(model => model.IsDeleted)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.DeletedBy)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.DeletedAt)
-                    </th>*@
+                                @Html.DisplayNameFor(model => model.IsDeleted)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.DeletedBy)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.DeletedAt)
+                            </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.Course)
                         </th>
@@ -66,26 +72,26 @@
                                 @Html.DisplayFor(modelItem => item.Code)
                             </td>
                             @*<td>
-                            @Html.DisplayFor(modelItem => item.CreatedBy)
-                        </td>*@
+                                    @Html.DisplayFor(modelItem => item.CreatedBy)
+                                </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.CreatedAt)
                             </td>
-                            @*<td>
-                            @Html.DisplayFor(modelItem => item.LastUpdatedBy)
-                        </td>*@
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+                                </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.LastUpdatedAt)
                             </td>
                             @*<td>
-                            @Html.DisplayFor(modelItem => item.IsDeleted)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.DeletedBy)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.DeletedAt)
-                        </td>*@
+                                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DeletedBy)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DeletedAt)
+                                </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Course.Code)
                             </td>
@@ -95,7 +101,11 @@
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a> |
+                                <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.Id" class="btn btn-primary">Go to Dashboard</a> |
+                                <a asp-controller="Subjects" asp-action="GetAllEnrolled" asp-route-id="@item.Id" class="btn btn-primary">View students enrolled</a>
+                                
+                                @*<a asp-action="Create" asp-controller="" class="btn btn-primary">Enroll</a>*@
                             </td>
                         </tr>
                     }

@@ -28,10 +28,10 @@ namespace SmartRegistry.Web.Controllers
         {
             var userId = _userManager.GetUserId(HttpContext.User);
 
-            var lecturer = _context.Lecturers.FirstOrDefault(a => a.AccountId == userId);
+            var lecturer = _context.Lecturer.FirstOrDefault(a => a.AccountId == userId);
             if (lecturer == null) return View();
 
-            var subjects = _context.Subjects.Include(s => s.Lecturer).Where(c => c.LecturerId == lecturer.Id).AsEnumerable();
+            var subjects = _context.Subject.Include(s => s.Lecturer).Where(c => c.LecturerId == lecturer.Id).AsEnumerable();
             if (subjects == null) return View();
 
             var result = subjects.Select(s => new
@@ -45,20 +45,20 @@ namespace SmartRegistry.Web.Controllers
 
         public async Task<IActionResult> Statistics()
         {
-            return View(new AdminStatsDashboardViewModel(){SiteVisits = 50, TotalStudents = await _context.Students.CountAsync() });
+            return View(new AdminStatsDashboardViewModel(){SiteVisits = 50, TotalStudents = await _context.Student.CountAsync() });
         }
 
         //GET: Dashboard/Details/5
         public ActionResult Details(int subjectId, int studentId) //  When viewing a student's record
         {
-            //var enrolledSubject = _context.EnrolledSubjects.FirstOrDefault(s => s.StudentId == studentId && s.SubjectId == subjectId);
+            //var enrolledSubject = _context.EnrolledSubject.FirstOrDefault(s => s.StudentId == studentId && s.SubjectId == subjectId);
             //if (enrolledSubject == null)
             //{
             //    ModelState.AddModelError("Subject_Error", "Student not enrolled on the specified subject");
             //    return View(ModelState);
             //}
 
-            var attendance = _context.Attendies.Include(a => a.Student)
+            var attendance = _context.Attendee.Include(a => a.Student)
                                                 .Include(a => a.Schedule)
                                                 .ThenInclude(a => a.Subject)
                                                 .Where(a => a.StudentId == studentId).ToList();
@@ -77,32 +77,32 @@ namespace SmartRegistry.Web.Controllers
         {            
             try
             {
-                var subject = _context.Schedules.Include(s => s.Subject).FirstOrDefault(s => s.Id == scheduleId)?.Subject;                
+                var subject = _context.Schedule.Include(s => s.Subject).FirstOrDefault(s => s.Id == scheduleId)?.Subject;                
                 if (subject == null) return JsonConvert.SerializeObject(new { success = false });
 
                 //return JsonConvert.SerializeObject(new
                 //{
                 //    a = new {
-                //        label = "attended", value = _context.Attendies.Count(s => s.ScheduleId == scheduleId)
+                //        label = "attended", value = _context.Attendee.Count(s => s.ScheduleId == scheduleId)
                 //    }
                 //    ,
                 //    b = new
                 //    {
                 //        label = "unattended",
-                //        value = _context.EnrolledSubjects.Count(s => s.SubjectId == subject.Id)
+                //        value = _context.EnrolledSubject.Count(s => s.SubjectId == subject.Id)
                 //    }
                 //});
 
                 var attended = new
                 {
                     label = "attended",
-                    value = 30//_context.Attendies.Count(s => s.ScheduleId == scheduleId)
+                    value = 30//_context.Attendee.Count(s => s.ScheduleId == scheduleId)
                 };
 
                 var unattended = new
                 {
                     label = "unattended",
-                    value = 20//_context.EnrolledSubjects.Include(en => en.Subject).Count(s => s.SubjectId == subject.Id) - attended.value
+                    value = 20//_context.EnrolledSubject.Include(en => en.Subject).Count(s => s.SubjectId == subject.Id) - attended.value
                 };
 
                 return JsonConvert.SerializeObject(new
@@ -115,8 +115,8 @@ namespace SmartRegistry.Web.Controllers
                 //return JsonConvert.SerializeObject( new
                 //{
                 //    [
-                //        new { attended = _context.Attendies.Count(s => s.ScheduleId == scheduleId) },
-                //        new { unattended = _context.EnrolledSubjects.Include(en => en.Subject).Count(s => s.SubjectId == subject.Id) - attended.value }
+                //        new { attended = _context.Attendee.Count(s => s.ScheduleId == scheduleId) },
+                //        new { unattended = _context.EnrolledSubject.Include(en => en.Subject).Count(s => s.SubjectId == subject.Id) - attended.value }
                 //    ]
                 //});
 
@@ -126,15 +126,17 @@ namespace SmartRegistry.Web.Controllers
             }           
         }
 
+        //  Need to determine all the schedules of a week the current date amd time and calculate the attendance rate from there
+        //  POSSIBLE SOLUTION: Have two calendar date controls to choose from the week dates and use that as range
         public async Task<string> GetWeeklyStats(int subjectId)
         {
-            var schedules = await _context.Schedules
+            var schedules = await _context.Schedule
                                     .Include(s => s.Subject)
                                     .Where(s => s.IsConfirmed && s.SubjectId == subjectId && s.ScheduleTo.Date <= DateTime.UtcNow.Date).ToListAsync();
-
+        
             var result = schedules.Select(async s =>
             {
-                var totalCount = await _context.Attendies/*.Where(a => a.ScheduleId == s.Id && a.HasAttended)*/
+                var totalCount = await _context.Attendee/*.Where(a => a.ScheduleId == s.Id && a.HasAttended)*/
                                                .CountAsync(a => a.ScheduleId == s.Id && a.HasAttended);
                 return
                 new

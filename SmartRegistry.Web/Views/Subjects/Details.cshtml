@@ -1,4 +1,10 @@
-﻿@model SmartRegistry.Web.Models.Subject
+﻿@using Microsoft.AspNetCore.Identity;
+@using SmartRegistry.Web.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@model SmartRegistry.Web.Models.Subject
 
 @{
     ViewData["Title"] = "Details";
@@ -9,87 +15,155 @@
     <div class="content">
         <div class="container">
 
-            <h2>Details</h2>
-
-            <div>
+            <div class="row">
+                <h2 class="text-center">Details for @Model?.Name (@Model?.Code)</h2>
                 <h4>Subject</h4>
                 <hr />
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Name)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Name)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Code)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Code)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.CreatedBy)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.CreatedBy)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.CreatedAt)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.CreatedAt)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.LastUpdatedBy)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.LastUpdatedBy)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.LastUpdatedAt)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.LastUpdatedAt)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.IsDeleted)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.IsDeleted)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.DeletedBy)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.DeletedBy)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.DeletedAt)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.DeletedAt)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Course)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Course.Code)
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Lecturer)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Lecturer.FirstName)
-                    </dd>
-                </dl>
+                <div class="card-box">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" readonly="readonly" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Code" class="control-label"></label>
+                            <input asp-for="Code" class="form-control" readonly="readonly" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Course" class="control-label"></label>
+                            <input asp-for="Course" class="form-control" readonly="readonly" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Lecturer" class="control-label"></label>
+                            <input asp-for="Lecturer.FirstName" class="form-control" readonly="readonly" />
+                            <span asp-validation-for="Lecturer" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default">Edit</a> |
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+                            @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                            {
+                                var exists = Convert.ToBoolean(ViewData["AlreadyEnrolled"]);
+
+                                if (!exists)
+                                {
+                                    <a asp-action="EnrollStudent" asp-controller="Students" asp-route-id="@Model.Id" class="btn btn-primary pull-right"><i class="fas fa-user-plus"></i>Enroll</a>;
+                                }
+                            }
+                            else
+                            {
+                                <a asp-action="EnrollStudent" asp-controller="Students" asp-route-id="@Model.Id" class="btn btn-primary pull-right"><i class="fas fa-user-plus"></i>Enroll</a>;
+                            }
+
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div>
-                <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-                <a asp-action="Index">Back to List</a>
-            </div>
-            @*<div>
-            <a asp-action="Index">Back to List</a>
+
+
+            @*<h2>Details</h2>
+
+        <div>
+            <h4>Subject</h4>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Code)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Code)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Course)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Course.Code)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Lecturer)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Lecturer.FirstName)
+                </dd>
+            </dl>
         </div>*@
+
+            @*<dt>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedAt)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedAt)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdatedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdatedBy)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdatedAt)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdatedAt)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsDeleted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsDeleted)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DeletedBy)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DeletedBy)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DeletedAt)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DeletedAt)
+        </dd>*@
+
+            @*<div>
+                <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+
+                @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                {
+                    var exists = Convert.ToBoolean(ViewData["AlreadyEnrolled"]);
+
+                    if (!exists)
+                    {
+                        <a asp-action="EnrollStudent" asp-controller="Student" asp-route-id="@Model.Id" class="btn btn-primary">Enroll</a>;
+                    }
+                }
+                else
+                {
+                    <a asp-action="EnrollStudent" asp-controller="Student" asp-route-id="@Model.Id" class="btn btn-primary">Enroll</a>;
+                }
+
+                <a asp-action="Index">Back to List</a>
+            </div>*@
 
         </div>
         <!-- container -->

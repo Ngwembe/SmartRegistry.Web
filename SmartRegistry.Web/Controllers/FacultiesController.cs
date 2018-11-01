@@ -23,14 +23,14 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
 
-        // GET: Faculties
+        // GET: Faculty
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Faculties.ToListAsync());
+            return View(await _context.Faculty.ToListAsync());
         }
 
-        // GET: Faculties/Details/5
+        // GET: Faculty/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -39,20 +39,20 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var faculty = await _context.Faculties
+            var faculty = await _context.Faculty
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (faculty == null)
             {
                 return NotFound();
             }
 
-            var departments = _context.Departments.Where(d => d.FacultyId == id).ToList();
-            //var announcements = _context.Announcements.Where(a => a.AnnouncementType == AnnouncementType.Faculty).ToList();
+            var departments = _context.Department.Where(d => d.FacultyId == id).ToList();
+            //var announcements = _context.Announcement.Where(a => a.AnnouncementType == AnnouncementType.Faculty).ToList();
 
             var facultyVM = new FacultyViewModel()
             {
                 Faculty = faculty,
-                //Announcements = announcements,
+                //Announcement = announcements,
                 Departments = departments,
                 Description = "this Faculty brings equip students with necesssary skills to ..."
             };
@@ -60,13 +60,13 @@ namespace SmartRegistry.Web.Controllers
             return View(facultyVM);
         }
 
-        // GET: Faculties/Create
+        // GET: Faculty/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Faculties/Create
+        // POST: Faculty/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[Authorize]
@@ -87,7 +87,7 @@ namespace SmartRegistry.Web.Controllers
             return View(faculty);
         }
 
-        // GET: Faculties/Edit/5
+        // GET: Faculty/Edit/5
         //[Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -96,7 +96,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var faculty = await _context.Faculties.SingleOrDefaultAsync(m => m.Id == id);
+            var faculty = await _context.Faculty.SingleOrDefaultAsync(m => m.Id == id);
             if (faculty == null)
             {
                 return NotFound();
@@ -104,7 +104,7 @@ namespace SmartRegistry.Web.Controllers
             return View(faculty);
         }
 
-        // POST: Faculties/Edit/5
+        // POST: Faculty/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -143,7 +143,7 @@ namespace SmartRegistry.Web.Controllers
             return View(faculty);
         }
 
-        // GET: Faculties/Delete/5
+        // GET: Faculty/Delete/5
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -152,7 +152,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var faculty = await _context.Faculties
+            var faculty = await _context.Faculty
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (faculty == null)
             {
@@ -162,14 +162,14 @@ namespace SmartRegistry.Web.Controllers
             return View(faculty);
         }
 
-        // POST: Faculties/Delete/5
+        // POST: Faculty/Delete/5
         [HttpPost, ActionName("Delete")]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var faculty = await _context.Faculties.SingleOrDefaultAsync(m => m.Id == id);
-            //_context.Faculties.Remove(faculty);
+            var faculty = await _context.Faculty.SingleOrDefaultAsync(m => m.Id == id);
+            //_context.Faculty.Remove(faculty);
             faculty.IsDeleted = true;
 
             await _context.SaveChangesAsync();
@@ -178,7 +178,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool FacultyExists(int id)
         {
-            return _context.Faculties.Any(e => e.Id == id);
+            return _context.Faculty.Any(e => e.Id == id);
         }
     }
 }

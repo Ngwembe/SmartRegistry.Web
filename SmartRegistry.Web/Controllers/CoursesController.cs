@@ -24,14 +24,14 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
 
-        // GET: Courses
+        // GET: Course
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Courses.Include(c => c.Department);
+            var applicationDbContext = _context.Course.Include(c => c.Department);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Courses/Details/5
+        // GET: Course/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,7 +39,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses
+            var course = await _context.Course
                 .Include(c => c.Department)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (course == null)
@@ -47,10 +47,10 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            //var announcements = _context.Announcements.Where(a => a.AnnouncementType == AnnouncementType.Department).ToList();
-            var announcements = _context.Announcements.Where(a => a.AnnouncementTypeOwnerId == course.Id).ToList();
+            //var announcements = _context.Announcement.Where(a => a.AnnouncementType == AnnouncementType.Department).ToList();
+            var announcements = _context.Announcement.Where(a => a.AnnouncementTypeOwnerId == course.Id).ToList();
 
-            var subjects = _context.Subjects.Include(s => s.Course).Where(s => s.CourseId == id).ToList();
+            var subjects = _context.Subject.Include(s => s.Course).Where(s => s.CourseId == id).ToList();
 
             var courseVM = new CourseViewModel()
             {
@@ -63,14 +63,14 @@ namespace SmartRegistry.Web.Controllers
             return View(courseVM);
         }
 
-        // GET: Courses/Create
+        // GET: Course/Create
         public IActionResult Create()
         {
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code");
+            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code");
             return View();
         }
 
-        // POST: Courses/Create
+        // POST: Course/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -92,11 +92,11 @@ namespace SmartRegistry.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code", course.DepartmentId);
+            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code", course.DepartmentId);
             return View(course);
         }
 
-        // GET: Courses/Edit/5
+        // GET: Course/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,16 +104,16 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses.SingleOrDefaultAsync(m => m.Id == id);
+            var course = await _context.Course.SingleOrDefaultAsync(m => m.Id == id);
             if (course == null)
             {
                 return NotFound();
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code", course.DepartmentId);
+            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code", course.DepartmentId);
             return View(course);
         }
 
-        // POST: Courses/Edit/5
+        // POST: Course/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -145,11 +145,11 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Code", course.DepartmentId);
+            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code", course.DepartmentId);
             return View(course);
         }
 
-        // GET: Courses/Delete/5
+        // GET: Course/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -157,7 +157,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses
+            var course = await _context.Course
                 .Include(c => c.Department)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (course == null)
@@ -168,13 +168,13 @@ namespace SmartRegistry.Web.Controllers
             return View(course);
         }
 
-        // POST: Courses/Delete/5
+        // POST: Course/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var course = await _context.Courses.SingleOrDefaultAsync(m => m.Id == id);
-            //_context.Courses.Remove(course);
+            var course = await _context.Course.SingleOrDefaultAsync(m => m.Id == id);
+            //_context.Course.Remove(course);
 
             course.IsDeleted = true;
 
@@ -184,7 +184,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool CourseExists(int id)
         {
-            return _context.Courses.Any(e => e.Id == id);
+            return _context.Course.Any(e => e.Id == id);
         }
     }
 }

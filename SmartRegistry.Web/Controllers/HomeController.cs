@@ -48,14 +48,14 @@ namespace SmartRegistry.Web.Controllers
 
         public IActionResult Index()
         {
-            var faculties = _context.Faculties.ToList();
-            var announcements = _context.Announcements.Where(a => a.AnnouncementTypeId == 1).ToList();
+            var faculties = _context.Faculty.ToList();
+            var announcements = _context.Announcement.Where(a => a.AnnouncementTypeId == 1).ToList();
 
             var homepageVM = new HomePageViewModel()
             {
                 Announcements = announcements,
                 Faculties = faculties,
-                Description = "This is institution's brief descritption... () To be pulled from the DB"
+                Description = "This is institution's brief description... () To be pulled from the DB"
             };
 
             return View(homepageVM);

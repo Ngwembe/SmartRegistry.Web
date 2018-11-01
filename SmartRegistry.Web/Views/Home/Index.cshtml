@@ -167,14 +167,14 @@
 
                                 @*<div class="panel-primary">
                                     <div class="panel-heading">
-                                        <h2 class="text-center">Announcements</h2>
+                                        <h2 class="text-center">Announcement</h2>
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
-                                            @if (Model.Announcements != null && Model.Announcements.Any())
+                                            @if (Model.Announcement != null && Model.Announcement.Any())
                                             {
                                                 <ul class="list-group list-group-flush">
-                                                    @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                    @foreach (var announcement in Model.Announcement.OrderBy(a => a.CreatedAt.TimeOfDay))
                                                     {
 
                                                         <li class="list-group-item">
@@ -221,7 +221,7 @@
                                         <ul class="list-group list-group-flush">
                                             @foreach (var faculty in Model.Faculties.OrderBy(f => f.Name))
                                             {
-                                                @*<a href="Faculties/Details/@faculty.Id">*@
+                                                @*<a href="Faculty/Details/@faculty.Id">*@
                                             <p class="inbox-item-text">
                                                 <a href="/Faculties/Details/@faculty.Id">
                                                     <div class="inbox-item">
@@ -249,19 +249,19 @@
 
                                 <div class="panel-primary">
                                     <div class="panel-heading">
-                                        <h2 class="text-center">Faculties @ViewData["InstitutionAbbrev"] offers</h2>
+                                        <h2 class="text-center">Faculty @ViewData["InstitutionAbbrev"] offers</h2>
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
 
-                                            @if (Model.Faculties != null && Model.Faculties.Any())
+                                            @if (Model.Faculty != null && Model.Faculty.Any())
                                             {
                                                 <ul class="list-group">
 
-                                                    @foreach (var faculty in Model.Faculties.OrderBy(f => f.Name))
+                                                    @foreach (var faculty in Model.Faculty.OrderBy(f => f.Name))
                                                     {
                                                         <li class="list-group-item">
-                                                            <a href="Faculties/Details/@faculty.Id">@faculty.Name</a>
+                                                            <a href="Faculty/Details/@faculty.Id">@faculty.Name</a>
                                                         </li>
                                                     }
                                                 </ul>

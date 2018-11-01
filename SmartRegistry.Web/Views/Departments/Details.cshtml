@@ -114,15 +114,15 @@
                             <div class="col-md-8">
                                 <div class="panel-primary">
                                     <div class="panel-heading">
-                                        <h2 class="text-center">Announcements</h2>
+                                        <h2 class="text-center">Announcement</h2>
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
 
-                                            @if (Model.Announcements != null && Model.Announcements.Any())
+                                            @if (Model.Announcement != null && Model.Announcement.Any())
                                             {
                                                 <ul class="list-group list-group-flush">
-                                                    @foreach (var announcement in Model.Announcements.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                    @foreach (var announcement in Model.Announcement.OrderBy(a => a.CreatedAt.TimeOfDay))
                                                     {
                                                         <li class="list-group-item">
                                                             <div>
@@ -151,18 +151,18 @@
 
                                 <div class="panel-primary">
                                     <div class="panel-heading">
-                                        <h2 class="text-center">List of Courses available under @Model?.Department.Name</h2>
+                                        <h2 class="text-center">List of Course available under @Model?.Department.Name</h2>
                                     </div>
                                     <div class="panel-body">
                                         <div class="row">
 
-                                            @if (Model.Courses != null && Model.Courses.Any())
+                                            @if (Model.Course != null && Model.Course.Any())
                                             {
                                                 <ul class="list-group list-group-flush">
-                                                    @foreach (var course in Model.Courses.OrderBy(d => d.Name))
+                                                    @foreach (var course in Model.Course.OrderBy(d => d.Name))
                                                     {
                                                         <li class="list-group-item">
-                                                            <a href="/Courses/Details/@course.Id">@course.Name (@course.Code)</a>
+                                                            <a href="/Course/Details/@course.Id">@course.Name (@course.Code)</a>
                                                         </li>
                                                     }
                                                 </ul>

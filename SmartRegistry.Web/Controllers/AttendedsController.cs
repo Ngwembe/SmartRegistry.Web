@@ -28,16 +28,16 @@ namespace SmartRegistry.Web.Controllers
         // GET: Attendeds
         public async Task<IActionResult> Index(int? subjectId)
         {
-            //var applicationDbContext = _context.Attendies.Include(a => a.Schedule).Include(a => a.Student);
+            //var applicationDbContext = _context.Attendee.Include(a => a.Schedule).Include(a => a.Student);
             //return View(await applicationDbContext.ToListAsync());
 
             if (subjectId == null) return View(new DashboardOverviewViewModel());
 
-            //var attendance = from a in _context.Attendies.Include(a => a.Schedule).ThenInclude(a => a.Subject)
+            //var attendance = from a in _context.Attendee.Include(a => a.Schedule).ThenInclude(a => a.Subject)
             //                 where a.Id == subjectId
             //                 select a;
 
-            var schedules = _context.Schedules.Where(s => s.Id == subjectId);
+            var schedules = _context.Schedule.Where(s => s.Id == subjectId);
 
             var results = schedules.GroupBy(s => s.IsConfirmed).Select(s => new
             {
@@ -45,7 +45,7 @@ namespace SmartRegistry.Web.Controllers
                 value = s.Count()
             });
 
-            //results = from sc in _context.Schedules
+            //results = from sc in _context.Schedule
             //    group sc by sc.IsConfirmed
             //    into g
             //    select new
@@ -54,7 +54,7 @@ namespace SmartRegistry.Web.Controllers
             //        count = g.Count()
             //    };
 
-            var r = from s in _context.Schedules
+            var r = from s in _context.Schedule
                 group s by s.IsConfirmed
                 into g
                 select new
@@ -82,7 +82,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var attended = await _context.Attendies
+            var attended = await _context.Attendee
                 .Include(a => a.Schedule)
                 .Include(a => a.Student)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -97,21 +97,21 @@ namespace SmartRegistry.Web.Controllers
         // GET: Attendeds/Create
         public IActionResult Create()
         {
-            var schedules = _context.Schedules.Include(s => s.Subject).Select(s => new
+            var schedules = _context.Schedule.Include(s => s.Subject).Select(s => new
             {
                 Text = $"{s.Subject.Name} - {s.LectureRoom} - {s.CreatedAt.ToShortDateString()}",
                 Id = s.Id
             }).AsEnumerable();
 
-            ViewData["ScheduleId"] = new SelectList(/*_context.Schedules*/ schedules , "Id", /*"LectureRoom"*/ "Text");
+            ViewData["ScheduleId"] = new SelectList(/*_context.Schedule*/ schedules , "Id", /*"LectureRoom"*/ "Text");
 
-            var students = _context.Students.Select(s => new
+            var students = _context.Student.Select(s => new
             {
                 Text = $"{s.FirstName} - {s.LastName}",
                 Id = s.Id
             }).AsEnumerable();
 
-            ViewData["StudentId"] = new SelectList(/*_context.Students*/ students, "Id", /*"FirstName"*/ "Text");
+            ViewData["StudentId"] = new SelectList(/*_context.Student*/ students, "Id", /*"FirstName"*/ "Text");
             return View();
         }
 
@@ -126,7 +126,7 @@ namespace SmartRegistry.Web.Controllers
             {
                 var userId = _userManager.GetUserId(HttpContext.User);
 
-                var student = _context.Students.FirstOrDefault(s => s.AccountId == userId);
+                var student = _context.Student.FirstOrDefault(s => s.AccountId == userId);
 
                 if (student == null)
                 {
@@ -146,8 +146,8 @@ namespace SmartRegistry.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "LectureRoom", attended.ScheduleId);
-            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "FirstName", attended.StudentId);
+            ViewData["ScheduleId"] = new SelectList(_context.Schedule, "Id", "LectureRoom", attended.ScheduleId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FirstName", attended.StudentId);
             return View(attended);
         }
 
@@ -159,13 +159,13 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var attended = await _context.Attendies.SingleOrDefaultAsync(m => m.Id == id);
+            var attended = await _context.Attendee.SingleOrDefaultAsync(m => m.Id == id);
             if (attended == null)
             {
                 return NotFound();
             }
-            ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "LectureRoom", attended.ScheduleId);
-            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "FirstName", attended.StudentId);
+            ViewData["ScheduleId"] = new SelectList(_context.Schedule, "Id", "LectureRoom", attended.ScheduleId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FirstName", attended.StudentId);
             return View(attended);
         }
 
@@ -201,8 +201,8 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "LectureRoom", attended.ScheduleId);
-            ViewData["StudentId"] = new SelectList(_context.Students, "Id", "FirstName", attended.StudentId);
+            ViewData["ScheduleId"] = new SelectList(_context.Schedule, "Id", "LectureRoom", attended.ScheduleId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FirstName", attended.StudentId);
             return View(attended);
         }
 
@@ -214,7 +214,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var attended = await _context.Attendies
+            var attended = await _context.Attendee
                 .Include(a => a.Schedule)
                 .Include(a => a.Student)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -231,17 +231,17 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var attended = await _context.Attendies.SingleOrDefaultAsync(m => m.Id == id);
+            var attended = await _context.Attendee.SingleOrDefaultAsync(m => m.Id == id);
             attended.IsDeleted = true;
 
-            //_context.Attendies.Remove(attended);
+            //_context.Attendee.Remove(attended);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AttendedExists(int id)
         {
-            return _context.Attendies.Any(e => e.Id == id);
+            return _context.Attendee.Any(e => e.Id == id);
         }
     }
 }

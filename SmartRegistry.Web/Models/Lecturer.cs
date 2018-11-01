@@ -39,6 +39,6 @@ namespace SmartRegistry.Web.Models
         public string DeletedBy { get; set; }
         public DateTime DeletedAt { get; set; } = DateTime.UtcNow;
 
-        //public virtual List<Subject> Subjects { get; set; }
+        //public virtual List<Subject> Subject { get; set; }
     }
 }

@@ -15,23 +15,23 @@ namespace SmartRegistry.Web.Data
             _configuration = configuration;
         }
 
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Lecturer> Lecturers { get; set; }
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<Subject> Subjects { get; set; }
-        public DbSet<Contact> Contacts { get; set; }
-        public DbSet<Address> Addresses { get; set; }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Faculty> Faculties { get; set; }
+        public DbSet<Student> Student { get; set; }
+        public DbSet<Lecturer> Lecturer { get; set; }
+        public DbSet<Course> Course { get; set; }
+        public DbSet<Subject> Subject { get; set; }
+        public DbSet<Contact> Contact { get; set; }
+        public DbSet<Address> Address { get; set; }
+        public DbSet<Department> Department { get; set; }
+        public DbSet<Faculty> Faculty { get; set; }
 
-        public DbSet<Attended> Attendies { get; set; }
-        public DbSet<Schedule> Schedules { get; set; }
-        public DbSet<EnrolledSubjects> EnrolledSubjects { get; set; }
+        public DbSet<Attended> Attendee { get; set; }
+        public DbSet<Schedule> Schedule { get; set; }
+        public DbSet<EnrolledSubjects> EnrolledSubject { get; set; }
 
-        public DbSet<Announcement> Announcements { get; set; }
-        public DbSet<AnnouncementType> AnnouncementTypes { get; set; }
+        public DbSet<Announcement> Announcement { get; set; }
+        public DbSet<AnnouncementType> AnnouncementType { get; set; }
 
-        public DbSet<Sensor> Sensors { get; set; }
+        public DbSet<Sensor> Sensor { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{

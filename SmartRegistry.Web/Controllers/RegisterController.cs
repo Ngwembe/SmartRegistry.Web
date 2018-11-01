@@ -34,7 +34,7 @@ namespace SmartRegistry.Web.Controllers
         {
             if (sensorId <= 0 /*|| studentId <= 0*/) return JsonConvert.SerializeObject(new {success = false});
 
-            //var student = _context.Students.FirstOrDefault(s => s.Id == studentId);
+            //var student = _context.Student.FirstOrDefault(s => s.Id == studentId);
             //if (student == null) return JsonConvert.SerializeObject(new { success = false });
 
             //student.SensorId = sensorId;
@@ -57,11 +57,11 @@ namespace SmartRegistry.Web.Controllers
             if (sensorId <= 0) return JsonConvert.SerializeObject(new { success = false});
             //  Log the possible error as hardware shouldn't have done the REQUEST
 
-            var student = _context.Students.FirstOrDefault(s => s.SensorId == sensorId);
+            var student = _context.Student.FirstOrDefault(s => s.SensorId == sensorId);
             if(student == null) return JsonConvert.SerializeObject(new { success = false });
 
             var currentDate = DateTime.UtcNow;
-            var schedule = _context.Schedules.FirstOrDefault(s => s.ScheduleFor <= currentDate && s.ScheduleTo >= currentDate);
+            var schedule = _context.Schedule.FirstOrDefault(s => s.ScheduleFor <= currentDate && s.ScheduleTo >= currentDate);
 
             if(schedule == null) return JsonConvert.SerializeObject(new { success = false });
 
@@ -73,7 +73,7 @@ namespace SmartRegistry.Web.Controllers
                 HasAttended = true                
             };
 
-            _context.Attendies.Add(attendee);
+            _context.Attendee.Add(attendee);
             _context.SaveChanges();
 
             JsonConvert.SerializeObject(new { success = true });
@@ -83,11 +83,11 @@ namespace SmartRegistry.Web.Controllers
 
         public async Task<string> MarkRegister(int studentId)
         {
-            var student = _context.Students.FirstOrDefault(s => s.Id == studentId);
+            var student = _context.Student.FirstOrDefault(s => s.Id == studentId);
             if(student == null) return JsonConvert.SerializeObject(new { success = false });
 
             //  Determine which schedule to mark as to have been attended, thus getting which Subject has been attended
-            var schedule = _context.Schedules.FirstOrDefault(s => s.IsConfirmed && s.ScheduleFor.AddHours(2.0) <= DateTime.UtcNow.AddHours(2.0) && s.ScheduleTo.AddHours(2.0) >= DateTime.UtcNow.AddHours(2.0));
+            var schedule = _context.Schedule.FirstOrDefault(s => s.IsConfirmed && s.ScheduleFor.AddHours(2.0) <= DateTime.UtcNow.AddHours(2.0) && s.ScheduleTo.AddHours(2.0) >= DateTime.UtcNow.AddHours(2.0));
             if (schedule == null) return JsonConvert.SerializeObject(new { success = false });
 
             var attendee = new Attended

@@ -1,128 +1,173 @@
 ﻿@model IEnumerable<SmartRegistry.Web.Models.Schedule>
 
-@{
-    ViewData["Title"] = "Index";
-}
-
-@*<h2>Index</h2>*@
-
-<div class="container">
-    <div class="row">
-        @*<p>
-            <a asp-action="Create" class="btn btn-primary">Create New</a>
-        </p>*@
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.LectureRoom)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.IsConfirmed)
-                    </th>
-                    @*<th>
-                        @Html.DisplayNameFor(model => model.CreatedBy)
-                    </th>*@
-                    <th>
-                        @Html.DisplayNameFor(model => model.CreatedAt)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Subject)
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LectureRoom)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IsConfirmed)
-                    </td>
-                    @*<td>
-                        @Html.DisplayFor(modelItem => item.CreatedBy)
-                    </td>*@
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreatedAt)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Subject.Code)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="col-md-12">
-                <div id="calendar"></div>
-            </div>
-            @*<div class="col-md-2">
-                <div class="border">
-                    <div class="panel-primary">
-                        <div class="panel-heading">
-                            <h2 class="panel-title">Schedule</h2>
-                        </div>
-                        <div class="panel-body">
-                            <form class="form">
-                                <div class="form-group">
-                                    <label class="label-control">Lecture Room</label>
-                                    <input type="text" placeholder="Enter lecture room" class="form-control"/>
-                                </div>
-                                <div class="form-group">
-                                    <label class="label-control">Title</label>
-                                    <input type="text" placeholder="Enter title" class="form-control"/>
-                                </div>
-                                <input type="submit" value="Add Schedule" class="btn btn-primary"/>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>*@
-        </div>
-
-    </div>
-
-    <div class="modal fade" id="eventView">
-        <div class="fade in" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <p id="eventViewHeader" class="text-center text-capitalize"></p>
-                    </div>
-                    <div class="modal-body">
-                        <h2 class="text-center" id="eventViewVenue"></h2>
-                        <p id="eventViewBody"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#" class="btn btn-primary pull-right" id="btnConfirmLecture">Confirm</a>
-                        <a href="#" class="btn pull-left close" data-dismiss="modal">Close</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div id="createModal"></div>
-</div>
-
 <link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.css" rel="stylesheet" />
 <link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 
-<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.min.css" rel="stylesheet" />
-<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.structure.css" rel="stylesheet" />
-<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.theme.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+
+<script src="~/lib/moment/moment.js"></script>
+@*<script src="~/lib/moment/moment-with-locales.js"></script>*@
+
+@*<link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/lib/jquery-ui-1.12.1.custom/css/jquery-ui.theme.css" rel="stylesheet" />*@
+
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            @{
+                ViewData["Title"] = "Index";
+            }
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        @*<h4 class="header-title m-t-0 m-b-30">Messages</h4>*@
+                        <h2 class="text-center"><b>Subject Schedules</b></h2>
+
+                        <div class="inbox-widget slimscroll-alt" style="min-height: 202px;">
+                            <div Class="col-md-12">
+
+
+                                <a class="btn btn-primary pull-right hide" asp-action="Create" style="margin: 10px 1px;">Add Schedule</a>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.LectureRoom)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IsConfirmed)
+                                            </th>
+                                            @*<th>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </th>*@
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.ScheduleFor)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.ScheduleTo)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Subject)
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Any())
+                                        {
+                                            @foreach (var item in Model)
+                                            {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.LectureRoom)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.IsConfirmed)
+                                            </td>
+                                            @*<td>
+            @Html.DisplayFor(modelItem => item.CreatedBy)
+        </td>*@
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.ScheduleFor)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.ScheduleTo)
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Subject.Code)
+                                            </td>
+                                            <td>
+                                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                                
+                                                @if (!item.IsConfirmed)
+                                                {
+                                                    <a asp-action="ConfirmSchedule" asp-route-id="@item.Id" class="btn btn-primary">Confirm</a>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr class="text-center">
+                                                <td>
+                                                    <p>There are currently no schedules for the subject.</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                    </div> <!-- end card -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        @*<h4 class="header-title m-t-0 m-b-30">Messages</h4>*@
+                        <h2 class="text-center"><b>Subject Calendar Schedules</b></h2>
+
+                        <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
+                            <div id="calendar"></div>
+                        </div>
+
+                    </div> <!-- end card -->
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="modal fade" id="eventView">
+                    <div class="fade in" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p id="eventViewHeader" class="text-center text-capitalize"></p>
+                                </div>
+                                <div class="modal-body">
+                                    <h2 class="text-center" id="eventViewVenue"></h2>
+                                    <p id="eventViewBody"></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary pull-right" id="btnConfirmLecture">Confirm</a>
+                                    <a href="#" class="btn pull-left close" data-dismiss="modal">Close</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="createModal"></div>
+            </div>
+
+
+
+        </div>
+        <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+
+    </footer>
+
+</div>
 
 @section Scripts {
     <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/jquery.min.js"></script>
@@ -134,8 +179,14 @@
 
     <script src="~/lib/jquery-ui-1.12.1.custom/js/jquery-ui.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+
     <script type="text/javascript">
-        $(function() {
+        $(function () {
+            //$.fn.modal.Constructor.prototype.enforceFocus = function () { };    //  For bootstrap 3
+            $.fn.modal.Constructor.prototype._enforceFocus = function () { };   //  For bootstrap 4
+
 
             //$('.date').datepicker({
             //    beforeShowDay: $.datepicker.noWeekends,
@@ -161,17 +212,15 @@
 
             var events = [];
 
-            getSchedules = function() {
+            getSchedules = function () {
                 $.ajax({
                     type: "GET",
                     url: "/Schedules/GetSchedules",
-                    success: function (data) {
-                        console.log("EVENTS");
-                        console.log(data);
+                    success: function (data) {                        
 
                         $.each(data,
-                            function(i, event) {
-                                //console.log(event);
+                            function (i, event) {
+                                console.log(event);
                                 events.push({
                                     //id: event.id,
                                     //title: `${event.subject.code} AT ${event.lectureRoom}`,
@@ -182,18 +231,20 @@
                                     //isConfirmed: event.isConfirmed
                                     id: event.id,
                                     title: `${event.subject.code} AT ${event.lectureRoom}`,
-                                    start: moment(event.scheduleFor),
+                                    start: event.scheduleFor != null ? moment(event.scheduleFor) : null, // moment(event.scheduleFor),
                                     end: event.scheduleTo != null ? moment(event.scheduleTo) : null,
                                     allDay: false,
                                     lectureRoom: event.lectureRoom,
                                     isConfirmed: event.isConfirmed
                                 });
+
+                                //console.log(events[i]);
                             });
 
                         generateCalendar(events);
-
+                        
                     },
-                    error: function(err) {
+                    error: function (err) {
                         alert(err);
                     }
                 });
@@ -203,10 +254,14 @@
 
             var $selectedSchedule = null;
 
-            function generateCalendar(events) {
+            function generateCalendar(eventData) {
+                //console.log("EVENTS");
+                //console.log(eventData);
+
                 $('#calendar').fullCalendar('destroy');
 
                 $('#calendar').fullCalendar({
+                    events: eventData,
                     //weekends: true, //false // will hide Saturdays and Sundays
                     businessHours: true,
                     contentHeight: 400,
@@ -221,7 +276,7 @@
                     eventStartEditable: true,
                     eventDurationEditable: true,
                     editable: true,
-                    eventResize: function(event) {
+                    eventResize: function (event) {
                         var start = $.fullCalendar.formatDate(event.start, "DD-MM-YYYY HH:mm:ss a");
                         var end = $.fullCalendar.formatDate(event.end, "DD-MM-YYYY HH:mm:ss a");
 
@@ -242,19 +297,23 @@
                          */
                         var scheduler = {
                             id: id,
-                            scheduleFor: start,
-                            scheduleTo: end,
+                            scheduleFor: /*start,*/ moment(event.start, 'DD-MMM-YYYY, hh:mm A').format('DD-MMM-YYYY hh:mm A'),
+                            scheduleTo: /*end,*/ moment(event.end, 'DD-MMM-YYYY, hh:mm A').format('DD-MMM-YYYY hh:mm A'),
                             lectureRoom: lectureRoom,
                             subjectId: id,
                             isConfirmed: isConfirmed
                         };
+
+                        //console.log(moment(event.start, 'ddd DD-MMM-YYYY, hh:mm A').format('dd DD-MMM-YYYY hh:mm A'));
+                        //console.log(moment(event.end, 'ddd DD-MMM-YYYY, hh:mm A').format('dd DD-MMM-YYYY hh:mm A'));
+
 
                         console.log(scheduler);
 
                         $.ajax({
                             type: "POST",
                             url: "/Schedules/Edit",
-                            data: {id: id, schedule: scheduler},
+                            data: { id: id, schedule: scheduler },
                             //data: JSON.stringify({
                             //    id: id,
                             //    scheduleFor: start,
@@ -263,7 +322,7 @@
                             //    subjectId: id,
                             //    isConfirmed: isConfirmed
                             //}),
-                            async:true,
+                            async: true,
                             success: function (response) {
                                 alert('Updated successfully!!!');
                             }
@@ -277,7 +336,7 @@
                     },
                     selectable: true,
                     selectHelper: true,
-                    select: function(start, end, allDay) {
+                    select: function (start, end, allDay) {
 
                         //var add = prompt("Set a new schedule?");
 
@@ -286,66 +345,118 @@
 
                         //if (lectureRoom) {
 
-                            var selectedDate = {
-                                startDate: new Date(start),
-                                endDate: new Date(end),
-                                //isAllDay: allDay,
-                                //title: add,
+                        var selectedDate = {
+                            startDate: new Date(start),
+                            endDate: new Date(end) //,
+                            //isAllDay: allDay,
+                            //title: add,
+                            //lectureRoom: lectureRoom
+                        };
+
+                        var startDate = new Date(start);
+                        var endDate = new Date(end);
+
+                        //startDate = `${startDate.getDate()}/${startDate.getMonth()}/${startDate.getFullYear()}`;
+                        //endDate = `${endDate.getDate()}/${endDate.getMonth()}/${endDate.getFullYear()}`;
+
+                        //console.log('Start: ' + startDate);
+                        //console.log('End: ' + endDate);
+
+                        //console.log("Getting partial view...");
+                        //return;
+
+                        return $.ajax({
+                            type: "POST",
+                            url: "/Schedules/GetCreateModalPartialView",
+                            data: {
+                                scheduleFor: new Date(start).toJSON(),
+                                scheduleTo: new Date(end).toJSON()
+                                //,title: add,
                                 //lectureRoom: lectureRoom
-                            };
+                            },
 
-                            var startDate = new Date(start);
-                            var endDate = new Date(end);
+                            //JSON.stringify(selectedDate),//{startDate: selectedDate.startDate, endDate: selectedDate.endDate}, // //.serialize(),
+                            success: function (data) {
+                                $('#createModal').empty().html(data);
 
-                            //startDate = `${startDate.getDate()}/${startDate.getMonth()}/${startDate.getFullYear()}`;
-                            //endDate = `${endDate.getDate()}/${endDate.getMonth()}/${endDate.getFullYear()}`;
+                                $('.date').datepicker({
+                                    beforeShowDay: $.datepicker.noWeekends,
+                                    dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
+                                });
 
-                            //console.log('Start: ' + startDate);
-                            //console.log('End: ' + endDate);
+                                $('#createEventViewModal').modal('show');
 
-                            //console.log("Getting partial view...");
-                            //return;
+                                $('.select2').select2();
+                                //$('.select2.subjects').select2({
+                                //    ajax: {
+                                //        url: '/Subjects/GetMatchingSubjects',
+                                //        async: true,
+                                //        data: function (params) {
+                                //            var query = {
+                                //                searchKey: params.term,
+                                //                type: 'public'
+                                //            }
+                                //            // Query parameters will be ?searchKey=[term]&type=public
+                                //            return query;
+                                //        },
+                                //        processResults: function (data) {
+                                //            // Tranforms the top-level key of the response object from 'items' to 'results'
 
-                            return $.ajax({
-                                type: "POST",
-                                url: "/Schedules/GetCreateModalPartialView",
-                                data: {
-                                    scheduleFor: new Date(start).toJSON(),
-                                    scheduleTo: new Date(end).toJSON()
-                                    //,title: add,
-                                    //lectureRoom: lectureRoom
-                                },
+                                //            var subjects = JSON.parse(data);
+                                //            console.log(subjects);
 
-                                //JSON.stringify(selectedDate),//{startDate: selectedDate.startDate, endDate: selectedDate.endDate}, // //.serialize(),
-                                success: function(data) {
-                                    $('#createModal').empty().html(data);
+                                //            return {
+                                //                //results: data.items
+                                //                //results: JSON.parse(data)
+                                //                //results: data
+                                //                results: JSON.stringify(data)
+                                //            };
+                                //        }
+                                //    }
+                                //});
 
-                                    $('.date').datepicker({
-                                        beforeShowDay: $.datepicker.noWeekends,
-                                        dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
+                                $('#saveSchedule').on('click', function(e) {
+                                    e.preventDefault();
+
+                                    $('#createEventViewModal').modal('hide');
+
+                                    var scheduleForm = $('#add-patient').serializeArray();
+
+                                    console.log(scheduleForm);
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: '/Schedules/Create',
+                                        dataType: 'json',
+                                        contentType: 'application/json',
+                                        data: JSON.stringify(scheduleForm),
+                                        success: (e) => {
+                                            e.preventDefault();
+
+                                            $('#createEventViewModal').modal('hide');
+                                            getSchedules();
+                                        }
                                     });
-
-                                    $('#createEventViewModal').modal('show');
-                                },
-                                error: function(err) {
-                                    console.log(err);
-                                }
-                            });
+                                });
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
                         //}
                         //}
 
                     },
                     eventLimit: true,
-                    eventColor: '#378006',
-                    events: events,
-                    eventClick: function(calEvent, jsEvent, view) {
+                    eventColor: '#378006',                    
+                    eventClick: function (calEvent, jsEvent, view) {
                         $selectedSchedule = calEvent;
 
                         $('#eventView #eventViewHeader').text(calEvent.title);
                         $('#eventViewVenue')
                             .text(calEvent.lectureRoom != null ? calEvent.lectureRoom : 'Venue not confirmed');
 
-                        let $description = $('<div/>');
+                        var $description = $('<div/>');
 
                         $description.append($('<p/>')
                             .html(`<b>Start:</b> ${calEvent.start.format('DD-MMM-YYYY HH:mm a')} `));
@@ -377,8 +488,19 @@
                 //$('.draggable').data('duration', '01:30');
             }
 
-            $('#btnConfirmLecture').on('click',
-                function(e) {
+            function getFormData(data) {
+
+                var unindexed_array = data;
+                var indexed_array = {};
+
+                $.map(unindexed_array, function (n, i) {
+                    indexed_array[n['name']] = n['value'];
+                });
+
+                return indexed_array;
+            }
+
+            $('#btnConfirmLecture').on('click', function (e) {
                     e.preventDefault();
 
                     if (confirm("Are you sure you want to confirm the schedule?")) {
@@ -386,12 +508,12 @@
                             type: "GET",
                             url: "/Schedules/ConfirmSchedule",
                             data: { scheduleId: $selectedSchedule.id },
-                            success: function(data) {
+                            success: function (data) {
                                 //TODO: Show confirmation success
                                 $('#eventView').modal('hide');
                                 getSchedules();
                             },
-                            error: function(err) {
+                            error: function (err) {
                                 alert(err);
                             }
                         });

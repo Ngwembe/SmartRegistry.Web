@@ -4,19 +4,25 @@
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
 
-<div>
-    <h4>AnnouncementType</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Text)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Text)
-        </dd>
-        <dt>
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+
+            <h2>Details</h2>
+
+            <div>
+                <h4>AnnouncementType</h4>
+                <hr />
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Text)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.Text)
+                    </dd>
+                    @*<dt>
             @Html.DisplayNameFor(model => model.CreatedBy)
         </dt>
         <dd>
@@ -57,10 +63,26 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.DeletedAt)
-        </dd>
-    </dl>
+        </dd>*@
+                </dl>
+            </div>
+            <div>
+                <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+                <a asp-action="Index">Back to List</a>
+            </div>
+
+        </div>
+        <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+
+    </footer>
+
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+

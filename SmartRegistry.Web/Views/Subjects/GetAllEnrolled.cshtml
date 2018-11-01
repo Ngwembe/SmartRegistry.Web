@@ -1,0 +1,102 @@
+﻿@*@model IEnumerable<SmartRegistry.Web.Models.Subject>*@
+@using iTextSharp.text.pdf.qrcode
+@model IEnumerable<SmartRegistry.Web.ViewModels.SubjectViewModels.EnrolledStudentViewModel>
+
+
+<div class="content-page">
+    <!-- Start content -->
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        @*<h4 class="header-title m-t-0 m-b-30">Messages</h4>*@
+                        @if (Model != null && Model.Any())
+                        {
+                            <h2 class="text-center"><b>Enrolled Students for @Model.FirstOrDefault().SubjectName  (@Model.FirstOrDefault().SubjectCode)</b></h2>
+                        }
+
+
+                        <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.FirstName)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.LastName)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.StudentNumber)
+                                        </th>
+                                        @*<th>
+            @Html.DisplayNameFor(model => model.CreatedAt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastUpdatedAt)
+        </th>*@
+                                        @*<th>
+            @Html.DisplayNameFor(model => model.Course)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Lecturer)
+        </th>*@
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.FirstName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LastName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StudentNumber)
+                                        </td>
+                                        @*<td>
+            @Html.DisplayFor(modelItem => item.CreatedAt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastUpdatedAt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Course.Code)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Lecturer.FirstName)
+        </td>*@
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.SubjectId" class="btn btn-secondary">Edit</a> |
+                                            <a asp-controller="Students" asp-action="Details" asp-route-id="@item.SubjectId" class="btn btn-info">Details</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.SubjectId" class="btn btn-danger">Delete</a> |
+                                            <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.SubjectId" class="btn btn-primary">Go to Dashboard</a>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div> <!-- end card -->
+                </div>
+            </div>
+            
+
+        </div>
+        <!-- container -->
+
+    </div> <!-- content -->
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+
+    </footer>
+
+</div>

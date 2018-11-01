@@ -13,7 +13,7 @@ namespace SmartRegistry.Web.Data.Service
 
         public Student AddStudent(Student student)
         {
-            _applicationDbContext.Students.Add(student);
+            _applicationDbContext.Student.Add(student);
             _applicationDbContext.SaveChanges();
 
             return student;
@@ -21,7 +21,7 @@ namespace SmartRegistry.Web.Data.Service
 
         public Lecturer AddLecturer(Lecturer lecturer)
         {
-            _applicationDbContext.Lecturers.Add(lecturer);
+            _applicationDbContext.Lecturer.Add(lecturer);
             _applicationDbContext.SaveChanges();
 
             return lecturer;

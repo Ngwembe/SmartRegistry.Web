@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -6,8 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SmartRegistry.Web.Data;
 using SmartRegistry.Web.Models;
+using SmartRegistry.Web.ViewModels.SubjectViewModels;
 
 namespace SmartRegistry.Web.Controllers
 {
@@ -23,15 +26,55 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
 
-        // GET: Subjects
+        // GET: Subject
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Subjects.Include(s => s.Course).Include(s => s.Lecturer);
+            var user = await _userManager.GetUserAsync(this.User);
+
+            if (user == null) return Create();
+
+            var userId = await _userManager.GetUserIdAsync(user);
+
+            if (userId == null) return Create();
+
+            var lecturer = await _context.Lecturer.FirstOrDefaultAsync(l => l.AccountId == userId);
+
+            var applicationDbContext = _context.Subject
+                                               .Include(s => s.Course)
+                                               .Include(s => s.Lecturer)
+                                               .Where(s => s.LecturerId == lecturer.Id);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Subjects/Details/5
+        public async Task<IActionResult> GetAllEnrolled(int id) //subjectId
+        {
+            var students = await _context.EnrolledSubject
+                .Where(s => s.SubjectId == id)
+                .Include(s => s.Student)
+                .Include(s => s.Subject)
+                //.ThenInclude(s => s.EnrolledSubject)
+                //.Where(s=> s.SubjectId == id)
+                .Select(en => new EnrolledStudentViewModel
+                 {
+                    SubjectId = id,
+                    StudentId = en.SubjectId,
+                    FirstName = en.Student.FirstName,
+                    LastName = en.Student.LastName,
+                    StudentNumber = en.Student.StudentNumber,
+                    SubjectCode = en.Subject.Code,
+                    SubjectName = en.Subject.Name
+                }).ToListAsync();
+
+            //var students = from st in _context.Student
+            //               join es in _context.EnrolledSubject on st.Id equals es.StudentId
+            //               join sub in _context.Subject on sub.Id equals es.SubjectId
+            //               select st;
+
+            return View(students);
+        }
+
+        // GET: Subject/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,7 +82,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var subject = await _context.Subjects
+            var subject = await _context.Subject
                 .Include(s => s.Course)
                 .Include(s => s.Lecturer)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -47,20 +90,57 @@ namespace SmartRegistry.Web.Controllers
             {
                 return NotFound();
             }
+            
+            var user = await _userManager.GetUserAsync(this.User);
+
+            if (user != null)
+            {
+                var userId = await _userManager.GetUserIdAsync(user);
+
+                var student = await _context.Student.FirstOrDefaultAsync(s => s.AccountId == userId);
+
+                if (student == null)
+                    return View(subject);
+
+                var exists = await _context.EnrolledSubject
+                    .FirstOrDefaultAsync(s => s.SubjectId == id && s.StudentId == student.Id);
+
+                var isEnrolled = exists != null;
+
+                ViewData["AlreadyEnrolled"] = isEnrolled;
+            }
+
+
+            //if (user == null)
+            //    return RedirectToAction("Login", "Account", new { returnUrl = $"/Subject/Details/{id}" });
+
+            //var userId = await _userManager.GetUserIdAsync(user);
+
+            //var student = await _context.Student.FirstOrDefaultAsync(s => s.AccountId == userId);
+
+            //if(student == null)
+            //    return View(subject);
+
+            //var exists = await _context.EnrolledSubject
+            //    .FirstOrDefaultAsync(s => s.SubjectId == id && s.StudentId == student.Id);
+
+            //var isEnrolled = exists != null;
+
+            //ViewData["AlreadyEnrolled"] = isEnrolled;
 
             return View(subject);
         }
 
-        // GET: Subjects/Create
+        // GET: Subject/Create
         //[Authorize]
         public IActionResult Create()
         {
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Code");
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName");
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code");
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName");
             return View();
         }
 
-        // POST: Subjects/Create
+        // POST: Subject/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -79,12 +159,12 @@ namespace SmartRegistry.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Code", subject.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName", subject.LecturerId);
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
             return View(subject);
         }
 
-        // GET: Subjects/Edit/5
+        // GET: Subject/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -92,17 +172,17 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var subject = await _context.Subjects.SingleOrDefaultAsync(m => m.Id == id);
+            var subject = await _context.Subject.SingleOrDefaultAsync(m => m.Id == id);
             if (subject == null)
             {
                 return NotFound();
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Code", subject.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName", subject.LecturerId);
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
             return View(subject);
         }
 
-        // POST: Subjects/Edit/5
+        // POST: Subject/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -134,12 +214,12 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Code", subject.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName", subject.LecturerId);
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
             return View(subject);
         }
 
-        // GET: Subjects/Delete/5
+        // GET: Subject/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -147,7 +227,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var subject = await _context.Subjects
+            var subject = await _context.Subject
                 .Include(s => s.Course)
                 .Include(s => s.Lecturer)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -159,13 +239,13 @@ namespace SmartRegistry.Web.Controllers
             return View(subject);
         }
 
-        // POST: Subjects/Delete/5
+        // POST: Subject/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var subject = await _context.Subjects.SingleOrDefaultAsync(m => m.Id == id);
-            //_context.Subjects.Remove(subject);            
+            var subject = await _context.Subject.SingleOrDefaultAsync(m => m.Id == id);
+            //_context.Subject.Remove(subject);            
             subject.IsDeleted = true;
 
             await _context.SaveChangesAsync();
@@ -174,7 +254,27 @@ namespace SmartRegistry.Web.Controllers
 
         private bool SubjectExists(int id)
         {
-            return _context.Subjects.Any(e => e.Id == id);
+            return _context.Subject.Any(e => e.Id == id);
         }
-    }
+
+        public string GetMatchingSubjects(string searchKey)
+        {
+            if (string.IsNullOrWhiteSpace(searchKey))
+            {
+                var subjects = _context.Subject.Take(10).Select(s => new
+                {
+                    id = s.Id,
+                    text = $"{s.Name} ({s.Code})"
+                }).ToList();
+                return JsonConvert.SerializeObject(subjects);
+            }
+
+            var filtered = _context.Subject.Take(5).Where(s => s.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(s => new
+            {
+                id = s.Id,
+                text = $"{s.Name} ({s.Code})"
+            }).ToList();
+            return JsonConvert.SerializeObject(filtered);
+        }       
+    }    
 }

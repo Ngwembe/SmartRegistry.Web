@@ -25,14 +25,14 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
 
-        // GET: Announcements
+        // GET: Announcement
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Announcements.Include(a => a.Lecturer);
+            var applicationDbContext = _context.Announcement.Include(a => a.Lecturer);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Announcements/Details/5
+        // GET: Announcement/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -40,7 +40,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var announcement = await _context.Announcements
+            var announcement = await _context.Announcement
                 .Include(a => a.Lecturer)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (announcement == null)
@@ -51,14 +51,20 @@ namespace SmartRegistry.Web.Controllers
             return View(announcement);
         }
 
-        // GET: Announcements/Create
+        // GET: Announcement/Create
         public IActionResult Create()
         {
             //this week's lecture, the 31st of May 2018 is cancelled due to a meeting that will be held at the department. I'll do a virtual tutorial and upload it on MyTutor for you to download. It will cover Chapter 5 & 6. Enjoy your weekend good people.
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName");
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer.Select(s => new
+            {
+                Id = s.Id,
+                FullName = $"{s.FirstName} {s.LastName}"
+            })
+                , "Id", "FullName");
+            //, "Id", "FirstName");
 
             //var types = GetEnumSelectList<AnnouncementType>();
-            //ViewData["AnnouncementId"] = types; //new SelectList(_context.Lecturers, "Id", "FirstName");
+            //ViewData["AnnouncementId"] = types; //new SelectList(_context.Lecturer, "Id", "FirstName");
             return View(new Announcement());
         }
 
@@ -77,7 +83,7 @@ namespace SmartRegistry.Web.Controllers
             })).ToList();
         }
 
-        // POST: Announcements/Create
+        // POST: Announcement/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -97,7 +103,7 @@ namespace SmartRegistry.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName", announcement.LecturerId);
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", announcement.LecturerId);
             return View(announcement);
         }
 
@@ -107,11 +113,11 @@ namespace SmartRegistry.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
-                categories = _context.AnnouncementTypes.Where(a => a.Text.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).ToList();
+                categories = _context.AnnouncementType.Where(a => a.Text.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).ToList();
                 return JsonConvert.SerializeObject(categories.Select(c => new { id = c.Id, text = c.Text }).ToList());
             }
 
-            categories = _context.AnnouncementTypes.ToList();
+            categories = _context.AnnouncementType.ToList();
             return JsonConvert.SerializeObject(categories.Select(c => new { id = c.Id, text = c.Text }).ToList());            
         }
 
@@ -122,20 +128,20 @@ namespace SmartRegistry.Web.Controllers
                 dynamic announcements = null;
                 switch (category)
                 {
-                    //case "1":
-                    //     announcements = _context.Announcements.ToList();                    
-                    //    break;
+                    case "1":
+                        announcements = _context.Announcement.ToList();
+                        break;
                     case "2":
-                        announcements = _context.Faculties.Where(f => f.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Faculty.Where(f => f.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                     case "4":
-                        announcements = _context.Courses.Where(c => c.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Course.Where(c => c.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                     case "3":
-                        announcements = _context.Departments.Where(d => d.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Department.Where(d => d.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                     case "5":
-                        announcements = _context.Subjects.Where(s => s.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Subject.Where(s => s.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                 }
 
@@ -145,7 +151,7 @@ namespace SmartRegistry.Web.Controllers
             return string.Empty;
         }
 
-        // GET: Announcements/Edit/5
+        // GET: Announcement/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -153,16 +159,16 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var announcement = await _context.Announcements.SingleOrDefaultAsync(m => m.Id == id);
+            var announcement = await _context.Announcement.SingleOrDefaultAsync(m => m.Id == id);
             if (announcement == null)
             {
                 return NotFound();
             }
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName", announcement.LecturerId);
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", announcement.LecturerId);
             return View(announcement);
         }
 
-        // POST: Announcements/Edit/5
+        // POST: Announcement/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -194,11 +200,11 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "Id", "FirstName", announcement.LecturerId);
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", announcement.LecturerId);
             return View(announcement);
         }
 
-        // GET: Announcements/Delete/5
+        // GET: Announcement/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -206,7 +212,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var announcement = await _context.Announcements
+            var announcement = await _context.Announcement
                 .Include(a => a.Lecturer)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (announcement == null)
@@ -217,13 +223,13 @@ namespace SmartRegistry.Web.Controllers
             return View(announcement);
         }
 
-        // POST: Announcements/Delete/5
+        // POST: Announcement/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var announcement = await _context.Announcements.SingleOrDefaultAsync(m => m.Id == id);
-            //_context.Announcements.Remove(announcement);
+            var announcement = await _context.Announcement.SingleOrDefaultAsync(m => m.Id == id);
+            //_context.Announcement.Remove(announcement);
             announcement.IsDeleted = true;
 
             await _context.SaveChangesAsync();
@@ -232,7 +238,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool AnnouncementExists(int id)
         {
-            return _context.Announcements.Any(e => e.Id == id);
+            return _context.Announcement.Any(e => e.Id == id);
         }
     }
 }
