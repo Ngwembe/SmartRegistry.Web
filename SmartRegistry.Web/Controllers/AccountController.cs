@@ -55,7 +55,7 @@ namespace SmartRegistry.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "/Home")
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
@@ -64,7 +64,7 @@ namespace SmartRegistry.Web.Controllers
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
-                    {
+                {
                     _logger.LogInformation("User logged in.");
                     //return RedirectToLocal(returnUrl);
 

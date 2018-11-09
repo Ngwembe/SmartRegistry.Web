@@ -13,7 +13,7 @@ using SmartRegistry.Web.Models;
 
 namespace SmartRegistry.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "System Admin,Admin,Lecturer")]
     public class SchedulesController : Controller
     {
         private readonly ApplicationDbContext _context;

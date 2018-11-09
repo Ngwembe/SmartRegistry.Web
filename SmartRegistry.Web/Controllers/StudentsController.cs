@@ -48,7 +48,7 @@ namespace SmartRegistry.Web.Controllers
             //var student = _context.Student.FirstOrDefault(s => s.AccountId == user); 
             var students = await _context.Student.ToListAsync();
 
-            //ExportToPDF(students);
+            ExportToPDF(students);
 
             return View(students);
         }
