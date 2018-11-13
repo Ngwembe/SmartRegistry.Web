@@ -62,6 +62,7 @@ namespace SmartRegistry.Web
 
             services.AddScoped<IPatientHandler, PatientHandler>();
             services.AddScoped<IApiAccessor, ApiAccessor>();
+            services.AddScoped<IReportingHandler, ReportingHandler>();
 
             services.AddMvc();
         }

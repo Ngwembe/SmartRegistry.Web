@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SmartRegistry.Web.Data;
+using SmartRegistry.Web.Interfaces;
 using SmartRegistry.Web.Models;
 using SmartRegistry.Web.ViewModels.SubjectViewModels;
 
@@ -19,11 +20,15 @@ namespace SmartRegistry.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IReportingHandler _reportingHandler;
+        private readonly IEmailSender _emailSender;
 
-        public SubjectsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public SubjectsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IReportingHandler reportingHandler, IEmailSender emailSender)
         {
             _context = context;
             _userManager = userManager;
+            _reportingHandler = reportingHandler;
+            _emailSender = emailSender;
         }
 
         // GET: Subject
@@ -58,7 +63,7 @@ namespace SmartRegistry.Web.Controllers
                 .Select(en => new EnrolledStudentViewModel
                  {
                     SubjectId = id,
-                    StudentId = en.SubjectId,
+                    StudentId = en.StudentId,
                     FirstName = en.Student.FirstName,
                     LastName = en.Student.LastName,
                     StudentNumber = en.Student.StudentNumber,
@@ -72,6 +77,18 @@ namespace SmartRegistry.Web.Controllers
             //               select st;
 
             return View(students);
+        }
+
+        public async Task<IActionResult> PrintEnrolledStudentList(int id)
+        {
+            var attachment = await _reportingHandler.GetEnrolledSubject(id);
+
+            if (attachment != null)
+            {
+                await _emailSender.SendReportAsync();
+            }
+
+            return RedirectToAction(nameof(GetAllEnrolled), new {id = id});
         }
 
         // GET: Subject/Details/5

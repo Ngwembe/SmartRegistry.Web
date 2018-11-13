@@ -11,43 +11,48 @@
                 <div class="col-md-12">
                     <div class="card-box">
                         @*<h4 class="header-title m-t-0 m-b-30">Messages</h4>*@
-                        @if (Model != null && Model.Any())
-                        {
-                            <h2 class="text-center"><b>Enrolled Students for @Model.FirstOrDefault().SubjectName  (@Model.FirstOrDefault().SubjectCode)</b></h2>
-                        }
-
-
+                        <div class="row">
+                            @if (Model != null && Model.Any())
+                            {
+                                <h2 class="text-center"><b>Enrolled Students for @Model.FirstOrDefault().SubjectName  (@Model.FirstOrDefault().SubjectCode)</b></h2>
+                            }
+                        </div>
+                        
                         <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
+                            <div class="row">
+                                @*<a asp-action="PrintEnrolledStudentList" asp-route="@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary">Print out list</a>*@
+                                <a href="/Subjects/PrintEnrolledStudentList/@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print out list</a>
+                            </div>
                             <table class="table">
                                 <thead>
-                                    <tr>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.FirstName)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.LastName)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.StudentNumber)
-                                        </th>
-                                        @*<th>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.FirstName)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.LastName)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.StudentNumber)
+                                    </th>
+                                    @*<th>
             @Html.DisplayNameFor(model => model.CreatedAt)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.LastUpdatedAt)
         </th>*@
-                                        @*<th>
+                                    @*<th>
             @Html.DisplayNameFor(model => model.Course)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Lecturer)
         </th>*@
-                                        <th></th>
-                                    </tr>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var item in Model)
-                                    {
+                                @foreach (var item in Model)
+                                {
                                     <tr>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.FirstName)
@@ -77,7 +82,7 @@
                                             <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.SubjectId" class="btn btn-primary">Go to Dashboard</a>
                                         </td>
                                     </tr>
-                                    }
+                                }
                                 </tbody>
                             </table>
                         </div>

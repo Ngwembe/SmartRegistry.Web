@@ -64,7 +64,7 @@ namespace SmartRegistry.Web.Controllers
         // GET: Department/Create
         public IActionResult Create()
         {
-            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code");
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new{ Id = f.Id, FullName = $"{f.Name} ({f.Code})"}), "Id", "FullName");
             return View();
         }
 
@@ -74,7 +74,7 @@ namespace SmartRegistry.Web.Controllers
         [HttpPost]
         //[Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Code,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,FacultyId")] Department department)
+        public async Task<IActionResult> Create([Bind("Id,Name,Code,Description,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,FacultyId")] Department department)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +95,7 @@ namespace SmartRegistry.Web.Controllers
                     return View(department);
                 }
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.Id, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
             return View(department);
         }
 
@@ -112,7 +112,7 @@ namespace SmartRegistry.Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.Id, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
             return View(department);
         }
 
@@ -121,7 +121,7 @@ namespace SmartRegistry.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,FacultyId")] Department department)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,Description,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,FacultyId")] Department department)
         {
             if (id != department.Id)
             {
@@ -148,7 +148,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculty, "Id", "Code", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.Id, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
             return View(department);
         }
 

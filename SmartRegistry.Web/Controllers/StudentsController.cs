@@ -48,7 +48,7 @@ namespace SmartRegistry.Web.Controllers
             //var student = _context.Student.FirstOrDefault(s => s.AccountId == user); 
             var students = await _context.Student.ToListAsync();
 
-            ExportToPDF(students);
+            //ExportToPDF(students);
 
             return View(students);
         }
@@ -182,10 +182,23 @@ namespace SmartRegistry.Web.Controllers
 
         [Authorize]
         public async Task<IActionResult> EnrollStudent(int id /*id*/)
-        {   
-            
+        {
+           
+
             var subject = await _context.Subject.FirstOrDefaultAsync(s => s.Id == id);
             if (subject == null) return NotFound(); //RedirectToAction("Details", "Subject", new { id = id });
+
+            var course = await _context.EnrolledSubject.Include(s => s.Subject)
+                .ThenInclude(s => s.Course)
+                .OrderByDescending(s => s.Subject.CreatedAt).Select(s=> s.Subject.Course).FirstOrDefaultAsync();
+
+            //  This ensures that a student only enrol subjects offered by the same course
+            if (course != null)
+            {
+                if (course.Id != subject.Course.Id) return BadRequest(subject);
+            }
+
+
 
             var user = await _userManager.GetUserAsync(this.User);
 

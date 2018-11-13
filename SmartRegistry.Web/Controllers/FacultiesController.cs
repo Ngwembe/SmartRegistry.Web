@@ -72,7 +72,7 @@ namespace SmartRegistry.Web.Controllers
         //[Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Code,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt")] Faculty faculty)
+        public async Task<IActionResult> Create([Bind("Id,Name,Code,Description,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt")] Faculty faculty)
         {
             if (ModelState.IsValid)
             {

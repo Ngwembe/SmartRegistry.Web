@@ -6,5 +6,7 @@ namespace SmartRegistry.Web.Interfaces
     {
         Task HandleConfirmationEmailSendAsync(string email, string subject, string message);
         Task<Task> SendEmailAsync(string recipientName, string recipientEmailAddress, string subject, string body);
+
+        Task SendReportAsync();
     }
 }
