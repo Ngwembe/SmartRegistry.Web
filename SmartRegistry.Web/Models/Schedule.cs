@@ -26,6 +26,10 @@ namespace SmartRegistry.Web.Models
         [Display(Name = "Scheduled To")]
         public DateTime ScheduleTo { get; set; }
 
+        //[Required(ErrorMessage = "{0} is a required field")]
+        [Display(Name = "Color Theme")]
+        public string ColorTheme { get; set; }
+
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string LastUpdatedBy { get; set; }

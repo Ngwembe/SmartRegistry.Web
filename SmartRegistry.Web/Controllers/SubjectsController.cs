@@ -79,18 +79,6 @@ namespace SmartRegistry.Web.Controllers
             return View(students);
         }
 
-        public async Task<IActionResult> PrintEnrolledStudentList(int id)
-        {
-            var attachment = await _reportingHandler.GetEnrolledSubject(id);
-
-            if (attachment != null)
-            {
-                await _emailSender.SendReportAsync();
-            }
-
-            return RedirectToAction(nameof(GetAllEnrolled), new {id = id});
-        }
-
         // GET: Subject/Details/5
         public async Task<IActionResult> Details(int? id)
         {

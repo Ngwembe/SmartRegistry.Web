@@ -9,5 +9,6 @@ namespace SmartRegistry.Web.Interfaces
     public interface IReportingHandler
     {
         Task<Document> GetEnrolledSubject(int subjectId);
+        Task<Document> GetSubjectSchedules(int subjectId);
     }
 }

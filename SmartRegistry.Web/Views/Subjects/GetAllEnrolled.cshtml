@@ -17,72 +17,74 @@
                                 <h2 class="text-center"><b>Enrolled Students for @Model.FirstOrDefault().SubjectName  (@Model.FirstOrDefault().SubjectCode)</b></h2>
                             }
                         </div>
-                        
+
                         <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
                             <div class="row">
                                 @*<a asp-action="PrintEnrolledStudentList" asp-route="@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary">Print out list</a>*@
-                                <a href="/Subjects/PrintEnrolledStudentList/@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print out list</a>
+                                <input type="hidden" value="@Model.FirstOrDefault().SubjectId" id="subjectId" />
+                                @*<a href="/Subjects/PrintEnrolledStudentList/@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print out list</a>*@
+                                <buttom id="printReport" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print out list</buttom>
                             </div>
                             <table class="table">
                                 <thead>
-                                <tr>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.FirstName)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.LastName)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.StudentNumber)
-                                    </th>
-                                    @*<th>
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LastUpdatedAt)
-        </th>*@
-                                    @*<th>
-            @Html.DisplayNameFor(model => model.Course)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Lecturer)
-        </th>*@
-                                    <th></th>
-                                </tr>
+                                    <tr>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.FirstName)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.LastName)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.StudentNumber)
+                                        </th>
+                                        @*<th>
+                                                @Html.DisplayNameFor(model => model.CreatedAt)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.LastUpdatedAt)
+                                            </th>*@
+                                        @*<th>
+                                                @Html.DisplayNameFor(model => model.Course)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Lecturer)
+                                            </th>*@
+                                        <th></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.FirstName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.LastName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.StudentNumber)
-                                        </td>
-                                        @*<td>
-            @Html.DisplayFor(modelItem => item.CreatedAt)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastUpdatedAt)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Course.Code)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Lecturer.FirstName)
-        </td>*@
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.SubjectId" class="btn btn-secondary">Edit</a> |
-                                            <a asp-controller="Students" asp-action="Details" asp-route-id="@item.SubjectId" class="btn btn-info">Details</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.SubjectId" class="btn btn-danger">Delete</a> |
-                                            <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.SubjectId" class="btn btn-primary">Go to Dashboard</a>
-                                        </td>
-                                    </tr>
-                                }
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.FirstName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.LastName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.StudentNumber)
+                                            </td>
+                                            @*<td>
+                                                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.LastUpdatedAt)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Course.Code)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Lecturer.FirstName)
+                                                </td>*@
+                                            <td>
+                                                <a asp-action="Edit" asp-route-id="@item.SubjectId" class="btn btn-secondary">Edit</a> |
+                                                <a asp-controller="Students" asp-action="Details" asp-route-id="@item.SubjectId" class="btn btn-info">Details</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.SubjectId" class="btn btn-danger">Delete</a> |
+                                                <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.SubjectId" class="btn btn-primary">Go to Dashboard</a>
+                                            </td>
+                                        </tr>
+                                    }
                                 </tbody>
                             </table>
                         </div>
@@ -90,7 +92,7 @@
                     </div> <!-- end card -->
                 </div>
             </div>
-            
+
 
         </div>
         <!-- container -->
@@ -105,3 +107,32 @@
     </footer>
 
 </div>
+
+@section Scripts
+{
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <script type="text/javascript">
+        $(() => {
+            $("#printReport").on('click', function () {
+
+                var subjectId = $('#subjectId').val();
+
+                $.ajax({
+                    type: "GET",
+                    //url: `/Subjects/PrintEnrolledStudentList/${subjectId}`,
+                    url: "/Reporting/PrintEnrolledStudentList",
+                    //dataType: "application/pdf",
+                    data: { id: subjectId },
+                    success: function(file) {
+
+                        console.log(file);
+
+                        window.location.href = "/Subjects/GetAllEnrolled";
+                        window.focus();
+                    }
+                });
+            });
+        });
+    </script>
+}

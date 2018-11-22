@@ -141,15 +141,15 @@ namespace SmartRegistry.Web.Domain
 
 
                     ,BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204)
-            };
+                };
 
 
                 table.AddCell(cell);
 
-                table.AddCell("First Name");
-                table.AddCell("Last Name");
-                table.AddCell("Gender");
-                table.AddCell("Date Of Birth");
+                table.AddCell(new PdfPCell(new Phrase("First Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Last Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Gender")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Date of Birth")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
 
 
 
@@ -339,6 +339,133 @@ namespace SmartRegistry.Web.Domain
             //{
             //    throw;
             //}
+        }
+
+        public async Task<Document> GetSubjectSchedules(int subjectId)
+        {
+            try
+            {
+                var subject = await _context.Subject
+                    .Include(s => s.Course)
+                    .Include(s => s.Lecturer)
+                    .SingleOrDefaultAsync(m => m.Id == subjectId);
+
+                if (subject == null) return null;
+
+                var schedules = await _context.Schedule
+                    .Where(s => s.SubjectId == subjectId)
+                    .Include(s => s.Subject)
+                    .ToListAsync();
+
+                if (!schedules.Any())
+                {
+                    return null;
+                }
+
+                var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
+
+                var path = $"{_hostingEnvironment.WebRootPath}";
+
+                PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\testPDF.pdf", FileMode.OpenOrCreate));
+                pdfDoc.Open();
+
+                iTextSharp.text.Image image = Image.GetInstance($"{path}\\images\\logo.png");
+                image.ScalePercent(24f);
+
+                var spacer = new Paragraph("")
+                {
+                    SpacingBefore = 10f,
+                    SpacingAfter = 10f
+                };
+
+                pdfDoc.Add(spacer);
+
+                var headerTable = new PdfPTable(new[] { .75f, 2.25f })
+                {
+                    WidthPercentage = 100,
+                    DefaultCell = { MinimumHeight = 22f }
+                };
+
+                headerTable.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
+
+                headerTable.AddCell("Date");
+                headerTable.AddCell(DateTime.Now.ToString("R"));
+                headerTable.AddCell("Lecturer Name");
+                headerTable.AddCell($"{subject.Lecturer.FirstName} {subject.Lecturer.LastName}");
+                headerTable.AddCell("Subject Name");
+                headerTable.AddCell($"{subject.Name}");
+                headerTable.AddCell("Subject Code");
+                headerTable.AddCell($"{subject.Code}");
+
+                image.ScaleToFit(250f, 250f);
+                image.Alignment = Image.TEXTWRAP | Image.ALIGN_LEFT;
+                image.IndentationLeft = 9f;
+                image.SpacingAfter = 9f;
+                image.BorderWidthTop = 36f;
+                image.BorderColorTop = BaseColor.WHITE;
+
+                pdfDoc.Add(image);
+                pdfDoc.Add(headerTable);
+                pdfDoc.Add(spacer);
+
+                var columnWidth = new[] { 2f, 2f, 0.75f, 2f };
+
+                var table = new PdfPTable(columnWidth)
+                {
+                    HorizontalAlignment = 25,
+                    WidthPercentage = 100,
+                    DefaultCell = { MinimumHeight = 22f }
+                };
+
+                var cell = new PdfPCell(new Phrase($"Schedules Summary for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
+                {
+                    Colspan = 4,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    MinimumHeight = 30f
+
+
+                    ,
+                    BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204)
+                };
+
+
+                table.AddCell(cell);
+
+                table.AddCell(new PdfPCell(new Phrase("Start Time")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("End Time")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Lecture Room")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Schedule Confirmed")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+
+
+
+                schedules.ToList().ForEach(s =>
+                {
+                    table.AddCell(s.ScheduleFor.ToString("f"));
+                    table.AddCell(s.ScheduleTo.ToString("f"));
+                    table.AddCell(s.LectureRoom);
+                    table.AddCell(s.IsConfirmed ? "Confirmed" : "Not Confirmed");
+                });
+
+                cell = new PdfPCell(new Phrase($"Total: {schedules.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
+                {
+                    Colspan = 4,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    MinimumHeight = 30f
+                };
+
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+                
+                pdfDoc.Close();
+                return pdfDoc;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            
         }
     }
 }
