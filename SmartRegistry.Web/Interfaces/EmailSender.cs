@@ -69,7 +69,7 @@ namespace SmartRegistry.Web.Interfaces
             return Task.CompletedTask;
         }
 
-        public async Task SendReportAsync(/*string recipientName, string recipientEmailAddress, string subject, string body*/)
+        public async Task SendReportAsync(string fileName  /*string recipientName, string recipientEmailAddress, string subject, string body*/)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace SmartRegistry.Web.Interfaces
 
                 //var attachment = new MimePart("application/pdf", "");
 
-                var path = $"{_hostingEnvironment.WebRootPath}\\testPDF.pdf";
+                var path = $"{_hostingEnvironment.WebRootPath}\\Reports\\{fileName}";
 
                 //var attachment = new MimePart("application/pdf")
                 ////var attachment = new MimePart("pdf")

@@ -28,26 +28,30 @@ namespace SmartRegistry.Web.Controllers
         {
             var attachment = await _reportingHandler.GetEnrolledSubject(id);
 
-            if (attachment != null)
+            if (!string.IsNullOrWhiteSpace(attachment))
             {
-                await _emailSender.SendReportAsync();
+                await _emailSender.SendReportAsync(attachment);
             }
 
-            var path = $"{_hostingEnvironment.WebRootPath}\\testPDF.pdf";
+            //var path = $"{_hostingEnvironment.WebRootPath}\\testPDF.pdf";
+            var path = $"{_hostingEnvironment.WebRootPath}\\Reports\\{attachment}";
 
-            FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            MemoryStream ms = new System.IO.MemoryStream();
-            await fs.CopyToAsync(ms);
+            using (FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                MemoryStream ms = new System.IO.MemoryStream();
+                await fs.CopyToAsync(ms);
 
 
-            //MemoryStream ms = new System.IO.MemoryStream();
+                //MemoryStream ms = new System.IO.MemoryStream();
 
-            byte[] byteInfo = ms.ToArray();
-            ms.Write(byteInfo, 0, byteInfo.Length);
-            ms.Position = 0;
+                byte[] byteInfo = ms.ToArray();
+                ms.Write(byteInfo, 0, byteInfo.Length);
+                ms.Position = 0;
 
-            return new FileStreamResult(fs, "application/pdf");
-            //return new FileStreamResult(ms, "application/pdf");
+                //return new FileStreamResult(fs, "application/pdf");
+                return new FileStreamResult(ms, "application/pdf");
+            }
+            
 
             //return File(fs, "application/pdf");
 

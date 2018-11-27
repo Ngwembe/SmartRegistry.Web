@@ -153,7 +153,51 @@
                 <div id="createModal"></div>
             </div>
 
+            <div class="row">
+                <div class="modal fade" id="updateSuccessModal">
+                    <div class="fade in" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p class="text-center text-capitalize">SCHEDULE UPDATE</p>
+                                </div>
+                                <div class="modal-body">
+                                    @*<h2 class="text-center" id="eventViewVenue"></h2>*@
+                                    <p >The schedule has been updated successfully!</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary pull-right" data-dismiss="modal">OK</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div id="createModal"></div>
+            </div>
+            
+            <div class="row">
+                <div class="modal fade" id="createSuccessModal">
+                    <div class="fade in" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p class="text-center text-capitalize">SCHEDULE CREATE</p>
+                                </div>
+                                <div class="modal-body">
+                                    @*<h2 class="text-center" id="eventViewVenue"></h2>*@
+                                    <p>The schedule has been created successfully!</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary pull-right" data-dismiss="modal">OK</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="createModal"></div>
+            </div>
 
         </div>
         <!-- container -->
@@ -324,7 +368,9 @@
                             //}),
                             async: true,
                             success: function (response) {
-                                alert('Updated successfully!!!');
+                                $('#createEventViewModal').modal('hide');
+                                $('#createSuccessModal').modal('hide');
+                                $('#updateSuccessModal').modal('show');
                             }
                         });
                     },
@@ -381,7 +427,8 @@
 
                                 $('.date').datepicker({
                                     beforeShowDay: $.datepicker.noWeekends,
-                                    dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
+                                    dateFormat: "dd/MM/yyyy HH:mm"
+                                    //dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
                                 });
 
                                 $('#createEventViewModal').modal('show');
@@ -434,6 +481,8 @@
                                             e.preventDefault();
 
                                             $('#createEventViewModal').modal('hide');
+                                            $('#createSuccessModal').modal('show');
+                                            
                                             getSchedules();
                                         }
                                     });

@@ -183,7 +183,8 @@ namespace SmartRegistry.Web.Controllers
             var userId = _userManager.GetUserId(HttpContext.User);
             var lecturer = _context.Lecturer.FirstOrDefault(l => l.AccountId == userId);
 
-            if (lecturer == null) return View(nameof(Index));
+            if (lecturer == null)
+                return View(nameof(Index));
 
             var subjects = await _context.Subject.Include(s => s.Lecturer).Where(s => s.Lecturer.Id == lecturer.Id).ToListAsync();//.AsEnumerable();
            

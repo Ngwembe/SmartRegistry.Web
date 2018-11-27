@@ -25,7 +25,8 @@ namespace SmartRegistry.Web.Domain
             _hostingEnvironment = hostingEnvironment;
         }
 
-        public async Task<Document> GetEnrolledSubject(int subjectId)
+        //public async Task<Document> GetEnrolledSubject(int subjectId)
+        public async Task<string> GetEnrolledSubject(int subjectId)
         {
             try
             {
@@ -66,7 +67,10 @@ namespace SmartRegistry.Web.Domain
 
                 var path = $"{_hostingEnvironment.WebRootPath}";
 
-                PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\testPDF.pdf", FileMode.OpenOrCreate));
+                var fileName = $"{subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.pdf";
+
+                //PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\testPDF.pdf", FileMode.OpenOrCreate));
+                PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\Reports\\{fileName}", FileMode.OpenOrCreate));
                 pdfDoc.Open();
                 
                 iTextSharp.text.Image image = Image.GetInstance($"{path}\\images\\logo.png");
@@ -133,7 +137,7 @@ namespace SmartRegistry.Web.Domain
                     DefaultCell = { MinimumHeight = 22f }
                 };
 
-                var cell = new PdfPCell(new Phrase($"Student Summary for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
+                var cell = new PdfPCell(new Phrase($"Enrolled Student for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
                 {
                     Colspan = 4,
                     HorizontalAlignment = Element.ALIGN_CENTER,
@@ -201,7 +205,9 @@ namespace SmartRegistry.Web.Domain
 
 
                 pdfDoc.Close();
-                return pdfDoc;
+                //return pdfDoc;
+
+                return fileName;
 
             }
             catch (Exception ex)
@@ -341,7 +347,8 @@ namespace SmartRegistry.Web.Domain
             //}
         }
 
-        public async Task<Document> GetSubjectSchedules(int subjectId)
+        //public async Task<Document> GetSubjectSchedules(int subjectId)
+        public async Task<string> GetSubjectSchedules(int subjectId)
         {
             try
             {
@@ -366,7 +373,10 @@ namespace SmartRegistry.Web.Domain
 
                 var path = $"{_hostingEnvironment.WebRootPath}";
 
-                PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\testPDF.pdf", FileMode.OpenOrCreate));
+                var fileName = $"{subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("G")}.pdf";
+
+                //PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\testPDF.pdf", FileMode.OpenOrCreate));
+                PdfWriter.GetInstance(pdfDoc, new FileStream($@"{path}\Reports\{fileName}", FileMode.OpenOrCreate));
                 pdfDoc.Open();
 
                 iTextSharp.text.Image image = Image.GetInstance($"{path}\\images\\logo.png");
@@ -457,8 +467,9 @@ namespace SmartRegistry.Web.Domain
                 pdfDoc.Add(table);
                 
                 pdfDoc.Close();
-                return pdfDoc;
+                //return pdfDoc;
 
+                return fileName;
             }
             catch (Exception ex)
             {
