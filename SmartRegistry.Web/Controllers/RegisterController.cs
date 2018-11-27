@@ -60,19 +60,32 @@ namespace SmartRegistry.Web.Controllers
             try
             {
                 if (sensorId <= 0)
-                    return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new { success = false }));
+                    return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
+                    {
+                        success = false,
+                        message = "Sensor ID must be greater than 0"
+                    }));
+
 
                 //  Log the possible error as hardware shouldn't have done the REQUEST
 
                 var student = await _context.Student.FirstOrDefaultAsync(s => s.SensorId == sensorId);
                 if (student == null)
-                    return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new { success = false }));
+                    return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
+                    {
+                        success = false,
+                        message = "No matching student found with sensor ID"
+                    }));
 
                 var currentDate = DateTime.UtcNow;
                 var schedule = await _context.Schedule.FirstOrDefaultAsync(s => s.ScheduleFor.AddHours(2.0) <= currentDate && s.ScheduleTo.AddHours(2.0) >= currentDate);
 
                 if (schedule == null)
-                    return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new { success = false }));
+                    return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
+                    {
+                        success = false,
+                        message = "No ongoing lecture session found"
+                    }));
 
                 var isEnrolled = await _context.EnrolledSubject.FirstOrDefaultAsync(es => es.SubjectId == schedule.SubjectId && es.StudentId == student.Id);
 
