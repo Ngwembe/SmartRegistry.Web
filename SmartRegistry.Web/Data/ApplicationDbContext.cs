@@ -32,6 +32,7 @@ namespace SmartRegistry.Web.Data
         public DbSet<AnnouncementType> AnnouncementType { get; set; }
 
         public DbSet<Sensor> Sensor { get; set; }
+        public DbSet<Events> Log { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{

@@ -80,6 +80,11 @@ namespace SmartRegistry.Web.Interfaces
 
                 //var attachment = new MimePart("application/pdf", "");
 
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+
                 var path = $"{_hostingEnvironment.WebRootPath}\\Reports\\{fileName}";
 
                 //var attachment = new MimePart("application/pdf")

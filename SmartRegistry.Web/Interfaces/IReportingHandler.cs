@@ -13,5 +13,7 @@ namespace SmartRegistry.Web.Interfaces
 
         Task<string> GetEnrolledSubject(int subjectId);
         Task<string> GetSubjectSchedules(int subjectId);
+
+        Task<string> GetAttendedStudents(int subjectId);
     }
 }

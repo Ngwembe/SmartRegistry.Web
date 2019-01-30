@@ -65,6 +65,11 @@ namespace SmartRegistry.Web.Domain
 
                 var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
 
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+
                 var path = $"{_hostingEnvironment.WebRootPath}";
 
                 var fileName = $"{subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.pdf";
@@ -371,9 +376,14 @@ namespace SmartRegistry.Web.Domain
 
                 var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
 
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+
                 var path = $"{_hostingEnvironment.WebRootPath}";
 
-                var fileName = $"{subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("G")}.pdf";
+                var fileName = $"Schedules for {subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("G")}.pdf";
 
                 //PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\testPDF.pdf", FileMode.OpenOrCreate));
                 PdfWriter.GetInstance(pdfDoc, new FileStream($@"{path}\Reports\{fileName}", FileMode.OpenOrCreate));
@@ -478,5 +488,206 @@ namespace SmartRegistry.Web.Domain
 
             
         }
+
+        public async Task<string> GetAttendedStudents(int subjectId)
+        {
+            try
+            {
+                var subject = await _context.Subject
+                    .Include(s => s.Course)
+                    .Include(s => s.Lecturer)
+                    .SingleOrDefaultAsync(m => m.Id == subjectId);
+
+                if (subject == null) return null;
+
+                var students = await _context.Schedule
+                    .Where(s => s.SubjectId == subjectId)
+                    .Include(s => s.Subject)
+                    .ToListAsync();
+                //.Select(en => new EnrolledStudentViewModel
+                //{
+                //    SubjectId = subjectId,
+                //    //StudentId = en.StudentId,
+                //    //FirstName = en.Student.FirstName,
+                //    //LastName = en.Student.LastName,
+                //    //StudentNumber = en.Student.StudentNumber,
+                //    //Gender = en.Student.Gender,
+                //    //DOB = en.Student.DOB,
+
+                //    SubjectCode = en.Subject.Code,
+                //    SubjectName = en.Subject.Name
+                //})
+                //.ToListAsync();
+
+                if (!students.Any())
+                {
+                    return null;
+                }
+
+
+                var results = new List<AttendeeViewModel>();
+                students.ForEach(/*async*/ sc =>
+                {
+                    var attendees = /*await*/ _context.Attendee.Where(a => a.ScheduleId == sc.Id)
+                                            .Include(a => a.Student)
+                                            .Select(en => new AttendeeViewModel
+                                            {
+                                                SubjectId = subjectId,
+                                                StudentId = en.StudentId,
+                                                FirstName = en.Student.FirstName,
+                                                LastName = en.Student.LastName,
+                                                StudentNumber = en.Student.StudentNumber,
+                                                Gender = en.Student.Gender,
+                                                DOB = en.Student.DOB,
+
+                                                SubjectCode = sc.Subject.Code,
+                                                SubjectName = sc.Subject.Name,
+
+                                                ScheduleFrom = en.Schedule.ScheduleFor,
+                                                ScheduleTo = en.Schedule.ScheduleTo
+                                            }).ToList();
+                                            //.ToListAsync();
+                    results.AddRange(attendees);
+                });
+
+
+                var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
+
+                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                {
+                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                }
+
+                var path = $"{_hostingEnvironment.WebRootPath}";
+
+                var fileName = $"Attendance for {subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.pdf";
+
+                PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\Reports\\{fileName}", FileMode.OpenOrCreate));
+                pdfDoc.Open();
+
+                iTextSharp.text.Image image = Image.GetInstance($"{path}\\images\\logo.png");
+                image.ScalePercent(24f);
+
+                var spacer = new Paragraph("")
+                {
+                    SpacingBefore = 10f,
+                    SpacingAfter = 10f
+                };
+
+                pdfDoc.Add(spacer);
+                
+                var headerTable = new PdfPTable(new[] { .75f, 2.25f })
+                {
+                    WidthPercentage = 100,
+                    DefaultCell = { MinimumHeight = 22f }
+                };
+
+                headerTable.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
+
+                headerTable.AddCell("Date");
+                headerTable.AddCell(DateTime.Now.ToString("R"));
+                headerTable.AddCell("Lecturer Name");
+                headerTable.AddCell($"{subject.Lecturer.FirstName} {subject.Lecturer.LastName}");
+                headerTable.AddCell("Subject Name");
+                headerTable.AddCell($"{subject.Name}");
+                headerTable.AddCell("Subject Code");
+                headerTable.AddCell($"{subject.Code}");
+
+                image.ScaleToFit(250f, 250f);
+                //image.Alignment = Image.TEXTWRAP | Image.ALIGN_RIGHT;
+                image.Alignment = Image.TEXTWRAP | Image.ALIGN_LEFT;
+                image.IndentationLeft = 9f;
+                image.SpacingAfter = 9f;
+                image.BorderWidthTop = 36f;
+                image.BorderColorTop = BaseColor.WHITE;
+
+                pdfDoc.Add(image);
+                pdfDoc.Add(headerTable);
+                pdfDoc.Add(spacer);
+
+
+
+                //var columnCount = 4;
+                //var columnWidth = new[] { 0.75f, 1f, 0.75f, 2f };
+                var columnWidth = new[] { 1.75f, 1.75f, 1f, 2f, 1.5f, 1.5f };
+
+                var table = new PdfPTable(columnWidth)
+                {
+                    HorizontalAlignment = 25,
+                    WidthPercentage = 100,
+                    DefaultCell = { MinimumHeight = 22f }
+                };
+
+                var cell = new PdfPCell(new Phrase($"Attendance for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
+                {
+                    Colspan = 6,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    MinimumHeight = 30f
+
+
+                    ,
+                    BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204)
+                };
+
+
+                table.AddCell(cell);
+
+                table.AddCell(new PdfPCell(new Phrase("First Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Last Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Gender")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("Date of Birth")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+
+                table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+
+                results.ToList().ForEach(s =>
+                {
+                    table.AddCell(s.FirstName);
+                    table.AddCell(s.LastName);
+                    table.AddCell(s.Gender);
+                    table.AddCell(s.DOB.ToString());
+
+                    table.AddCell(s.ScheduleFrom.ToString()?? "Unspecified");
+                    table.AddCell(s.ScheduleTo.ToString() ?? "Unspecified");
+                });
+
+
+                cell = new PdfPCell(new Phrase($"Total: { results.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
+                {
+                    //Colspan = 4,
+                    //HorizontalAlignment = Element.ALIGN_RIGHT,
+                    //MinimumHeight = 30f
+
+                    Colspan = 6,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    MinimumHeight = 30f
+                };
+
+                //cell = new PdfPCell(new Phrase($"Total: {students.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
+                //{
+                //    //Colspan = 4,
+                //    //HorizontalAlignment = Element.ALIGN_RIGHT,
+                //    //MinimumHeight = 30f
+
+                //    Colspan = 4,
+                //    HorizontalAlignment = Element.ALIGN_CENTER,
+                //    MinimumHeight = 30f
+                //};
+
+                table.AddCell(cell);
+                pdfDoc.Add(table);
+
+
+                pdfDoc.Close();
+
+                return fileName;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }
