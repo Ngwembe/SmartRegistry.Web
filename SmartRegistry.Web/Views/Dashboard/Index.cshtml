@@ -1,6 +1,8 @@
 ﻿<link href="~/lib/morris/morris-0.5.1/css/morris.css" rel="stylesheet" />
 <link href="~/lib/highcharts/css/highcharts.css" rel="stylesheet" />
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shoelace-css/1.0.0-beta16/shoelace.css">
+<link rel="stylesheet" href="~/css/print.css" type="text/css" media="print">
 
 <div class="content-page">
     <!-- Start content -->
@@ -8,147 +10,238 @@
         <div class="container">
 
             <div class="row">
+            <div class="col-md-12">
+            @*<div class="row">
+                            <div class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav">
+                                    <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">Daily</a></li>
+                                    <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">Weekly</a></li>
+                                    <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#monthlyView">Monthly</a></li>
+                                    <li class="hidden"><a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">Semesterly</a></li>
+                                </ul>
+                            </div>
+                        </div>*@
+
+            <div class="row">
+                <h2 class="text-center" id="subjTitle"></h2><hr />
+            </div>
+
+            <div id="views">
+
                 <div class="col-md-12">
-                    @*<div class="row">
-                        <div class="navbar-collapse collapse">
-                            <ul class="nav navbar-nav">
-                                <li><a href="#" data-toggle="collapse" data-target="#dailyView">Daily</a></li>
-                                <li><a href="#" data-toggle="collapse" data-target="#weeklyView">Weekly</a></li>
-                                <li><a href="#" data-toggle="collapse" data-target="#monthlyView">Monthly</a></li>
-                                <li class="hidden"><a href="#" data-toggle="collapse" data-target="#semesterlyView">Semesterly</a></li>
-                            </ul>
-                        </div>
-                    </div>*@
-                    
-                    <div class="row">
-                        <h2 class="text-center" id="subjTitle"></h2><hr/>
-                    </div>
-                    
-                    <div id="views">
-                        <div class="col-md-12">
-                            <div class="card-box">
-                                <a href="#" data-toggle="collapse" data-target="#dailyView">
-                                    <h4 class="header-title m-t-0 m-b-30">DAILY</h4>
-                                </a>
+                    <div class="panel">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
+                            <h4 class="panel-heading m-t-0 m-b-30">DAILY</h4>
+                        </a>
 
-                                <hr />
+                        <hr />
 
-                                <div class="inbox-widget slimscroll-alt" >
-                                    <div class="row">
-                                        <div class="collapse" id="dailyView" data-parent="#views">
-                                            <div id="dailyViewChart" style="min-height: 450px;"></div>
-                                        </div>
-                                    </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="collapsed" id="dailyView" data-parent="#views">
+                                    <div id="dailyViewChart" style="min-height: 450px;"></div>
                                 </div>
-
-                            </div> <!-- end card -->
-                        </div>
-                        @*<div class="row">
-                            <div class="collapse" id="dailyView" data-parent="#views">
-                                <div id="dailyViewChart" style="min-height: 450px;"></div>
                             </div>
-                        </div>*@
-                        
-                        <div class="col-md-12">
-                            <div class="card-box">
-                                <a href="#" data-toggle="collapse" data-target="#weeklyView">
-                                    <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
-                                </a>
-
-                                <hr/>
-
-                                <div class="inbox-widget slimscroll-alt">
-                                    <div class="row">
-                                        <div class="collapse" id="weeklyView" data-parent="#views">
-                                            <div id="weeklyViewChart" style="min-height: 450px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div> <!-- end card -->
-                        </div>
-                        
-                        <div class="col-md-12">
-                            <div class="card-box">
-                                <a href="#" data-toggle="collapse" data-target="#weeklyChart">
-                                    <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
-                                </a>
-
-                                <hr/>
-
-                                <div class="inbox-widget slimscroll-alt">
-                                    <div class="row">
-                                        <div class="collapse" id="weeklyChart" data-parent="#views">
-                                            <div id="weeklyChart" style="min-height: 450px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div> <!-- end card -->
                         </div>
 
-                        @*<div class="row">
-                            <div class="collapse" id="weeklyView" data-parent="#views">
-                                <div id="weeklyViewChart" style="min-height: 450px;"></div>
-                            </div>
-                        </div>*@
-                        
-                        <div class="col-md-12">
-                            <div class="card-box">
-                                <a href="#" data-toggle="collapse" data-target="#monthlyView">
-                                    <h4 class="header-title m-t-0 m-b-30">MONTHLY</h4>
-                                </a>
-                                
-                                <hr/>
-
-                                <div class="inbox-widget slimscroll-alt">
-                                    <div class="row">
-                                        <div class="collapse" id="monthlyView" data-parent="#views">
-                                            <div id="monthlyViewChart" style="min-height: 450px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div> <!-- end card -->
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="card-box">
-                                <a href="#" data-toggle="collapse" data-target="#semesterlyView">
-                                    <h4 class="header-title m-t-0 m-b-30">SEMESTERLY</h4>
-                                </a>
-                                
-                                <hr/>
-
-                                <div class="inbox-widget slimscroll-alt">
-                                    <div class="row">
-                                        <div class="collapse" id="semesterlyView" data-parent="#views">
-                                            <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
-                                            <div id="semesterlyViewChart" style="min-height: 450px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div> <!-- end card -->
-                        </div>
-
-                       
                     </div>
                 </div>
+
+                @*<div class="col-md-12">
+                                <div class="card-box">
+                                    <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
+                                        <h4 class="header-title m-t-0 m-b-30">DAILY</h4>
+                                    </a>
+
+                                    <hr />
+
+                                    <div class="inbox-widget slimscroll-alt" >
+                                        <div class="row">
+                                            <div class="collapsed" id="dailyView" data-parent="#views">
+                                                <div id="dailyViewChart" style="min-height: 450px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div> <!-- end card -->
+                            </div>*@
+                @*<div class="row">
+                                <div class="collapsed" id="dailyView" data-parent="#views">
+                                    <div id="dailyViewChart" style="min-height: 450px;"></div>
+                                </div>
+                            </div>*@
+
+                <div class="col-md-12">
+                    <div class="panel">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
+                            <h4 class="panel-heading m-t-0 m-b-30">WEEKLY</h4>
+                        </a>
+
+                        <hr />
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="collapsed" id="weeklyView" data-parent="#views">
+                                    <div id="weeklyViewChart" style="min-height: 450px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--
+                    <div class="card-box">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">
+                            <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
+                        </a>
+
+                        <hr />
+
+                        <div class="inbox-widget slimscroll-alt">
+                            <div class="row">
+                                <div class="collapsed" id="weeklyView" data-parent="#views">
+                                    <div id="weeklyViewChart" style="min-height: 450px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    -->
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyChart">
+                            <h4 class="panel-heading m-t-0 m-b-30">WEEKLY</h4>
+                        </a>
+
+                        <hr />
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="collapsed" id="weeklyChart" data-parent="#views">
+                                    <div id="weeklyChart" style="min-height: 450px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    @*<div class="card-box">
+                                    <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyChart">
+                                        <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
+                                    </a>
+
+                                    <hr/>
+
+                                    <div class="inbox-widget slimscroll-alt">
+                                        <div class="row">
+                                            <div class="collapsed" id="weeklyChart" data-parent="#views">
+                                                <div id="weeklyChart" style="min-height: 450px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>*@
+                </div>
+
+                @*<div class="row">
+                                <div class="collapsed" id="weeklyView" data-parent="#views">
+                                    <div id="weeklyViewChart" style="min-height: 450px;"></div>
+                                </div>
+                            </div>*@
+
+                <div class="col-md-12">
+                    <div class="panel">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#monthlyView">
+                            <h4 class="panel-heading m-t-0 m-b-30">MONTHLY</h4>
+                        </a>
+
+                        <hr />
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="collapsed" id="monthlyView" data-parent="#views">
+                                    <div id="monthlyViewChart" style="min-height: 450px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    @*<div class="card-box">
+                                    <a href="#" data-toggle="collapse" data-target="#monthlyView">
+                                        <h4 class="header-title m-t-0 m-b-30">MONTHLY</h4>
+                                    </a>
+
+                                    <hr/>
+
+                                    <div class="inbox-widget slimscroll-alt">
+                                        <div class="row">
+                                            <div class="collapsed" id="monthlyView" data-parent="#views">
+                                                <div id="monthlyViewChart" style="min-height: 450px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>*@ <!-- end card -->
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">
+                            <h4 class="panel-heading m-t-0 m-b-30">SEMESTERLY</h4>
+                        </a>
+
+                        <hr />
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="collapsed" id="semesterlyView" data-parent="#views">
+                                    <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
+                                    <div id="semesterlyViewChart" style="min-height: 450px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    @*<div class="card-box">
+                                    <a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">
+                                        <h4 class="header-title m-t-0 m-b-30">SEMESTERLY</h4>
+                                    </a>
+
+                                    <hr/>
+
+                                    <div class="inbox-widget slimscroll-alt">
+                                        <div class="row">
+                                            <div class="collapsed" id="semesterlyView" data-parent="#views">
+                                                <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
+                                                <div id="semesterlyViewChart" style="min-height: 450px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>*@ <!-- end card -->
+                </div>
+
+
             </div>
-          </div>
-            
+            </div>
+            <div class="col-md-12">
+                <a href="javascript:void(0);" class="btn btn-primary" id="printDoc">Print Report</a>
+            </div>
+            </div>
         </div>
-        <!-- container -->
 
-    </div> <!-- content -->
+    </div>
+    <!-- container -->
 
-    <footer class="footer text-right">
-        @{
-            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
-        }
+</div> <!-- content -->
 
-    </footer>
+<footer class="footer text-right">
+    @{
+        <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+    }
+
+</footer>
 
 </div>
 
@@ -157,44 +250,48 @@
     <script src="~/lib/morris/morris-0.5.1/js/morris.min.js"></script>
     <script src="~/lib/morris/morris-0.5.1/js/raphael.min.js"></script>
     <script src="~/lib/highcharts/js/highcharts.js"></script>
-
+    
+    @*<script src="https://code.highcharts.com/highcharts.js"></script>*@
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
     <script type="text/javascript">
 
 
-
         $(function () {
 
-            var subjectName = "";
+            var subjectName = "<Subject Name>";            
 
             //$('[data-toggle="collapse"]').click(function () {
             //    $('.collapse.in').collapse('hide')
             //});
 
-            $.ajax({
-                type: "GET",
-                url: "/Dashboard/GetWeeklyStats",
-                data: { subjectId: 1 },
-                //async: true,
-                success: function (data) {
-                    console.log("Weekly Stats");
-                    console.log(data);
-                    //renderDonut(data);
-                }
-            });
+            //$.ajax({
+            //    type: "GET",
+            //    url: "/Dashboard/GetWeeklyStats",
+            //    data: { subjectId: 1 },
+            //    //async: true,
+            //    success: function (data) {
+            //        console.log("Weekly Stats");
+            //        console.log(data);
+            //        //renderDonut(data);
+            //    }
+            //});
+
+
 
             //****************     DAILY     *****************
-
             $.ajax({
                 type: "GET",
                 url: "/Dashboard/GetDailyStats",
                 async: true,
-                data: { scheduleId: 1},
+                data: { scheduleId: 1 },
                 success: function (response) {
                     console.log("DAILY STATS RETURNED:");
 
                     var stats = JSON.parse(response);
                     console.log(stats);
+
+                    subjectName = stats.subjectName;
 
                     let chart = Highcharts.chart('dailyViewChart', {
                         legend: {
@@ -234,14 +331,13 @@
                                 y: stats.attended.value
                                 //,color: '#71f442'
                             }, {
-                                    name: stats.unattended.label,
-                                    y: stats.unattended.value
+                                name: stats.unattended.label,
+                                y: stats.unattended.value
                                 //,color: '#429b9e'
                             }]
                         }]
                     });
 
-                    subjectName = stats.subjectName;
                     chart.setTitle({ text: `<b>Daily Attendance Summary for ${subjectName}</b>` });
 
                     $('#subjTitle').text(`Dashboard for ${subjectName}`);
@@ -396,12 +492,12 @@
                 //},
                 xAxis: {
                     min: Date.UTC(2018, 0, 1),
-                    max: Date.UTC(2018,11,1),
+                    max: Date.UTC(2018, 11, 1),
                     type: 'datetime',
                     allowDecimals: false,
                     tickInterval: 24 * 3600 * 1000 * 30,
                     labels: {
-                       rotation: 0
+                        rotation: 0
                     }
                 },
                 yAxis: {
@@ -455,27 +551,28 @@
                         10577, 10527, 10475, 10421, 10358, 10295, 10104, 9914, 9620, 9326,
                         5113, 5113, 4954, 4804, 4761, 4717, 4368, 4018
                         */
-                        36,43,50,46,39,42,56,30
+                        36, 43, 50, 46, 39, 42, 56, 30
                     ]
                 }, {
                     name: 'Missed',
-                        data: [
-                         /*   
-                            null, null, null, null, null, null, null, null, null, null,
-                            5, 25, 50, 120, 150, 200, 426, 660, 869, 1060,
-                            1605, 2471, 3322, 4238, 5221, 6129, 7089, 8339, 9399, 10538,
-                            11643, 13092, 14478, 15915, 17385, 19055, 21205, 23044, 25393, 27935,
-                            30062, 32049, 33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000,
-                            37000, 35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
-                            21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
-                            12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
-                        */
-                            (70-36),(70-43),(70-50),(70-46),(70-39),(70-42),(70-56),(70-30)
+                    data: [
+                        /*
+                           null, null, null, null, null, null, null, null, null, null,
+                           5, 25, 50, 120, 150, 200, 426, 660, 869, 1060,
+                           1605, 2471, 3322, 4238, 5221, 6129, 7089, 8339, 9399, 10538,
+                           11643, 13092, 14478, 15915, 17385, 19055, 21205, 23044, 25393, 27935,
+                           30062, 32049, 33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000,
+                           37000, 35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
+                           21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
+                           12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
+                       */
+                        (70 - 36), (70 - 43), (70 - 50), (70 - 46), (70 - 39), (70 - 42), (70 - 56), (70 - 30)
                     ]
                 }]
             });
 
             //****************      MONTHLY      **********************
+
             Highcharts.chart('monthlyViewChart', {
                 chart: {
                     type: 'area'
@@ -552,12 +649,13 @@
                 }]
             });
 
+
             Highcharts.chart('weeklyChart', {
                 chart: {
                     type: 'areaspline'
                 },
                 title: {
-                    text: `Daily Attendance Summary ${subjectName}`
+                    text: `Weekly Attendance Summary ${subjectName}`
                 },
                 legend: {
                     layout: 'vertical',
@@ -610,6 +708,91 @@
                     data: [1, 3, 4, 3, 3, 5, 4]
                 }]
             });
+            
+            //****************     SEMESTERLY     *****************
+
+            var chart;
+            var pointStart = Date.UTC(2018, 0, 1);
+            $(function () {
+
+                $('#semesterlyViewChart').highcharts({
+                    chart: { type: 'area' },
+                    title: {},
+                    subtitle: {},
+                    legend: { enabled: true },
+                    tooltip: {},
+                    plotOptions: {
+                        series: {
+                            pointStart: pointStart,
+                            pointInterval: 24 * 3600 * 1000 * 30
+                        }
+                    },
+                    xAxis: {
+                        min: Date.UTC(2018, 0, 0),
+                        max: Date.UTC(2018, 5, 1),
+                        //allowDecimals: false,
+                        type: 'datetime',
+                        tickInterval: 24 * 3600 * 1000 * 30, //one day
+                        labels: {
+                            rotation: 0
+                        }
+
+                    },
+                    yAxis: {}
+                });
+                chart = $('#semesterlyViewChart').highcharts();
+
+
+                var jsonString =
+                    '[ { "date": "2018-1-01", "in": "30", "out": "21" }, { "date": "2018-1-02", "in": "35", "out": "32" }, { "date": "2018-1-03", "in": "23", "out": "34" }, { "date": "2018-1-04", "in": "20", "out": "15" }, { "date": "2018-1-05", "in": "34", "out": "20" }, { "date": "2018-2-06", "in": "22", "out": "34" }, { "date": "2018-2-07", "in": "15", "out": "18" } ]';
+
+                var myData = JSON.parse(jsonString);
+                var dataArray = [];
+                var dataAbsentArray = [];
+
+                $.each(myData,
+                    function (i, obj) {
+                        console.log(obj.date);
+                        var d = new Date(obj.date);
+                        dataArray.push([Date.parse(d), parseInt(obj.in)]);
+                        dataAbsentArray.push([Date.parse(d), parseInt(obj.out)]);
+                    });
+
+                chart.addSeries({
+                    data: dataArray
+                });
+
+                chart.addSeries({
+                    data: dataAbsentArray
+                });
+
+                //console.log('data is ' + dataArray);
+            });
+
+            
+            $("#printDoc").on('click', function () {
+
+                Highcharts.setOptions({ // Apply to all charts
+                    chart: {
+                        events: {
+                            beforePrint: function () {
+                                this.oldhasUserSize = this.hasUserSize;
+                                this.resetParams = [this.chartWidth, this.chartHeight, false];
+                                this.setSize(600, 400, false);
+                            },
+                            afterPrint: function () {
+                                this.setSize.apply(this, this.resetParams);
+                                this.hasUserSize = this.oldhasUserSize;
+                            }
+                        }
+                    }
+                });
+
+                $(".highcharts-menu .highcharts-menu-item").click();
+
+                //window.print();
+            });
+
         });
 
         var renderDonut = function (data) {
@@ -645,7 +828,7 @@
             //    //formatter: function (x) { return x + "%"}
             //});
         }
-                
+
         //new Morris.Line({
         //    // ID of the element in which to draw the chart.
         //    element: 'dailyViewChart',
@@ -666,58 +849,6 @@
         //    // chart.
         //    labels: ['Value']
         //});
-
-
-        var chart;
-        var pointStart = Date.UTC(2018,0,1);
-        $(function() {
-    
-            $('#semesterlyViewChart').highcharts({
-                chart       : { type    : 'area' },
-                title       : { },
-                subtitle    : { },
-                legend      : { enabled : true },
-                tooltip     : { },
-                plotOptions : {
-                    series  : {
-                        pointStart      : pointStart,
-                        pointInterval   : 24 * 3600 * 1000*30
-                    }
-                },
-                xAxis      : { 
-                    min:Date.UTC(2018, 0, 0),
-                    max:Date.UTC(2018, 5, 1),
-                    //allowDecimals: false,
-                    type           : 'datetime',
-                    tickInterval   : 24 * 3600 * 1000*30, //one day
-                    labels         : {
-                        rotation : 0
-                    }
-            
-                },
-                yAxis      : {  }
-            });	
-            chart = $('#semesterlyViewChart').highcharts();
-
-        
-            var jsonString = '[ { "date": "2018-1-01", "in": "30", "out": "21" }, { "date": "2018-1-02", "in": "35", "out": "32" }, { "date": "2018-1-03", "in": "23", "out": "34" }, { "date": "2018-1-04", "in": "20", "out": "15" }, { "date": "2018-1-05", "in": "34", "out": "20" }, { "date": "2018-2-06", "in": "22", "out": "34" }, { "date": "2018-2-07", "in": "15", "out": "18" } ]';
-
-            var myData = JSON.parse(jsonString);
-            var dataArray = [];
-
-            $.each(myData, function(i, obj) {
-                console.log(obj.date);
-                var d = new Date(obj.date);
-                dataArray.push([Date.parse(d), parseInt(obj.in)]);
-            });
-    
-            chart.addSeries({ 
-                data: dataArray    
-            });
-
-            console.log('data is ' + dataArray);
-        })
-
 
 
     </script>

@@ -659,7 +659,7 @@ namespace SmartRegistry.Web.Domain
                     //MinimumHeight = 30f
 
                     Colspan = 6,
-                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    HorizontalAlignment = Element.ALIGN_RIGHT,
                     MinimumHeight = 30f
                 };
 
