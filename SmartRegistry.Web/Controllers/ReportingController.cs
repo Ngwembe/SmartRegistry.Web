@@ -28,21 +28,23 @@ namespace SmartRegistry.Web.Controllers
         {
             try
             {
-                var attachment = await _reportingHandler.GetEnrolledSubject(id);
+                var attachment = await _reportingHandler.GetEnrolledSubjectAsync(id);
 
                 if (!string.IsNullOrWhiteSpace(attachment))
                 {
                     await _emailSender.SendReportAsync(attachment);
                 }
 
+                return RedirectToAction("GetAllEnrolled", "Subjects", new { id = id });
+
                 //var path = $"{_hostingEnvironment.WebRootPath}\\testPDF.pdf";
 
-                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
-                {
-                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                }
+                //if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                //{
+                //    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                //}
 
-                var path = $"{_hostingEnvironment.WebRootPath}\\Reports\\{attachment}";
+                //var path = $"{_hostingEnvironment.WebRootPath}\\Reports\\{attachment}";
 
                 //FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
                 //MemoryStream ms = new System.IO.MemoryStream();
@@ -58,21 +60,21 @@ namespace SmartRegistry.Web.Controllers
                 ////return new FileStreamResult(ms, "application/pdf");
                 //return File(new MemoryStream(byteInfo), "application/pdf");
 
-                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    MemoryStream ms = new MemoryStream();
-                    await fs.CopyToAsync(ms);
+                //using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                //{
+                //    MemoryStream ms = new MemoryStream();
+                //    await fs.CopyToAsync(ms);
 
 
-                    //MemoryStream ms = new System.IO.MemoryStream();
+                //    //MemoryStream ms = new System.IO.MemoryStream();
 
-                    byte[] byteInfo = ms.ToArray();
-                    ms.Write(byteInfo, 0, byteInfo.Length);
-                    ms.Position = 0;
+                //    byte[] byteInfo = ms.ToArray();
+                //    ms.Write(byteInfo, 0, byteInfo.Length);
+                //    ms.Position = 0;
 
-                    //return new FileStreamResult(fs, "application/pdf");
-                    return new FileStreamResult(ms, "application/pdf");
-                }
+                //    //return new FileStreamResult(fs, "application/pdf");
+                //    return new FileStreamResult(ms, "application/pdf");
+                //}
             }
             catch (Exception e)
             {
@@ -83,7 +85,7 @@ namespace SmartRegistry.Web.Controllers
 
 
 
-            //return RedirectToAction("GetAllEnrolled","Subjects", new { id = id });
+            //return RedirectToAction("GetAllEnrolled", "Subjects", new { id = id });
 
             //return File(path, "application/pdf");
         }
