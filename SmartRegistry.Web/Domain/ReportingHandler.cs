@@ -176,7 +176,7 @@ namespace SmartRegistry.Web.Domain
 
                     var request = new PutObjectRequest
                     {
-                        BucketName = "elasticbeanstalk-eu-west-2-925426318079",
+                        BucketName = "",
                         Key = fileName,
                         InputStream = new MemoryStream(ms.ToArray()),
                         //InputStream = new MemoryStream(ms.ToArray()),
@@ -187,7 +187,7 @@ namespace SmartRegistry.Web.Domain
                     request.Metadata.Add("report", fileName);
 
                     // connecting to the client
-                    var client = new AmazonS3Client("AKIAJMKBT2AZBA24LFYA", "DOnaWvOF6RAHLfcaqB3N3q41OmsJeyRxZP+uoNv+", Amazon.RegionEndpoint.USEast2);
+                    var client = new AmazonS3Client("", "", Amazon.RegionEndpoint.USEast2);
 
                     response = await client.PutObjectAsync(request);
 
