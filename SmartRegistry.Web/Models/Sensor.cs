@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartRegistry.Web.Models
 {
+    [Table("Sensor")]
     public class Sensor
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

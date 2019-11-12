@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartRegistry.Web.Models
 {
+    [Table("Department")]
     public class Department
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

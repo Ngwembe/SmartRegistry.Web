@@ -32,8 +32,8 @@ namespace SmartRegistry.Web
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 //options.UseMySql(Configuration.GetConnectionString("MySQLConnectionLocal")));
-            options.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
-            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             
             // Automatically perform database migration
             

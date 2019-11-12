@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartRegistry.Web.Models
 {
+    [Table("Events")]
     public class Events
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
