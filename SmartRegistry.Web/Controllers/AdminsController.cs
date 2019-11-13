@@ -71,14 +71,14 @@ namespace SmartRegistry.Web.Controllers
 
             ViewData["StudentIds"] = new SelectList(_context.Student.Select(u => new
             {
-                u.Id,
+                Id = u.StudentId,
                 Name = $"{u.FirstName} {u.LastName} ({u.StudentNumber})"
             }), "Id", "Name");
 
             ViewData["SensorIds"] = new SelectList(_context.Sensor.Where(s => !s.IsAssigned).Select(u => new
             {
-                u.Id,
-                Name = $"Unassigned Sensor # {u.Id}"
+                Id = u.SensorId,
+                Name = $"Unassigned Sensor # {u.SensorId}"
             }), "Id", "Name");
 
             return View();
@@ -102,7 +102,7 @@ namespace SmartRegistry.Web.Controllers
         {
             var lecturers = new SelectList(_context.Lecturer.Select(u => new
             {
-                u.Id,
+                Id = u.LecturerId,
                 Name = $"{u.FirstName} {u.LastName}"
             }), "Id", "Name");
 
@@ -121,7 +121,7 @@ namespace SmartRegistry.Web.Controllers
         {
             try
             {
-                var user = _context.Lecturer.FirstOrDefault(u => u.Id == lecturer.Id);
+                var user = _context.Lecturer.FirstOrDefault(u => u.LecturerId == lecturer.LecturerId);
 
                 if (user == null)
                     return View(lecturer);

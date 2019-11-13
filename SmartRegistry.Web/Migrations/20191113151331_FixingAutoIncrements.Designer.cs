@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartRegistry.Web.Data;
 
 namespace SmartRegistry.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191113151331_FixingAutoIncrements")]
+    partial class FixingAutoIncrements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,7 +130,7 @@ namespace SmartRegistry.Web.Migrations
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Address", b =>
                 {
-                    b.Property<int>("AddressId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AddressType");
@@ -156,14 +158,14 @@ namespace SmartRegistry.Web.Migrations
                     b.Property<string>("Residential")
                         .IsRequired();
 
-                    b.HasKey("AddressId");
+                    b.HasKey("Id");
 
                     b.ToTable("Address");
                 });
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Announcement", b =>
                 {
-                    b.Property<int>("AnnouncementId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AnnouncementTypeId");
@@ -191,7 +193,7 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<string>("Title");
 
-                    b.HasKey("AnnouncementId");
+                    b.HasKey("Id");
 
                     b.HasIndex("LecturerId");
 
@@ -277,7 +279,7 @@ namespace SmartRegistry.Web.Migrations
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Attended", b =>
                 {
-                    b.Property<int>("AttendedId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedAt");
@@ -300,7 +302,7 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<int>("StudentId");
 
-                    b.HasKey("AttendedId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ScheduleId");
 
@@ -311,7 +313,7 @@ namespace SmartRegistry.Web.Migrations
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Contact", b =>
                 {
-                    b.Property<int>("ContactId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CellPhone")
@@ -339,14 +341,14 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<int>("UserId");
 
-                    b.HasKey("ContactId");
+                    b.HasKey("Id");
 
                     b.ToTable("Contact");
                 });
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Course", b =>
                 {
-                    b.Property<int>("CourseId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
@@ -374,7 +376,7 @@ namespace SmartRegistry.Web.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.HasKey("CourseId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
@@ -383,7 +385,7 @@ namespace SmartRegistry.Web.Migrations
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Department", b =>
                 {
-                    b.Property<int>("DepartmentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
@@ -411,16 +413,16 @@ namespace SmartRegistry.Web.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.HasKey("DepartmentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("FacultyId");
 
                     b.ToTable("Department");
                 });
 
-            modelBuilder.Entity("SmartRegistry.Web.Models.EnrolledSubject", b =>
+            modelBuilder.Entity("SmartRegistry.Web.Models.EnrolledSubjects", b =>
                 {
-                    b.Property<int>("EnrolledSubjectId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedAt");
@@ -441,7 +443,7 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<int>("SubjectId");
 
-                    b.HasKey("EnrolledSubjectId");
+                    b.HasKey("Id");
 
                     b.HasIndex("StudentId");
 
@@ -469,7 +471,7 @@ namespace SmartRegistry.Web.Migrations
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Faculty", b =>
                 {
-                    b.Property<int>("FacultyId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
@@ -495,14 +497,14 @@ namespace SmartRegistry.Web.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.HasKey("FacultyId");
+                    b.HasKey("Id");
 
                     b.ToTable("Faculty");
                 });
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Lecturer", b =>
                 {
-                    b.Property<int>("LecturerId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("AccountId");
@@ -535,14 +537,14 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<string>("LastUpdatedBy");
 
-                    b.HasKey("LecturerId");
+                    b.HasKey("Id");
 
                     b.ToTable("Lecturer");
                 });
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Schedule", b =>
                 {
-                    b.Property<int>("ScheduleId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ColorTheme");
@@ -572,7 +574,7 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<int>("SubjectId");
 
-                    b.HasKey("ScheduleId");
+                    b.HasKey("Id");
 
                     b.HasIndex("SubjectId");
 
@@ -581,7 +583,7 @@ namespace SmartRegistry.Web.Migrations
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Sensor", b =>
                 {
-                    b.Property<int>("SensorId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedAt");
@@ -594,14 +596,14 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<string>("LastModifiedBy");
 
-                    b.HasKey("SensorId");
+                    b.HasKey("Id");
 
                     b.ToTable("Sensor");
                 });
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Student", b =>
                 {
-                    b.Property<int>("StudentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("AccountId");
@@ -640,7 +642,7 @@ namespace SmartRegistry.Web.Migrations
 
                     b.Property<long>("StudentNumber");
 
-                    b.HasKey("StudentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("SensorId");
 
@@ -649,7 +651,7 @@ namespace SmartRegistry.Web.Migrations
 
             modelBuilder.Entity("SmartRegistry.Web.Models.Subject", b =>
                 {
-                    b.Property<int>("SubjectId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code")
@@ -679,7 +681,7 @@ namespace SmartRegistry.Web.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.HasKey("SubjectId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
@@ -770,7 +772,7 @@ namespace SmartRegistry.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SmartRegistry.Web.Models.EnrolledSubject", b =>
+            modelBuilder.Entity("SmartRegistry.Web.Models.EnrolledSubjects", b =>
                 {
                     b.HasOne("SmartRegistry.Web.Models.Student", "Student")
                         .WithMany("EnrolledSubjects")

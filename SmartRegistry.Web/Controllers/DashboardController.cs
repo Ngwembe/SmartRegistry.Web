@@ -31,7 +31,7 @@ namespace SmartRegistry.Web.Controllers
             var lecturer = _context.Lecturer.FirstOrDefault(a => a.AccountId == userId);
             if (lecturer == null) return View();
 
-            var subjects = _context.Subject.Include(s => s.Lecturer).Where(c => c.LecturerId == lecturer.Id).AsEnumerable();
+            var subjects = _context.Subject.Include(s => s.Lecturer).Where(c => c.LecturerId == lecturer.LecturerId).AsEnumerable();
             if (subjects == null) return View();
 
             var result = subjects.Select(s => new
@@ -77,7 +77,7 @@ namespace SmartRegistry.Web.Controllers
         {            
             try
             {
-                var subject = _context.Schedule.Include(s => s.Subject).FirstOrDefault(s => s.Id == scheduleId)?.Subject;                
+                var subject = _context.Schedule.Include(s => s.Subject).FirstOrDefault(s => s.ScheduleId == scheduleId)?.Subject;                
                 if (subject == null) return JsonConvert.SerializeObject(new { success = false });
 
                 //return JsonConvert.SerializeObject(new
@@ -137,7 +137,7 @@ namespace SmartRegistry.Web.Controllers
             var result = schedules.Select(async s =>
             {
                 var totalCount = await _context.Attendee/*.Where(a => a.ScheduleId == s.Id && a.HasAttended)*/
-                                               .CountAsync(a => a.ScheduleId == s.Id && a.HasAttended);
+                                               .CountAsync(a => a.ScheduleId == s.ScheduleId && a.HasAttended);
                 return
                 new
                 {

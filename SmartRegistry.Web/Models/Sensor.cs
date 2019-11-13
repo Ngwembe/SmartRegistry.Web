@@ -9,7 +9,7 @@ namespace SmartRegistry.Web.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int SensorId { get; set; }
         public bool IsAssigned { get; set; } = false;
 
         public DateTime CreatedAt { get; set; }

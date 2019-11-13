@@ -83,7 +83,7 @@
                                                     @foreach (var course in Model.Courses.OrderBy(f => f.Name))
                                                     {
                                                         <p class="inbox-item-text">
-                                                            <a href="/Courses/Details/@course.Id">
+                                                            <a href="/Courses/Details/@course.CourseId">
                                                                 <div class="inbox-item">
                                                                     @course.Name (@course.Code)
                                                                 </div>

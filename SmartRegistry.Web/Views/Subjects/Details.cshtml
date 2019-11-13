@@ -22,7 +22,7 @@
                 <div class="card-box">
                     <form asp-action="Edit">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="SubjectId" />
 
                         <div class="form-group">
                             <label asp-for="Name" class="control-label"></label>
@@ -45,7 +45,7 @@
                             <span asp-validation-for="Lecturer" class="text-danger"></span>
                         </div>
                         <div>
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default">Edit</a> |
+                            <a asp-action="Edit" asp-route-id="@Model.SubjectId" class="btn btn-default">Edit</a> |
                             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 
                             @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
@@ -54,12 +54,12 @@
 
                                 if (!exists)
                                 {
-                                    <a asp-action="EnrollStudent" asp-controller="Students" asp-route-id="@Model.Id" class="btn btn-primary pull-right"><i class="fas fa-user-plus"></i>Enroll</a>;
+                                    <a asp-action="EnrollStudent" asp-controller="Students" asp-route-id="@Model.SubjectId" class="btn btn-primary pull-right"><i class="fas fa-user-plus"></i>Enroll</a>;
                                 }
                             }
                             else
                             {
-                                <a asp-action="EnrollStudent" asp-controller="Students" asp-route-id="@Model.Id" class="btn btn-primary pull-right"><i class="fas fa-user-plus"></i>Enroll</a>;
+                                <a asp-action="EnrollStudent" asp-controller="Students" asp-route-id="@Model.SubjectId" class="btn btn-primary pull-right"><i class="fas fa-user-plus"></i>Enroll</a>;
                             }
 
                         </div>

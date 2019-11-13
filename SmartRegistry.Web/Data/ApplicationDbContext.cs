@@ -26,7 +26,7 @@ namespace SmartRegistry.Web.Data
 
         public DbSet<Attended> Attendee { get; set; }
         public DbSet<Schedule> Schedule { get; set; }
-        public DbSet<EnrolledSubjects> EnrolledSubject { get; set; }
+        public DbSet<EnrolledSubject> EnrolledSubject { get; set; }
 
         public DbSet<Announcement> Announcement { get; set; }
         public DbSet<AnnouncementType> AnnouncementType { get; set; }

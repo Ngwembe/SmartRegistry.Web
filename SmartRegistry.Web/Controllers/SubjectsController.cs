@@ -48,7 +48,7 @@ namespace SmartRegistry.Web.Controllers
             var applicationDbContext = _context.Subject
                                                .Include(s => s.Course)
                                                .Include(s => s.Lecturer)
-                                               .Where(s => s.LecturerId == lecturer.Id);
+                                               .Where(s => s.LecturerId == lecturer.LecturerId);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -90,7 +90,7 @@ namespace SmartRegistry.Web.Controllers
             var subject = await _context.Subject
                 .Include(s => s.Course)
                 .Include(s => s.Lecturer)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.SubjectId == id);
             if (subject == null)
             {
                 return NotFound();
@@ -108,7 +108,7 @@ namespace SmartRegistry.Web.Controllers
                     return View(subject);
 
                 var exists = await _context.EnrolledSubject
-                    .FirstOrDefaultAsync(s => s.SubjectId == id && s.StudentId == student.Id);
+                    .FirstOrDefaultAsync(s => s.SubjectId == id && s.StudentId == student.StudentId);
 
                 var isEnrolled = exists != null;
 
@@ -177,7 +177,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var subject = await _context.Subject.SingleOrDefaultAsync(m => m.Id == id);
+            var subject = await _context.Subject.SingleOrDefaultAsync(m => m.SubjectId == id);
             if (subject == null)
             {
                 return NotFound();
@@ -194,7 +194,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,CourseId,LecturerId")] Subject subject)
         {
-            if (id != subject.Id)
+            if (id != subject.SubjectId)
             {
                 return NotFound();
             }
@@ -208,7 +208,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SubjectExists(subject.Id))
+                    if (!SubjectExists(subject.SubjectId))
                     {
                         return NotFound();
                     }
@@ -235,7 +235,7 @@ namespace SmartRegistry.Web.Controllers
             var subject = await _context.Subject
                 .Include(s => s.Course)
                 .Include(s => s.Lecturer)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.SubjectId == id);
             if (subject == null)
             {
                 return NotFound();
@@ -249,7 +249,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var subject = await _context.Subject.SingleOrDefaultAsync(m => m.Id == id);
+            var subject = await _context.Subject.SingleOrDefaultAsync(m => m.SubjectId == id);
             //_context.Subject.Remove(subject);            
             subject.IsDeleted = true;
 
@@ -259,7 +259,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool SubjectExists(int id)
         {
-            return _context.Subject.Any(e => e.Id == id);
+            return _context.Subject.Any(e => e.SubjectId == id);
         }
 
         public string GetMatchingSubjects(string searchKey)
@@ -268,7 +268,7 @@ namespace SmartRegistry.Web.Controllers
             {
                 var subjects = _context.Subject.Take(10).Select(s => new
                 {
-                    id = s.Id,
+                    id = s.SubjectId,
                     text = $"{s.Name} ({s.Code})"
                 }).ToList();
                 return JsonConvert.SerializeObject(subjects);
@@ -276,7 +276,7 @@ namespace SmartRegistry.Web.Controllers
 
             var filtered = _context.Subject.Take(5).Where(s => s.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(s => new
             {
-                id = s.Id,
+                id = s.SubjectId,
                 text = $"{s.Name} ({s.Code})"
             }).ToList();
             return JsonConvert.SerializeObject(filtered);

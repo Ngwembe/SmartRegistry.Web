@@ -10,7 +10,7 @@ namespace SmartRegistry.Web.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int AttendedId { get; set; }
 
         //[Required(ErrorMessage = "{0} is a required field")]
         [DisplayName("Is Present")]

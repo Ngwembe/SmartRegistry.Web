@@ -62,7 +62,7 @@ namespace SmartRegistry.Web.Controllers
             }
 
             var student = await _context.Student
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.StudentId == id);
             if (student == null)
             {
                 return NotFound();
@@ -101,7 +101,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Student.SingleOrDefaultAsync(m => m.Id == id);
+            var student = await _context.Student.SingleOrDefaultAsync(m => m.StudentId == id);
             if (student == null)
             {
                 return NotFound();
@@ -116,7 +116,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SensorId,AccountId,FirstName,LastName,Age,DOB,IsComplete,Gender,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt")] Student student)
         {
-            if (id != student.Id)
+            if (id != student.StudentId)
             {
                 return NotFound();
             }
@@ -130,7 +130,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StudentExists(student.Id))
+                    if (!StudentExists(student.StudentId))
                     {
                         return NotFound();
                     }
@@ -153,7 +153,7 @@ namespace SmartRegistry.Web.Controllers
             }
 
             var student = await _context.Student
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.StudentId == id);
             if (student == null)
             {
                 return NotFound();
@@ -167,7 +167,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var student = await _context.Student.SingleOrDefaultAsync(m => m.Id == id);
+            var student = await _context.Student.SingleOrDefaultAsync(m => m.StudentId == id);
             //_context.Student.Remove(student);
             student.IsDeleted = true;
 
@@ -177,7 +177,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool StudentExists(int id)
         {
-            return _context.Student.Any(e => e.Id == id);
+            return _context.Student.Any(e => e.StudentId == id);
         }
 
         [Authorize]
@@ -185,7 +185,7 @@ namespace SmartRegistry.Web.Controllers
         {
            
 
-            var subject = await _context.Subject.FirstOrDefaultAsync(s => s.Id == id);
+            var subject = await _context.Subject.FirstOrDefaultAsync(s => s.SubjectId == id);
             if (subject == null) return NotFound(); //RedirectToAction("Details", "Subject", new { id = id });
 
             var course = await _context.EnrolledSubject.Include(s => s.Subject)
@@ -195,7 +195,7 @@ namespace SmartRegistry.Web.Controllers
             //  This ensures that a student only enrol subjects offered by the same course
             if (course != null)
             {
-                if (course.Id != subject.Course.Id) return BadRequest(subject);
+                if (course.CourseId != subject.Course.CourseId) return BadRequest(subject);
             }
 
 
@@ -212,9 +212,9 @@ namespace SmartRegistry.Web.Controllers
 
             if (student == null) RedirectToAction("Details", "Subjects", new { id = id });
 
-            var enrolled = new EnrolledSubjects()
+            var enrolled = new EnrolledSubject()
             {
-                StudentId = student.Id,
+                StudentId = student.StudentId,
                SubjectId = id
             };
 

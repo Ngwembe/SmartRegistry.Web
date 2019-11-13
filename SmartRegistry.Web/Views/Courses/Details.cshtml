@@ -296,7 +296,7 @@
                                                         @foreach (var subject in Model.Subjects.OrderBy(f => f.Name))
                                                         {
                                                             <p class="inbox-item-text">
-                                                                <a href="/Subjects/Details/@subject.Id">
+                                                                <a href="/Subjects/Details/@subject.SubjectId">
                                                                     <div class="inbox-item">
                                                                         @subject.Name (@subject.Code)
                                                                     </div>

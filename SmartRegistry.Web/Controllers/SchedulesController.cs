@@ -55,7 +55,7 @@ namespace SmartRegistry.Web.Controllers
 
             var schedule = await _context.Schedule
                 .Include(s => s.Subject)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.ScheduleId == id);
 
             if (schedule == null)
             {
@@ -102,7 +102,7 @@ namespace SmartRegistry.Web.Controllers
             var schedules = _context.Schedule.Include(s => s.Subject)
                 .Where(s => !s.IsDeleted)
                 .Select(s => new {
-                    Id = s.Id,
+                    Id = s.ScheduleId,
                     Subject = s.Subject,
                     ScheduleFor = s.ScheduleFor, //.ToString("dd-MM-yyyy HH:mm:ss a"),
                     ScheduleTo = s.ScheduleTo, //.ToString("dd-MM-yyyy HH:mm:ss a"),
@@ -117,7 +117,7 @@ namespace SmartRegistry.Web.Controllers
 
         public string ConfirmSchedule(int scheduleId)
         {
-            var schedule = _context.Schedule.FirstOrDefault(s => s.Id == scheduleId);
+            var schedule = _context.Schedule.FirstOrDefault(s => s.ScheduleId == scheduleId);
 
             if(schedule == null) return JsonConvert.SerializeObject(new { success = false });
 
@@ -186,7 +186,7 @@ namespace SmartRegistry.Web.Controllers
             if (lecturer == null)
                 return View(nameof(Index));
 
-            var subjects = await _context.Subject.Include(s => s.Lecturer).Where(s => s.Lecturer.Id == lecturer.Id).ToListAsync();//.AsEnumerable();
+            var subjects = await _context.Subject.Include(s => s.Lecturer).Where(s => s.Lecturer.LecturerId == lecturer.LecturerId).ToListAsync();//.AsEnumerable();
            
 
             ViewData["SubjectId"] = new SelectList(subjects, "Id", "Code");
@@ -228,7 +228,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var schedule = await _context.Schedule.SingleOrDefaultAsync(m => m.Id == id);
+            var schedule = await _context.Schedule.SingleOrDefaultAsync(m => m.ScheduleId == id);
             if (schedule == null)
             {
                 return NotFound();
@@ -245,12 +245,12 @@ namespace SmartRegistry.Web.Controllers
         //public async Task<IActionResult> Edit(int id, [Bind("Id,LectureRoom,IsConfirmed,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,SubjectId")] Schedule schedule)
         public async Task<IActionResult> Edit(int id, [Bind("Id,LectureRoom,IsConfirmed,ScheduleFor, ScheduleTo,SubjectId")] Schedule schedule)
         {
-            if (id != schedule.Id)
+            if (id != schedule.ScheduleId)
             {
                 return NotFound();
             }
 
-            var result = _context.Schedule.FirstOrDefault(s => s.Id == id);
+            var result = _context.Schedule.FirstOrDefault(s => s.ScheduleId == id);
             if(result == null) return NotFound();
 
             result.LectureRoom = schedule.LectureRoom;
@@ -271,7 +271,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ScheduleExists(schedule.Id))
+                    if (!ScheduleExists(schedule.ScheduleId))
                     {
                         return NotFound();
                     }
@@ -296,7 +296,7 @@ namespace SmartRegistry.Web.Controllers
 
             var schedule = await _context.Schedule
                 .Include(s => s.Subject)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.ScheduleId == id);
             if (schedule == null)
             {
                 return NotFound();
@@ -310,7 +310,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var schedule = await _context.Schedule.SingleOrDefaultAsync(m => m.Id == id);
+            var schedule = await _context.Schedule.SingleOrDefaultAsync(m => m.ScheduleId == id);
             //_context.Schedule.Remove(schedule);
             schedule.IsDeleted = true;
 
@@ -320,7 +320,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool ScheduleExists(int id)
         {
-            return _context.Schedule.Any(e => e.Id == id);
+            return _context.Schedule.Any(e => e.ScheduleId == id);
         }
     }
 }

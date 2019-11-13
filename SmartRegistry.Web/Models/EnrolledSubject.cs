@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SmartRegistry.Web.Models
 {
     [Table("EnrolledSubject")]
-    public class EnrolledSubjects
+    public class EnrolledSubject
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int EnrolledSubjectId { get; set; }
 
         public int SubjectId { get; set; }
         public virtual Subject Subject { get; set; }

@@ -43,7 +43,7 @@ namespace SmartRegistry.Web.Controllers
 
             var sensor = new Sensor()
             {
-                Id = sensorId,
+                SensorId = sensorId,
                 IsAssigned = false,
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow
@@ -87,7 +87,7 @@ namespace SmartRegistry.Web.Controllers
                         message = "No ongoing lecture session found"
                     }));
 
-                var isEnrolled = await _context.EnrolledSubject.FirstOrDefaultAsync(es => es.SubjectId == schedule.SubjectId && es.StudentId == student.Id);
+                var isEnrolled = await _context.EnrolledSubject.FirstOrDefaultAsync(es => es.SubjectId == schedule.SubjectId && es.StudentId == student.StudentId);
 
                 if (isEnrolled == null)
                     return StatusCode((int)HttpStatusCode.OK, JsonConvert.SerializeObject(new
@@ -102,8 +102,8 @@ namespace SmartRegistry.Web.Controllers
                 var attendee = new Attended
                 {
                     CreatedAt = DateTime.UtcNow,
-                    StudentId = student.Id,
-                    ScheduleId = schedule.Id,
+                    StudentId = student.StudentId,
+                    ScheduleId = schedule.ScheduleId,
                     HasAttended = true
                 };
 
@@ -129,7 +129,7 @@ namespace SmartRegistry.Web.Controllers
 
         public async Task<string> MarkRegister(int studentId)
         {
-            var student = _context.Student.FirstOrDefault(s => s.Id == studentId);
+            var student = _context.Student.FirstOrDefault(s => s.StudentId == studentId);
             if(student == null) return JsonConvert.SerializeObject(new { success = false });
 
             //  Determine which schedule to mark as to have been attended, thus getting which Subject has been attended
@@ -143,8 +143,8 @@ namespace SmartRegistry.Web.Controllers
                 HasAttended = true,
                 LastUpdatedAt = DateTime.UtcNow,
                 LastUpdatedBy = student.AccountId,
-                ScheduleId = schedule.Id,
-                StudentId = student.Id
+                ScheduleId = schedule.ScheduleId,
+                StudentId = student.StudentId
             };
 
             await _context.SaveChangesAsync();

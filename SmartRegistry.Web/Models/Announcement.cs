@@ -10,7 +10,7 @@ namespace SmartRegistry.Web.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int AnnouncementId { get; set; }
 
         public string Title { get; set; }
 

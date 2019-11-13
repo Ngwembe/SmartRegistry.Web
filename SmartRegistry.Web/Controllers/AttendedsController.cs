@@ -37,7 +37,7 @@ namespace SmartRegistry.Web.Controllers
             //                 where a.Id == subjectId
             //                 select a;
 
-            var schedules = _context.Schedule.Where(s => s.Id == subjectId);
+            var schedules = _context.Schedule.Where(s => s.ScheduleId == subjectId);
 
             var results = schedules.GroupBy(s => s.IsConfirmed).Select(s => new
             {
@@ -85,7 +85,7 @@ namespace SmartRegistry.Web.Controllers
             var attended = await _context.Attendee
                 .Include(a => a.Schedule)
                 .Include(a => a.Student)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.AttendedId == id);
             if (attended == null)
             {
                 return NotFound();
@@ -100,7 +100,7 @@ namespace SmartRegistry.Web.Controllers
             var schedules = _context.Schedule.Include(s => s.Subject).Select(s => new
             {
                 Text = $"{s.Subject.Name} - {s.LectureRoom} - {s.CreatedAt.ToShortDateString()}",
-                Id = s.Id
+                Id = s.ScheduleId
             }).AsEnumerable();
 
             ViewData["ScheduleId"] = new SelectList(/*_context.Schedule*/ schedules , "Id", /*"LectureRoom"*/ "Text");
@@ -108,7 +108,7 @@ namespace SmartRegistry.Web.Controllers
             var students = _context.Student.Select(s => new
             {
                 Text = $"{s.FirstName} - {s.LastName}",
-                Id = s.Id
+                Id = s.StudentId
             }).AsEnumerable();
 
             ViewData["StudentId"] = new SelectList(/*_context.Student*/ students, "Id", /*"FirstName"*/ "Text");
@@ -139,7 +139,7 @@ namespace SmartRegistry.Web.Controllers
                 attended.LastUpdatedAt = DateTime.UtcNow;
                 attended.CreatedBy = userId;
                 attended.LastUpdatedBy = userId;
-                attended.StudentId = student.Id;
+                attended.StudentId = student.StudentId;
                 attended.HasAttended = true;
 
                 _context.Add(attended);
@@ -159,7 +159,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var attended = await _context.Attendee.SingleOrDefaultAsync(m => m.Id == id);
+            var attended = await _context.Attendee.SingleOrDefaultAsync(m => m.AttendedId == id);
             if (attended == null)
             {
                 return NotFound();
@@ -176,7 +176,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,HasAttended,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,StudentId,ScheduleId")] Attended attended)
         {
-            if (id != attended.Id)
+            if (id != attended.AttendedId)
             {
                 return NotFound();
             }
@@ -190,7 +190,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AttendedExists(attended.Id))
+                    if (!AttendedExists(attended.AttendedId))
                     {
                         return NotFound();
                     }
@@ -217,7 +217,7 @@ namespace SmartRegistry.Web.Controllers
             var attended = await _context.Attendee
                 .Include(a => a.Schedule)
                 .Include(a => a.Student)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.AttendedId == id);
             if (attended == null)
             {
                 return NotFound();
@@ -231,7 +231,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var attended = await _context.Attendee.SingleOrDefaultAsync(m => m.Id == id);
+            var attended = await _context.Attendee.SingleOrDefaultAsync(m => m.AttendedId == id);
             attended.IsDeleted = true;
 
             //_context.Attendee.Remove(attended);
@@ -241,7 +241,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool AttendedExists(int id)
         {
-            return _context.Attendee.Any(e => e.Id == id);
+            return _context.Attendee.Any(e => e.AttendedId == id);
         }
     }
 }

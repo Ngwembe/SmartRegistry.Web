@@ -40,7 +40,7 @@ namespace SmartRegistry.Web.Controllers
             }
 
             var faculty = await _context.Faculty
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.FacultyId == id);
             if (faculty == null)
             {
                 return NotFound();
@@ -96,7 +96,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var faculty = await _context.Faculty.SingleOrDefaultAsync(m => m.Id == id);
+            var faculty = await _context.Faculty.SingleOrDefaultAsync(m => m.FacultyId == id);
             if (faculty == null)
             {
                 return NotFound();
@@ -112,7 +112,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt")] Faculty faculty)
         {
-            if (id != faculty.Id)
+            if (id != faculty.FacultyId)
             {
                 return NotFound();
             }
@@ -129,7 +129,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FacultyExists(faculty.Id))
+                    if (!FacultyExists(faculty.FacultyId))
                     {
                         return NotFound();
                     }
@@ -153,7 +153,7 @@ namespace SmartRegistry.Web.Controllers
             }
 
             var faculty = await _context.Faculty
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.FacultyId == id);
             if (faculty == null)
             {
                 return NotFound();
@@ -168,7 +168,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var faculty = await _context.Faculty.SingleOrDefaultAsync(m => m.Id == id);
+            var faculty = await _context.Faculty.SingleOrDefaultAsync(m => m.FacultyId == id);
             //_context.Faculty.Remove(faculty);
             faculty.IsDeleted = true;
 
@@ -178,7 +178,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool FacultyExists(int id)
         {
-            return _context.Faculty.Any(e => e.Id == id);
+            return _context.Faculty.Any(e => e.FacultyId == id);
         }
     }
 }

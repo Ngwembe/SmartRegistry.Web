@@ -9,7 +9,7 @@ namespace SmartRegistry.Web.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int LecturerId { get; set; }
 
         public string AccountId { get; set; }
         [MaxLength(6)]

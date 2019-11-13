@@ -42,7 +42,7 @@ namespace SmartRegistry.Web.Controllers
 
             var announcement = await _context.Announcement
                 .Include(a => a.Lecturer)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.AnnouncementId == id);
             if (announcement == null)
             {
                 return NotFound();
@@ -57,7 +57,7 @@ namespace SmartRegistry.Web.Controllers
             //this week's lecture, the 31st of May 2018 is cancelled due to a meeting that will be held at the department. I'll do a virtual tutorial and upload it on MyTutor for you to download. It will cover Chapter 5 & 6. Enjoy your weekend good people.
             ViewData["LecturerId"] = new SelectList(_context.Lecturer.Select(s => new
             {
-                Id = s.Id,
+                Id = s.LecturerId,
                 FullName = $"{s.FirstName} {s.LastName}"
             })
                 , "Id", "FullName");
@@ -132,16 +132,16 @@ namespace SmartRegistry.Web.Controllers
                         announcements = _context.Announcement.ToList();
                         break;
                     case "2":
-                        announcements = _context.Faculty.Where(f => f.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Faculty.Where(f => f.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.FacultyId, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                     case "4":
-                        announcements = _context.Course.Where(c => c.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Course.Where(c => c.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.CourseId, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                     case "3":
-                        announcements = _context.Department.Where(d => d.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Department.Where(d => d.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.DepartmentId, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                     case "5":
-                        announcements = _context.Subject.Where(s => s.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.Id, text = $"{f.Code} - {f.Name}" }).ToList();
+                        announcements = _context.Subject.Where(s => s.Name.ToLowerInvariant().Contains(searchKey.ToLowerInvariant())).Select(f => new { id = f.SubjectId, text = $"{f.Code} - {f.Name}" }).ToList();
                         break;
                 }
 
@@ -159,7 +159,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var announcement = await _context.Announcement.SingleOrDefaultAsync(m => m.Id == id);
+            var announcement = await _context.Announcement.SingleOrDefaultAsync(m => m.AnnouncementId == id);
             if (announcement == null)
             {
                 return NotFound();
@@ -175,7 +175,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,LecturerId,Message,AnnouncementType,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt")] Announcement announcement)
         {
-            if (id != announcement.Id)
+            if (id != announcement.AnnouncementId)
             {
                 return NotFound();
             }
@@ -189,7 +189,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AnnouncementExists(announcement.Id))
+                    if (!AnnouncementExists(announcement.AnnouncementId))
                     {
                         return NotFound();
                     }
@@ -214,7 +214,7 @@ namespace SmartRegistry.Web.Controllers
 
             var announcement = await _context.Announcement
                 .Include(a => a.Lecturer)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.AnnouncementId == id);
             if (announcement == null)
             {
                 return NotFound();
@@ -228,7 +228,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var announcement = await _context.Announcement.SingleOrDefaultAsync(m => m.Id == id);
+            var announcement = await _context.Announcement.SingleOrDefaultAsync(m => m.AnnouncementId == id);
             //_context.Announcement.Remove(announcement);
             announcement.IsDeleted = true;
 
@@ -238,7 +238,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool AnnouncementExists(int id)
         {
-            return _context.Announcement.Any(e => e.Id == id);
+            return _context.Announcement.Any(e => e.AnnouncementId == id);
         }
     }
 }

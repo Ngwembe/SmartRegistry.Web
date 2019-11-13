@@ -21,7 +21,7 @@
                                             <h2 class="text-center">@Model?.Faculty.Name</h2>
                                         </div>
                                         <div class="col-md-1">
-                                            <a class="btn btn-primary" asp-controller="Faculties" asp-action="Edit" asp-route-id="@Model?.Faculty.Id">Edit</a>
+                                            <a class="btn btn-primary" asp-controller="Faculties" asp-action="Edit" asp-route-id="@Model?.Faculty.FacultyId">Edit</a>
                                         </div>
                                     </div>
                                 </div>
@@ -117,7 +117,7 @@
                                                 {
                                                 <div class="inbox-item">
                                                     <p class="inbox-item-text">
-                                                        <a href="/Departments/Details/@department.Id">
+                                                        <a href="/Departments/Details/@department.DepartmentId">
                                                             @department.Name (@department.Code)
                                                         </a>
                                                     </p>

@@ -99,11 +99,11 @@
                                 @Html.DisplayFor(modelItem => item.Lecturer.FirstName)
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> |
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a> |
-                                <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.Id" class="btn btn-primary">Go to Dashboard</a> |
-                                <a asp-controller="Subjects" asp-action="GetAllEnrolled" asp-route-id="@item.Id" class="btn btn-primary">View students enrolled</a>
+                                <a asp-action="Edit" asp-route-id="@item.SubjectId" class="btn btn-secondary">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.SubjectId" class="btn btn-info">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.SubjectId" class="btn btn-danger">Delete</a> |
+                                <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.SubjectId" class="btn btn-primary">Go to Dashboard</a> |
+                                <a asp-controller="Subjects" asp-action="GetAllEnrolled" asp-route-id="@item.SubjectId" class="btn btn-primary">View students enrolled</a>
                                 
                                 @*<a asp-action="Create" asp-controller="" class="btn btn-primary">Enroll</a>*@
                             </td>

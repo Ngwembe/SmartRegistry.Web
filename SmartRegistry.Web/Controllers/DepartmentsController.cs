@@ -41,7 +41,7 @@ namespace SmartRegistry.Web.Controllers
 
             var department = await _context.Department
                 .Include(d => d.Faculty)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.DepartmentId == id);
             if (department == null)
             {
                 return NotFound();
@@ -64,7 +64,7 @@ namespace SmartRegistry.Web.Controllers
         // GET: Department/Create
         public IActionResult Create()
         {
-            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new{ Id = f.Id, FullName = $"{f.Name} ({f.Code})"}), "Id", "FullName");
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new{ Id = f.FacultyId, FullName = $"{f.Name} ({f.Code})"}), "Id", "FullName");
             return View();
         }
 
@@ -95,7 +95,7 @@ namespace SmartRegistry.Web.Controllers
                     return View(department);
                 }
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.Id, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.FacultyId, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
             return View(department);
         }
 
@@ -107,12 +107,12 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var department = await _context.Department.SingleOrDefaultAsync(m => m.Id == id);
+            var department = await _context.Department.SingleOrDefaultAsync(m => m.DepartmentId == id);
             if (department == null)
             {
                 return NotFound();
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.Id, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.FacultyId, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
             return View(department);
         }
 
@@ -123,7 +123,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,Description,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,FacultyId")] Department department)
         {
-            if (id != department.Id)
+            if (id != department.DepartmentId)
             {
                 return NotFound();
             }
@@ -137,7 +137,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DepartmentExists(department.Id))
+                    if (!DepartmentExists(department.DepartmentId))
                     {
                         return NotFound();
                     }
@@ -148,7 +148,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.Id, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
+            ViewData["FacultyId"] = new SelectList(_context.Faculty.Select(f => new { Id = f.FacultyId, FullName = $"{f.Name} ({f.Code})" }), "Id", "FullName");
             return View(department);
         }
 
@@ -162,7 +162,7 @@ namespace SmartRegistry.Web.Controllers
 
             var department = await _context.Department
                 .Include(d => d.Faculty)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.DepartmentId == id);
             if (department == null)
             {
                 return NotFound();
@@ -176,7 +176,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var department = await _context.Department.SingleOrDefaultAsync(m => m.Id == id);
+            var department = await _context.Department.SingleOrDefaultAsync(m => m.DepartmentId == id);
             //_context.Department.Remove(department);
             department.IsDeleted = true;
 
@@ -186,7 +186,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool DepartmentExists(int id)
         {
-            return _context.Department.Any(e => e.Id == id);
+            return _context.Department.Any(e => e.DepartmentId == id);
         }
     }
 }

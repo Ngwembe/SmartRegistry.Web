@@ -35,7 +35,7 @@ namespace SmartRegistry.Web.Domain
                 var subject = await _context.Subject
                     .Include(s => s.Course)
                     .Include(s => s.Lecturer)
-                    .SingleOrDefaultAsync(m => m.Id == subjectId);
+                    .SingleOrDefaultAsync(m => m.SubjectId == subjectId);
 
                 if (subject == null) return null;
 
@@ -339,7 +339,7 @@ namespace SmartRegistry.Web.Domain
                 var subject = await _context.Subject
                     .Include(s => s.Course)
                     .Include(s => s.Lecturer)
-                    .SingleOrDefaultAsync(m => m.Id == subjectId);
+                    .SingleOrDefaultAsync(m => m.SubjectId == subjectId);
 
                 if (subject == null) return null;
 
@@ -475,7 +475,7 @@ namespace SmartRegistry.Web.Domain
                 var subject = await _context.Subject
                     .Include(s => s.Course)
                     .Include(s => s.Lecturer)
-                    .SingleOrDefaultAsync(m => m.Id == subjectId);
+                    .SingleOrDefaultAsync(m => m.SubjectId == subjectId);
 
                 if (subject == null) return null;
 
@@ -507,7 +507,7 @@ namespace SmartRegistry.Web.Domain
                 var results = new List<AttendeeViewModel>();
                 students.ForEach(/*async*/ sc =>
                 {
-                    var attendees = /*await*/ _context.Attendee.Where(a => a.ScheduleId == sc.Id)
+                    var attendees = /*await*/ _context.Attendee.Where(a => a.ScheduleId == sc.ScheduleId)
                                             .Include(a => a.Student)
                                             .Select(en => new AttendeeViewModel
                                             {

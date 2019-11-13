@@ -9,7 +9,7 @@ namespace SmartRegistry.Web.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int ScheduleId { get; set; }
 
         [Required(ErrorMessage = "{0} is a required field")]
         [Display(Name = "Lecture Room")]

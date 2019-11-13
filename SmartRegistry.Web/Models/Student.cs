@@ -10,7 +10,7 @@ namespace SmartRegistry.Web.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int Id { get; set; }
+        public int StudentId { get; set; }
 
         public long StudentNumber { get; set; }
 
@@ -51,6 +51,6 @@ namespace SmartRegistry.Web.Models
         public string DeletedBy { get; set; }
         public DateTime DeletedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual List<EnrolledSubjects> EnrolledSubjects { get; set; }
+        public virtual List<EnrolledSubject> EnrolledSubjects { get; set; }
     }
 }

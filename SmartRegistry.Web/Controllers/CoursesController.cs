@@ -41,14 +41,14 @@ namespace SmartRegistry.Web.Controllers
 
             var course = await _context.Course
                 .Include(c => c.Department)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.CourseId == id);
             if (course == null)
             {
                 return NotFound();
             }
 
             //var announcements = _context.Announcement.Where(a => a.AnnouncementType == AnnouncementType.Department).ToList();
-            var announcements = _context.Announcement.Where(a => a.AnnouncementTypeOwnerId == course.Id).ToList();
+            var announcements = _context.Announcement.Where(a => a.AnnouncementTypeOwnerId == course.CourseId).ToList();
 
             var subjects = _context.Subject.Include(s => s.Course).Where(s => s.CourseId == id).ToList();
 
@@ -104,7 +104,7 @@ namespace SmartRegistry.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course.SingleOrDefaultAsync(m => m.Id == id);
+            var course = await _context.Course.SingleOrDefaultAsync(m => m.CourseId == id);
             if (course == null)
             {
                 return NotFound();
@@ -120,7 +120,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,DepartmentId")] Course course)
         {
-            if (id != course.Id)
+            if (id != course.CourseId)
             {
                 return NotFound();
             }
@@ -134,7 +134,7 @@ namespace SmartRegistry.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CourseExists(course.Id))
+                    if (!CourseExists(course.CourseId))
                     {
                         return NotFound();
                     }
@@ -159,7 +159,7 @@ namespace SmartRegistry.Web.Controllers
 
             var course = await _context.Course
                 .Include(c => c.Department)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.CourseId == id);
             if (course == null)
             {
                 return NotFound();
@@ -173,7 +173,7 @@ namespace SmartRegistry.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var course = await _context.Course.SingleOrDefaultAsync(m => m.Id == id);
+            var course = await _context.Course.SingleOrDefaultAsync(m => m.CourseId == id);
             //_context.Course.Remove(course);
 
             course.IsDeleted = true;
@@ -184,7 +184,7 @@ namespace SmartRegistry.Web.Controllers
 
         private bool CourseExists(int id)
         {
-            return _context.Course.Any(e => e.Id == id);
+            return _context.Course.Any(e => e.CourseId == id);
         }
     }
 }
