@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SmartRegistry.Web.Data;
 using SmartRegistry.Web.Models;
+using SmartRegistry.Web.ViewModels.SchedulesViewModels;
 
 namespace SmartRegistry.Web.Controllers
 {
@@ -113,6 +114,109 @@ namespace SmartRegistry.Web.Controllers
             return new JsonResult(schedules);
 
             //return new JsonResult { Data = schedules.ToList(), JsonResquestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
+        public JsonResult PullSchedules(int subjectId)
+        {
+            var schedules = _context.Schedule
+                .Include(s => s.Subject)
+                .Where(s => s.SubjectId == subjectId)
+                .Select(s => new {
+                    Id = s.ScheduleId,
+                    Subject = s.Subject,
+                    ScheduleFor = s.ScheduleFor, //.ToString("dd-MM-yyyy HH:mm:ss a"),
+                    ScheduleTo = s.ScheduleTo, //.ToString("dd-MM-yyyy HH:mm:ss a"),
+                    LectureRoom = s.LectureRoom,
+                    IsConfirmed = s.IsConfirmed
+                    //,Attended = _context.Attendee.Where(a => a.ScheduleId == s.ScheduleId).Count(),
+                    //Absent = _context.EnrolledSubject.Count(e => e.SubjectId == s.SubjectId) - _context.Attendee.Where(a => a.ScheduleId == s.ScheduleId).Count()
+                });
+
+            return new JsonResult(schedules);
+        }
+
+        public async Task<JsonResult> PullSchedule(int scheduleId)
+        {
+            var schedule = await _context.Schedule.Include(s => s.Subject).FirstOrDefaultAsync(s => s.ScheduleId == scheduleId);
+
+            if (schedule == null) return new JsonResult(null);
+
+            var total = await _context.EnrolledSubject.CountAsync(e => e.SubjectId == schedule.Subject.SubjectId);
+            var present = await _context.Attendee.Where(a => a.ScheduleId == schedule.ScheduleId).CountAsync();
+            var absent = total - present;
+
+            var details = MapperHelper.Map(new ScheduleDetailsViewModel(), schedule);
+            bool v = total > 0;
+
+            if(v)
+            {
+                details.Present = ((float)present / (float)total) * 100.0f;                
+                details.Absent = ((float)absent / (float)total) * 100.0f;
+            }
+            else
+            {
+                details.Present = present * 100.0f;
+                details.Absent = absent * 100.0f;
+            }                      
+
+            //var schedules = _context.Schedule
+            //    .Include(s => s.Subject)
+            //    .Where(s => s.ScheduleId == scheduleId)
+            //    .Select(s => new {
+            //        Id = s.ScheduleId,
+            //        Subject = s.Subject,
+            //        ScheduleFor = s.ScheduleFor, //.ToString("dd-MM-yyyy HH:mm:ss a"),
+            //        ScheduleTo = s.ScheduleTo, //.ToString("dd-MM-yyyy HH:mm:ss a"),
+            //        LectureRoom = s.LectureRoom,
+            //        IsConfirmed = s.IsConfirmed
+            //        //,Attended = _context.Attendee.Where(a => a.ScheduleId == s.ScheduleId).Count(),
+            //        //Absent = _context.EnrolledSubject.Count(e => e.SubjectId == s.SubjectId) - _context.Attendee.Where(a => a.ScheduleId == s.ScheduleId).Count()
+            //    });
+
+            return new JsonResult(details);
+        }
+
+        public async Task<JsonResult> RetrieveSchedules(int subjectId)
+        {
+            var schedules = await _context.Schedule.Include(s => s.Subject)
+                                                   .Where(s => s.SubjectId == subjectId)
+                                                   //.GroupBy(s => s.ScheduleFor.Date)
+                                                   .ToListAsync();
+            //var schedules = await _context.Schedule.Include(s => s.Subject).Where(s => s.SubjectId == subjectId).ToListAsync();
+
+            if (schedules == null || !schedules.Any()) return new JsonResult(null);
+
+            var totalEnrollments = await _context.EnrolledSubject.CountAsync(e => e.SubjectId == schedules.FirstOrDefault().Subject.SubjectId);
+
+            float present = 0f, absent = 0f;
+
+            var scheduleData = new List<ScheduleViewModel>();
+
+            schedules.ForEach(async s => {
+
+                present =  _context.Attendee.Count(a => a.ScheduleId == s.ScheduleId);
+                absent = totalEnrollments - present;
+
+                scheduleData.Add(new ScheduleViewModel { ScheduleId = s.ScheduleId, Absent = absent, Present = present, Date = s.ScheduleFor });
+            });
+
+            return new JsonResult(scheduleData);
+
+            //var details = MapperHelper.Map(new ScheduleDetailsViewModel(), schedules);
+            //bool v = totalEnrollments > 0;
+
+            //if (v)
+            //{
+            //    details.Present = ((float)present / (float)totalEnrollments) * 100.0f;
+            //    details.Absent = ((float)absent / (float)totalEnrollments) * 100.0f;
+            //}
+            //else
+            //{
+            //    details.Present = present * 100.0f;
+            //    details.Absent = absent * 100.0f;
+            //}
+
+            //return new JsonResult(details);
         }
 
         public string ConfirmSchedule(int scheduleId)

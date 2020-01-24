@@ -31,30 +31,30 @@ namespace SmartRegistry.Web.Controllers
             {
                 await _roleManager.CreateAsync(new IdentityRole() { Name = "System Admin" });
 
-                //var role = new IdentityRole();
-                //var userId = _userManager.GetUserId(HttpContext.User);
-                //var user = await _userManager.FindByIdAsync(userId);
-                //await _userManager.AddToRoleAsync(user, "System Admin");
+                var role = new IdentityRole();
+                var userId = _userManager.GetUserId(HttpContext.User);
+                var user = await _userManager.FindByIdAsync(userId);
+                await _userManager.AddToRoleAsync(user, "System Admin");
             }
 
             if ((await _roleManager.FindByNameAsync("Admin")) == null)
             {
                 await _roleManager.CreateAsync(new IdentityRole() { Name = "Admin" });
 
-                //var role = new IdentityRole();
-                //var userId = _userManager.GetUserId(HttpContext.User);
-                //var user = await _userManager.FindByIdAsync(userId);
-                //await _userManager.AddToRoleAsync(user, "System Admin");
+                var role = new IdentityRole();
+                var userId = _userManager.GetUserId(HttpContext.User);
+                var user = await _userManager.FindByIdAsync(userId);
+                await _userManager.AddToRoleAsync(user, "System Admin");
             }
 
             if ((await _roleManager.FindByNameAsync("Lecturer")) == null)
             {
                 await _roleManager.CreateAsync(new IdentityRole() { Name = "Lecturer" });
 
-                //var role = new IdentityRole();
-                //var userId = _userManager.GetUserId(HttpContext.User);
-                //var user = await _userManager.FindByIdAsync(userId);
-                //await _userManager.AddToRoleAsync(user, "System Admin");
+                var role = new IdentityRole();
+                var userId = _userManager.GetUserId(HttpContext.User);
+                var user = await _userManager.FindByIdAsync(userId);
+                await _userManager.AddToRoleAsync(user, "System Admin");
             }
 
         }

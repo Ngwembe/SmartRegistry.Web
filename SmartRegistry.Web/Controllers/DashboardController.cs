@@ -24,14 +24,14 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
         // GET: Dashboard
-        public ActionResult Index() //  To be used by Admins
+        public async Task<IActionResult> Index() //  To be used by Admins
         {
             var userId = _userManager.GetUserId(HttpContext.User);
 
-            var lecturer = _context.Lecturer.FirstOrDefault(a => a.AccountId == userId);
+            var lecturer = await _context.Lecturer.FirstOrDefaultAsync(a => a.AccountId == userId);
             if (lecturer == null) return View();
 
-            var subjects = _context.Subject.Include(s => s.Lecturer).Where(c => c.LecturerId == lecturer.LecturerId).AsEnumerable();
+            var subjects = await _context.Subject.Include(s => s.Lecturer).Where(c => c.LecturerId == lecturer.LecturerId).ToListAsync();
             if (subjects == null) return View();
 
             var result = subjects.Select(s => new
@@ -40,7 +40,7 @@ namespace SmartRegistry.Web.Controllers
                 value  = 1
             }).ToList();
 
-            return View();
+            return View(subjects);
         }
 
         public async Task<IActionResult> Statistics()

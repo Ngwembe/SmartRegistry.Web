@@ -1,8 +1,43 @@
-﻿<link href="~/lib/morris/morris-0.5.1/css/morris.css" rel="stylesheet" />
+﻿@model IEnumerable<SmartRegistry.Web.Models.Subject>
+
+<link href="~/lib/morris/morris-0.5.1/css/morris.css" rel="stylesheet" />
 <link href="~/lib/highcharts/css/highcharts.css" rel="stylesheet" />
+
+<link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.css" rel="stylesheet" />
+<link href="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.css" rel="stylesheet" />
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shoelace-css/1.0.0-beta16/shoelace.css">
 <link rel="stylesheet" href="~/css/print.css" type="text/css" media="print">
+
+<style>
+    .module-balls {
+        width: 11%;
+        height: 130px !important;
+        border-radius: 50%;
+        text-decoration: none;
+    }
+
+    a.module-balls:hover {
+        text-decoration: none;
+        background-color: #f3eaea;
+        /*background-color: #dcdcdc;*/
+    }
+
+    .module-balls-few {
+        width: 23%;
+        height: 130px !important;
+        border-radius: 50%;
+        text-decoration: none;
+    }
+
+    a.module-balls-few:hover {
+        text-decoration: none;
+        background-color: #f3eaea;
+        /*background-color: #dcdcdc;*/
+    }
+</style>
 
 <div class="content-page">
     <!-- Start content -->
@@ -10,8 +45,158 @@
         <div class="container">
 
             <div class="row">
-            <div class="col-md-12">
-            @*<div class="row">
+
+                <h2 class="text-center"><b>Subject(s)</b></h2>
+                <div class="col-md-12 m-b-30">
+
+                    @if (Model != null && Model.Any())
+                    {
+                        if (Model.Count() > 4)
+                        {
+                            foreach (var subject in Model)
+                            {
+                                <a class="col-md-3 m-l-15 m-r-15 module-balls" href="javascript:void(0);" onclick="pullSubjectSchedules('@subject.SubjectId');" style="border: 2px solid #472493;">
+                                    <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">@subject.Code</h2>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-md-6 m-b-30">
+                                @foreach (var subject in Model)
+                                {
+                                    <a class="col-md-3 m-l-15 m-r-15 module-balls-few pull-right" href="javascript:void(0);" onclick="pullSubjectSchedules('@subject.SubjectId');" style="border: 2px solid #472493;">
+                                        <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">@subject.Code</h2>
+                                    </a>
+                                }
+                            </div>
+
+                        }
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-4">
+                                    <div id="testingDonut"></div>
+                                    <div id="continuous-chart"></div>
+                                </div>
+                                <div class="col-lg-8"></div>
+                            </div>
+                        </div>
+
+                    }
+
+                    @*<a class="col-md-3 m-l-15 m-r-15 module-balls" href="javascript:void(0);" style="border: 2px solid #472493;">
+                            <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">TPG111T</h2>
+                        </a>
+
+                        <a href="javascript:void(0);" class="col-md-3 m-l-15 m-r-15 module-balls" style="border: 2px solid #4CFF00;">
+                            <h2 class="text-center" style="margin-top: 50% !important; color: #4CFF00; font-weight: 600;">DSO30BT</h2>
+                        </a>
+
+                        <a href="javascript:void(0);" class="col-md-3 m-l-15 m-r-15 module-balls" style="border: 2px solid #FFD800;">
+                            <h2 class="text-center" style="margin-top: 50% !important; color: #FFD800; font-weight: 600;">GPM20BT</h2>
+                        </a>*@
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box">
+                        @*<h4 class="header-title m-t-0 m-b-30">Messages</h4>*@
+                        <h2 class="text-center"><b>Subject Calendar Schedules</b></h2>
+
+                        <div>
+                            <div id="calendar"></div>
+                        </div>
+
+                    </div> <!-- end card -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="modal fade" id="eventView">
+                    <div class="fade in" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p id="eventViewHeader" class="text-center text-capitalize" style="text-transform:capitalize;font-weight:bolder;"></p>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <h2 class="text-center" id="eventViewVenue"></h2>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <p id="eventViewBody"></p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div id="eventDonut"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary pull-right" id="btnConfirmLecture">Confirm</a>
+                                    <a href="#" class="btn pull-left close" data-dismiss="modal">Close</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="createModal"></div>
+            </div>
+
+            <div class="row">
+                <div class="modal fade" id="updateSuccessModal">
+                    <div class="fade in" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p class="text-center text-capitalize">SCHEDULE UPDATE</p>
+                                </div>
+                                <div class="modal-body">
+                                    @*<h2 class="text-center" id="eventViewVenue"></h2>*@
+                                    <p>The schedule has been updated successfully!</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary pull-right" data-dismiss="modal">OK</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="createModal"></div>
+            </div>
+
+            <div class="row">
+                <div class="modal fade" id="createSuccessModal">
+                    <div class="fade in" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p class="text-center text-capitalize">SCHEDULE CREATE</p>
+                                </div>
+                                <div class="modal-body">
+                                    @*<h2 class="text-center" id="eventViewVenue"></h2>*@
+                                    <p>The schedule has been created successfully!</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary pull-right" data-dismiss="modal">OK</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="createModal"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @*<div class="row">
                             <div class="navbar-collapse collapse">
                                 <ul class="nav navbar-nav">
                                     <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">Daily</a></li>
@@ -22,32 +207,32 @@
                             </div>
                         </div>*@
 
-            <div class="row">
-                <h2 class="text-center" id="subjTitle"></h2><hr />
-            </div>
+                    <div class="row">
+                        <h2 class="text-center" id="subjTitle"></h2><hr />
+                    </div>
 
-            <div id="views">
+                    <div id="views">
 
-                <div class="col-md-12">
-                    <div class="panel">
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
-                            <h4 class="panel-heading m-t-0 m-b-30">DAILY</h4>
-                        </a>
+                        <div class="col-md-12">
+                            <div class="panel">
+                                <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
+                                    <h4 class="panel-heading m-t-0 m-b-30">DAILY</h4>
+                                </a>
 
-                        <hr />
+                                <hr />
 
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="collapsed" id="dailyView" data-parent="#views">
-                                    <div id="dailyViewChart" style="min-height: 450px;"></div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="collapsed" id="dailyView" data-parent="#views">
+                                            <div id="dailyViewChart" style="min-height: 450px;"></div>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
 
-                    </div>
-                </div>
-
-                @*<div class="col-md-12">
+                        @*<div class="col-md-12">
                                 <div class="card-box">
                                     <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
                                         <h4 class="header-title m-t-0 m-b-30">DAILY</h4>
@@ -65,96 +250,96 @@
 
                                 </div> <!-- end card -->
                             </div>*@
-                @*<div class="row">
+                        @*<div class="row">
                                 <div class="collapsed" id="dailyView" data-parent="#views">
                                     <div id="dailyViewChart" style="min-height: 450px;"></div>
                                 </div>
                             </div>*@
 
-                <div class="col-md-12">
-                    <div class="panel">
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
-                            <h4 class="panel-heading m-t-0 m-b-30">WEEKLY</h4>
-                        </a>
+                        <div class="col-md-12">
+                            <div class="panel">
+                                <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
+                                    <h4 class="panel-heading m-t-0 m-b-30">WEEKLY</h4>
+                                </a>
 
-                        <hr />
+                                <hr />
 
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="collapsed" id="weeklyView" data-parent="#views">
-                                    <div id="weeklyViewChart" style="min-height: 450px;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!--
-                    <div class="card-box">
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">
-                            <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
-                        </a>
-
-                        <hr />
-
-                        <div class="inbox-widget slimscroll-alt">
-                            <div class="row">
-                                <div class="collapsed" id="weeklyView" data-parent="#views">
-                                    <div id="weeklyViewChart" style="min-height: 450px;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    -->
-                </div>
-
-                <div class="col-md-12">
-                    <div class="panel">
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyChart">
-                            <h4 class="panel-heading m-t-0 m-b-30">WEEKLY</h4>
-                        </a>
-
-                        <hr />
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <form >
+                                <div class="panel-body">
                                     <div class="row">
-                                        <div class="col col-md-4">
-                                            <div class="form-group">
-                                                <label for="EndDate" class="control-label">End Date</label>
-                                                <input type="date" id="EndDate" class="form-control col-md-6" placeholder="End Date" />
-                                            </div>
+                                        <div class="collapsed" id="weeklyView" data-parent="#views">
+                                            <div id="weeklyViewChart" style="min-height: 450px;"></div>
                                         </div>
-                                        <div class="col col-md-4">
-                                            <div class="form-group">
-                                                <label for="EndDate" class="control-label">End Date</label>
-                                                <input type="date" id="EndDate" class="form-control col-md-6" placeholder="End Date" />
-                                            </div>
-                                        </div>
-
-                                        <div class="col col-md-2 m-t-30">
-                                            <div class="form-group">
-                                                <input type="submit" value="Filter" class="btn btn-primary" />
-                                            </div>
-                                        </div>
-                                        
                                     </div>
-                                    
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="collapsed" id="weeklyChart" data-parent="#views">
-                                    <div id="weeklyChart" style="min-height: 450px;"></div>
                                 </div>
+
                             </div>
+                            <!--
+                            <div class="card-box">
+                                <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">
+                                    <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
+                                </a>
+
+                                <hr />
+
+                                <div class="inbox-widget slimscroll-alt">
+                                    <div class="row">
+                                        <div class="collapsed" id="weeklyView" data-parent="#views">
+                                            <div id="weeklyViewChart" style="min-height: 450px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            -->
                         </div>
 
-                    </div>
-                    @*<div class="card-box">
+                        <div class="col-md-12">
+                            <div class="panel">
+                                <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyChart">
+                                    <h4 class="panel-heading m-t-0 m-b-30">WEEKLY</h4>
+                                </a>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="WeeklyStartDate" class="control-label">Start Date</label>
+                                                        <input type="date" id="WeeklyStartDate" class="form-control col-md-6" placeholder="End Date" />
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="WeeklyEndDate" class="control-label">End Date</label>
+                                                        <input type="date" id="WeeklyEndDate" class="form-control col-md-6" placeholder="End Date" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col col-md-2 m-t-30">
+                                                    <div class="form-group">
+                                                        <input type="submit" value="Filter" class="btn btn-primary" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="collapsed" id="weeklyChart" data-parent="#views">
+                                            <div id="weeklyChart" style="min-height: 450px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @*<div class="card-box">
                                     <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyChart">
                                         <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
                                     </a>
@@ -170,33 +355,62 @@
                                     </div>
 
                                 </div>*@
-                </div>
+                        </div>
 
-                @*<div class="row">
+                        @*<div class="row">
                                 <div class="collapsed" id="weeklyView" data-parent="#views">
                                     <div id="weeklyViewChart" style="min-height: 450px;"></div>
                                 </div>
                             </div>*@
 
-                <div class="col-md-12">
-                    <div class="panel">
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#monthlyView">
-                            <h4 class="panel-heading m-t-0 m-b-30">MONTHLY</h4>
-                        </a>
+                        <div class="col-md-12">
+                            <div class="panel">
+                                <a href="javascript:void(0);" data-toggle="collapse" data-target="#monthlyView">
+                                    <h4 class="panel-heading m-t-0 m-b-30">MONTHLY</h4>
+                                </a>
 
-                        <hr />
+                                <hr />
 
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="collapsed" id="monthlyView" data-parent="#views">
-                                    <div id="monthlyViewChart" style="min-height: 450px;"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="MonthlyStartDate" class="control-label">Start Date</label>
+                                                        <input type="date" id="MonthlyStartDate" class="form-control col-md-6" placeholder="End Date" />
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="MonthlyEndDate" class="control-label">End Date</label>
+                                                        <input type="date" id="MonthlyEndDate" class="form-control col-md-6" placeholder="End Date" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col col-md-2 m-t-30">
+                                                    <div class="form-group">
+                                                        <input type="submit" value="Filter" class="btn btn-primary" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </form>
+                                    </div>
                                 </div>
+
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="collapsed" id="monthlyView" data-parent="#views">
+                                            <div id="monthlyViewChart" style="min-height: 450px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                        </div>
 
-                    </div>
-
-                    @*<div class="card-box">
+                            @*<div class="card-box">
                                     <a href="#" data-toggle="collapse" data-target="#monthlyView">
                                         <h4 class="header-title m-t-0 m-b-30">MONTHLY</h4>
                                     </a>
@@ -212,27 +426,56 @@
                                     </div>
 
                                 </div>*@ <!-- end card -->
-                </div>
-
-                <div class="col-md-12">
-                    <div class="panel">
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">
-                            <h4 class="panel-heading m-t-0 m-b-30">SEMESTERLY</h4>
-                        </a>
-
-                        <hr />
-
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="collapsed" id="semesterlyView" data-parent="#views">
-                                    <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
-                                    <div id="semesterlyViewChart" style="min-height: 450px;"></div>
-                                </div>
-                            </div>
                         </div>
 
-                    </div>
-                    @*<div class="card-box">
+                        <div class="col-md-12">
+                            <div class="panel">
+                                <a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">
+                                    <h4 class="panel-heading m-t-0 m-b-30">SEMESTERLY</h4>
+                                </a>
+
+                                <hr />
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="SemesterlyStartDate" class="control-label">Start Date</label>
+                                                        <input type="date" id="SemesterlyStartDate" class="form-control col-md-6" placeholder="End Date" />
+                                                    </div>
+                                                </div>
+                                                <div class="col col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="SemesterlyEndDate" class="control-label">End Date</label>
+                                                        <input type="date" id="SemesterlyEndDate" class="form-control col-md-6" placeholder="End Date" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col col-md-2 m-t-30">
+                                                    <div class="form-group">
+                                                        <input type="submit" value="Filter" class="btn btn-primary" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="collapsed" id="semesterlyView" data-parent="#views">
+                                            <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
+                                            <div id="semesterlyViewChart" style="min-height: 450px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            @*<div class="card-box">
                                     <a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">
                                         <h4 class="header-title m-t-0 m-b-30">SEMESTERLY</h4>
                                     </a>
@@ -249,14 +492,14 @@
                                     </div>
 
                                 </div>*@ <!-- end card -->
+                        </div>
+
+
+                    </div>
                 </div>
-
-
-            </div>
-            </div>
-            <div class="col-md-12">
-                <a href="javascript:void(0);" class="btn btn-primary" id="printDoc">Print Report</a>
-            </div>
+                <div class="col-md-12">
+                    <a href="javascript:void(0);" class="btn btn-primary" id="printDoc">Print Report</a>
+                </div>
             </div>
         </div>
 
@@ -272,23 +515,48 @@
 
 </footer>
 
-</div>
-
 @section Scripts {
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/morris/morris-0.5.1/js/morris.min.js"></script>
-    <script src="~/lib/morris/morris-0.5.1/js/raphael.min.js"></script>
-    <script src="~/lib/highcharts/js/highcharts.js"></script>
-    
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/morris/morris-0.5.1/js/raphael.min.js"></script>
+        <script src="~/lib/morris/morris-0.5.1/js/morris.min.js"></script>*@
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+
+    @*<script src="~/lib/highcharts/js/highcharts.js"></script>*@
+
     @*<script src="https://code.highcharts.com/highcharts.js"></script>*@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
-    <script type="text/javascript">
+    <script src="~/js/dashboard-charts.js"></script>
 
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/jquery.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/moment.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/theme-chooser.js"></script>
+    <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script src="~/lib/jquery-ui-1.12.1.custom/js/jquery-ui.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+    <script src="~/js/draw-calendar.js"></script>
+
+    <script type="text/javascript">
+        
+        function pullSubjectSchedules(subjectId) {
+            pullSchedules(subjectId);
+        }
 
         $(function () {
 
-            var subjectName = "<Subject Name>";            
+            var subjectName = "<Subject Name>";
 
             //$('[data-toggle="collapse"]').click(function () {
             //    $('.collapse.in').collapse('hide')
@@ -520,8 +788,8 @@
                 //    }
                 //},
                 xAxis: {
-                    min: Date.UTC(2018, 0, 1),
-                    max: Date.UTC(2018, 11, 1),
+                    min: Date.UTC(2019, 0, 1),
+                    max: Date.UTC(2019, 12, 30),
                     type: 'datetime',
                     allowDecimals: false,
                     tickInterval: 24 * 3600 * 1000 * 30,
@@ -546,7 +814,7 @@
                 plotOptions: {
                     area: {
                         pointInterval: 24 * 3600 * 1000 * 30,
-                        pointStart: Date.UTC(2018, 0, 1),//2018,
+                        pointStart: Date.UTC(2019, 0, 1),//2018,
                         marker: {
                             enabled: false,
                             symbol: 'circle',
@@ -580,7 +848,7 @@
                         10577, 10527, 10475, 10421, 10358, 10295, 10104, 9914, 9620, 9326,
                         5113, 5113, 4954, 4804, 4761, 4717, 4368, 4018
                         */
-                        36, 43, 50, 46, 39, 42, 56, 30
+                        36, 43, 50, 46, 39, 42, 56, 30, 35, 62, 57, 59
                     ]
                 }, {
                     name: 'Missed',
@@ -595,149 +863,48 @@
                            21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
                            12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
                        */
-                        (70 - 36), (70 - 43), (70 - 50), (70 - 46), (70 - 39), (70 - 42), (70 - 56), (70 - 30)
+                        (70 - 36), (70 - 43), (70 - 50), (70 - 46), (70 - 39), (70 - 42), (70 - 56), (70 - 30), (70 - 35), (70 - 62), (70 - 57), (70 - 59)
                     ]
                 }]
             });
 
             //****************      MONTHLY      **********************
 
-            Highcharts.chart('monthlyViewChart', {
-                chart: {
-                    type: 'area'
-                },
-                title: {
-                    text: `Monthly Attendance Summary for ${subjectName}`
-                },
-                subtitle: {
-                    text: 'Week # of semester # summary'
-                    //text: 'Sources: <a href="https://thebulletin.org/2006/july/global-nuclear-stockpiles-1945-2006">' +
-                    //'thebulletin.org</a> &amp; <a href="https://www.armscontrol.org/factsheets/Nuclearweaponswhohaswhat">' +
-                    //'armscontrol.org</a>'
-                },
-                xAxis: {
-                    allowDecimals: false,
-                    labels: {
-                        formatter: function () {
-                            return this.value; // clean, unformatted number for year
-                        }
-                    }
-                },
-                yAxis: {
-                    title: {
-                        text: 'Overall Attendance Statistics'
-                    },
-                    labels: {
-                        formatter: function () {
-                            //return this.value / 1000 + 'k';
-                            return Math.round((this.value / 70) * 100) + '%';
-                        }
-                    }
-                },
-                tooltip: {
-                    pointFormat: '{series.name} had attended <b>{point.y:,.0f}</b><br/> in {point.x}'
-                },
-                plotOptions: {
-                    area: {
-                        pointStart: 2018,
-                        marker: {
-                            enabled: false,
-                            symbol: 'circle',
-                            radius: 2,
-                            states: {
-                                hover: {
-                                    enabled: true
-                                }
-                            }
-                        }
-                    }
-                },
-                series: [{
-                    name: 'Attended',
-                    data: [
-                        25000, 27362, 12937, 40200, 13959, 4935, 8659, 32365, 3567, 23452,
-                        369, 640, 34358, 1436, 2063, 3057, 4618, 6444, 9822, 15468,
-                        20434, 24126, 27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342,
-                        26662, 26956, 27912, 28999, 12849, 27826, 25579, 25722, 24826, 24605,
-                        24304, 23464, 23708, 24099, 14357, 14237, 24401, 24344, 23586, 22380,
-                        21004, 17287, 14747, 13076, 7555, 9144, 11009, 10950, 10871, 10824,
-                        10577, 10527, 10475, 10421, 17358, 13295, 10104, 9914, 9620, 9326,
-                        5113, 5113, 4954, 4804, 4761, 7717, 4368, 4018
-                    ]
-                }, {
-                    name: 'Missed',
-                    data: [12534, 7375, 14925, 18349, 11946, 21429, 23195, 8459, 14183, 36543,
-                        34926, 25693, 21580, 12693, 15702, 22560, 42986, 6698, 37159, 10760,
-                        8605, 4471, 7322, 6238, 7221, 9129, 9089, 7339, 9399, 10538,
-                        11643, 13092, 14478, 15915, 17385, 19055, 21205, 23044, 25393, 27935,
-                        30062, 32049, 33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000,
-                        37000, 35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
-                        21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
-                        12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
-                    ]
-                }]
-            });
+            drawMonthlyChart("IDC30BT", [{
+                name: 'Attended',
+                data: [
+                    25000, 27362, 12937, 40200, 13959, 4935, 8659, 32365, 3567, 23452,
+                    369, 640, 34358, 1436, 2063, 3057, 4618, 6444, 9822, 15468,
+                    20434, 24126, 27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342,
+                    26662, 26956, 27912, 28999, 12849, 27826, 25579, 25722, 24826, 24605,
+                    24304, 23464, 23708, 24099, 14357, 14237, 24401, 24344, 23586, 22380,
+                    21004, 17287, 14747, 13076, 7555, 9144, 11009, 10950, 10871, 10824,
+                    10577, 10527, 10475, 10421, 17358, 13295, 10104, 9914, 9620, 9326,
+                    5113, 5113, 4954, 4804, 4761, 7717, 4368, 4018
+                ]
+            }, {
+                name: 'Missed',
+                data: [12534, 7375, 14925, 18349, 11946, 21429, 23195, 8459, 14183, 36543,
+                    34926, 25693, 21580, 12693, 15702, 22560, 42986, 6698, 37159, 10760,
+                    8605, 4471, 7322, 6238, 7221, 9129, 9089, 7339, 9399, 10538,
+                    11643, 13092, 14478, 15915, 17385, 19055, 21205, 23044, 25393, 27935,
+                    30062, 32049, 33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000,
+                    37000, 35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
+                    21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
+                    12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
+                ]
+            }]);
 
 
-            Highcharts.chart('weeklyChart', {
-                chart: {
-                    type: 'areaspline'
-                },
-                title: {
-                    text: `Weekly Attendance Summary ${subjectName}`
-                },
-                legend: {
-                    layout: 'vertical',
-                    align: 'left',
-                    verticalAlign: 'top',
-                    x: 150,
-                    y: 100,
-                    floating: true,
-                    borderWidth: 1,
-                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-                },
-                xAxis: {
-                    categories: [
-                        'Monday',
-                        'Tuesday',
-                        'Wednesday',
-                        'Thursday',
-                        'Friday',
-                        'Saturday',
-                        'Sunday'
-                    ],
-                    plotBands: [{ // visualize the weekend
-                        from: 4.5,
-                        to: 6.5,
-                        color: 'rgba(68, 170, 213, .2)'
-                    }]
-                },
-                yAxis: {
-                    title: {
-                        text: 'Attendance Percentage (%)'
-                    }
-                },
-                tooltip: {
-                    shared: true,
-                    valueSuffix: ' %'
-                },
-                credits: {
-                    enabled: false
-                },
-                plotOptions: {
-                    areaspline: {
-                        fillOpacity: 0.5
-                    }
-                },
-                series: [{
+            drawWeeklyChart("IDC30BT",
+                [{
                     name: 'Attended',
                     data: [3, 4, 3, 5, 4, 10, 12]
                 }, {
                     name: 'Absent',
                     data: [1, 3, 4, 3, 3, 5, 4]
-                }]
-            });
-            
+                }]);
+
             //****************     SEMESTERLY     *****************
 
             var chart;
@@ -798,7 +965,7 @@
                 //console.log('data is ' + dataArray);
             });
 
-            
+
             $("#printDoc").on('click', function () {
 
                 Highcharts.setOptions({ // Apply to all charts
@@ -858,29 +1025,30 @@
             //});
         }
 
-        //new Morris.Line({
-        //    // ID of the element in which to draw the chart.
-        //    element: 'dailyViewChart',
-        //    // Chart data records -- each entry in this array corresponds to a point on
-        //    // the chart.
-        //    data: [
-        //        { year: '2008', value: 20 },
-        //        { year: '2009', value: 10 },
-        //        { year: '2010', value: 5 },
-        //        { year: '2011', value: 5 },
-        //        { year: '2012', value: 20 }
-        //    ],
-        //    // The name of the data record attribute that contains x-values.
-        //    xkey: 'year',
-        //    // A list of names of data record attributes that contain y-values.
-        //    ykeys: ['value'],
-        //    // Labels for the ykeys -- will be displayed when you hover over the
-        //    // chart.
-        //    labels: ['Value']
-        //});
+                                //new Morris.Line({
+                                //    // ID of the element in which to draw the chart.
+                                //    element: 'dailyViewChart',
+                                //    // Chart data records -- each entry in this array corresponds to a point on
+                                //    // the chart.
+                                //    data: [
+                                //        { year: '2008', value: 20 },
+                                //        { year: '2009', value: 10 },
+                                //        { year: '2010', value: 5 },
+                                //        { year: '2011', value: 5 },
+                                //        { year: '2012', value: 20 }
+                                //    ],
+                                //    // The name of the data record attribute that contains x-values.
+                                //    xkey: 'year',
+                                //    // A list of names of data record attributes that contain y-values.
+                                //    ykeys: ['value'],
+                                //    // Labels for the ykeys -- will be displayed when you hover over the
+                                //    // chart.
+                                //    labels: ['Value']
+                                //});
 
 
     </script>
+
 }
 
 
