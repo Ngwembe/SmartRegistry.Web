@@ -30,7 +30,7 @@ namespace SmartRegistry.Web.Controllers
             {
                 var attachment = await _reportingHandler.GetEnrolledSubjectAsync(id);
 
-                if (!string.IsNullOrWhiteSpace(attachment))
+                if (attachment != null)
                 {
                     await _emailSender.SendReportAsync(attachment);
                 }
@@ -94,10 +94,15 @@ namespace SmartRegistry.Web.Controllers
         {
             var attachment = await _reportingHandler.GetAttendedStudents(id);
 
-            if (!string.IsNullOrWhiteSpace(attachment))
+            if (attachment != null)
             {
                 await _emailSender.SendReportAsync(attachment);
             }
+
+            //if (!string.IsNullOrWhiteSpace(attachment))
+            //{
+            //    await _emailSender.SendReportAsync(attachment);
+            //}
 
             if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
             {

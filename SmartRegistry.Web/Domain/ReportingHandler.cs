@@ -28,7 +28,7 @@ namespace SmartRegistry.Web.Domain
         }
 
         //public async Task<Document> GetEnrolledSubject(int subjectId)
-        public async Task<string> GetEnrolledSubjectAsync(int subjectId)
+        public async Task<byte[]> GetEnrolledSubjectAsync(int subjectId)
         {
             try
             {
@@ -171,27 +171,27 @@ namespace SmartRegistry.Web.Domain
                     pdfDoc.Close();
 
 
-                    //  Sending document to the Cloud
-                    PutObjectResponse response = null;
+                    ////  Sending document to the Cloud
+                    //PutObjectResponse response = null;
 
-                    var request = new PutObjectRequest
-                    {
-                        BucketName = "elasticbeanstalk-eu-west-2-925426318079",
-                        Key = fileName,
-                        InputStream = new MemoryStream(ms.ToArray()),
-                        //InputStream = new MemoryStream(ms.ToArray()),
-                        ContentType = "application/pdf",
-                        CannedACL = S3CannedACL.PublicRead
-                    };
+                    //var request = new PutObjectRequest
+                    //{
+                    //    BucketName = "elasticbeanstalk-eu-west-2-925426318079",
+                    //    Key = fileName,
+                    //    InputStream = new MemoryStream(ms.ToArray()),
+                    //    //InputStream = new MemoryStream(ms.ToArray()),
+                    //    ContentType = "application/pdf",
+                    //    CannedACL = S3CannedACL.PublicRead
+                    //};
 
-                    request.Metadata.Add("report", fileName);
+                    //request.Metadata.Add("report", fileName);
 
-                    // connecting to the client
-                    var client = new AmazonS3Client("AKIAJMKBT2AZBA24LFYA", "DOnaWvOF6RAHLfcaqB3N3q41OmsJeyRxZP+uoNv+", Amazon.RegionEndpoint.USEast2);
+                    //// connecting to the client
+                    //var client = new AmazonS3Client("AKIAJMKBT2AZBA24LFYA", "DOnaWvOF6RAHLfcaqB3N3q41OmsJeyRxZP+uoNv+", Amazon.RegionEndpoint.USEast2);
 
-                    response = await client.PutObjectAsync(request);
+                    //response = await client.PutObjectAsync(request);
 
-                    return fileName;
+                    return ms.ToArray();
                 }
             }
             catch (Exception ex)
@@ -468,7 +468,8 @@ namespace SmartRegistry.Web.Domain
             
         }
 
-        public async Task<string> GetAttendedStudents(int subjectId)
+        public async Task<byte[]> GetAttendedStudents(int subjectId)
+        //public async Task<string> GetAttendedStudents(int subjectId)
         {
             try
             {
@@ -529,137 +530,285 @@ namespace SmartRegistry.Web.Domain
                     results.AddRange(attendees);
                 });
 
-
-                var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
-
-                if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                //  CREATING THE ACTUAL DOCUMENT HERE
+                using (var ms = new MemoryStream())
                 {
-                    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                }
+                    Document doc = new Document(PageSize.A4, 0f, 0f, 0f, 0f);
+                    doc.SetPageSize(PageSize.A4);
+                    doc.SetMargins(20f, 20f, 20f, 20f);
 
-                var path = $"{_hostingEnvironment.WebRootPath}";
+                    var writer = PdfWriter.GetInstance(doc, ms);
 
-                var fileName = $"Attendance for {subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.pdf";
+                    doc.Open();
 
-                PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\Reports\\{fileName}", FileMode.OpenOrCreate));
-                pdfDoc.Open();
+                    var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
 
-                iTextSharp.text.Image image = Image.GetInstance($"{path}\\images\\logo.png");
-                image.ScalePercent(24f);
+                    if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                    {
+                        _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                    }
 
-                var spacer = new Paragraph("")
-                {
-                    SpacingBefore = 10f,
-                    SpacingAfter = 10f
+                    var path = $"{_hostingEnvironment.WebRootPath}";
+
+                    var fileName = $"Attendance for {subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.pdf";
+
+                    iTextSharp.text.Image image = Image.GetInstance($"{path}\\images\\logo.png");
+                    image.ScalePercent(24f);
+
+                    var spacer = new Paragraph("")
+                    {
+                        SpacingBefore = 10f,
+                        SpacingAfter = 10f
+                    };
+
+                    pdfDoc.Add(spacer);
+
+                    var headerTable = new PdfPTable(new[] { .75f, 2.25f })
+                    {
+                        WidthPercentage = 100,
+                        DefaultCell = { MinimumHeight = 22f }
+                    };
+
+                    headerTable.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
+
+                    headerTable.AddCell("Date");
+                    headerTable.AddCell(DateTime.Now.ToString("R"));
+                    headerTable.AddCell("Lecturer Name");
+                    headerTable.AddCell($"{subject.Lecturer.FirstName} {subject.Lecturer.LastName}");
+                    headerTable.AddCell("Subject Name");
+                    headerTable.AddCell($"{subject.Name}");
+                    headerTable.AddCell("Subject Code");
+                    headerTable.AddCell($"{subject.Code}");
+
+                    image.ScaleToFit(250f, 250f);
+                    //image.Alignment = Image.TEXTWRAP | Image.ALIGN_RIGHT;
+                    image.Alignment = Image.TEXTWRAP | Image.ALIGN_LEFT;
+                    image.IndentationLeft = 9f;
+                    image.SpacingAfter = 9f;
+                    image.BorderWidthTop = 36f;
+                    image.BorderColorTop = BaseColor.WHITE;
+
+                    pdfDoc.Add(image);
+                    pdfDoc.Add(headerTable);
+                    pdfDoc.Add(spacer);
+
+
+
+                    //var columnCount = 4;
+                    //var columnWidth = new[] { 0.75f, 1f, 0.75f, 2f };
+                    var columnWidth = new[] { 1.75f, 1.75f, 1f, 2f, 1.5f, 1.5f };
+
+                    var table = new PdfPTable(columnWidth)
+                    {
+                        HorizontalAlignment = 25,
+                        WidthPercentage = 100,
+                        DefaultCell = { MinimumHeight = 22f }
+                    };
+
+                    var cell = new PdfPCell(new Phrase($"Attendance for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
+                    {
+                        Colspan = 6,
+                        HorizontalAlignment = Element.ALIGN_CENTER,
+                        MinimumHeight = 30f
+
+
+                        ,
+                        BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204)
+                    };
+
+
+                    table.AddCell(cell);
+
+                    table.AddCell(new PdfPCell(new Phrase("First Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                    table.AddCell(new PdfPCell(new Phrase("Last Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                    table.AddCell(new PdfPCell(new Phrase("Gender")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                    table.AddCell(new PdfPCell(new Phrase("Date of Birth")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+
+                    table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                    table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+
+                    results.ToList().ForEach(s =>
+                    {
+                        table.AddCell(s.FirstName);
+                        table.AddCell(s.LastName);
+                        table.AddCell(s.Gender);
+                        table.AddCell(s.DOB.ToString());
+
+                        table.AddCell(s.ScheduleFrom.ToString() ?? "Unspecified");
+                        table.AddCell(s.ScheduleTo.ToString() ?? "Unspecified");
+                    });
+
+
+                    cell = new PdfPCell(new Phrase($"Total: { results.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
+                    {
+                        //Colspan = 4,
+                        //HorizontalAlignment = Element.ALIGN_RIGHT,
+                        //MinimumHeight = 30f
+
+                        Colspan = 6,
+                        HorizontalAlignment = Element.ALIGN_RIGHT,
+                        MinimumHeight = 30f
+                    };
+
+                    //cell = new PdfPCell(new Phrase($"Total: {students.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
+                    //{
+                    //    //Colspan = 4,
+                    //    //HorizontalAlignment = Element.ALIGN_RIGHT,
+                    //    //MinimumHeight = 30f
+
+                    //    Colspan = 4,
+                    //    HorizontalAlignment = Element.ALIGN_CENTER,
+                    //    MinimumHeight = 30f
+                    //};
+
+                    table.AddCell(cell);
+                    pdfDoc.Add(table);
+
+
+                    pdfDoc.Close();
+                    
+                    doc.Close();
+
+                    return ms.ToArray();
                 };
 
-                pdfDoc.Add(spacer);
+
+
+
+
+
+
+                //var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
+
+                //if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
+                //{
+                //    _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                //}
+
+                //var path = $"{_hostingEnvironment.WebRootPath}";
+
+                //var fileName = $"Attendance for {subject.Name} ({subject.Code})_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.pdf";
+
+                //PdfWriter.GetInstance(pdfDoc, new FileStream($"{path}\\Reports\\{fileName}", FileMode.OpenOrCreate));
+                //pdfDoc.Open();
+
+                //iTextSharp.text.Image image = Image.GetInstance($"{path}\\images\\logo.png");
+                //image.ScalePercent(24f);
+
+                //var spacer = new Paragraph("")
+                //{
+                //    SpacingBefore = 10f,
+                //    SpacingAfter = 10f
+                //};
+
+                //pdfDoc.Add(spacer);
                 
-                var headerTable = new PdfPTable(new[] { .75f, 2.25f })
-                {
-                    WidthPercentage = 100,
-                    DefaultCell = { MinimumHeight = 22f }
-                };
+                //var headerTable = new PdfPTable(new[] { .75f, 2.25f })
+                //{
+                //    WidthPercentage = 100,
+                //    DefaultCell = { MinimumHeight = 22f }
+                //};
 
-                headerTable.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
+                //headerTable.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
 
-                headerTable.AddCell("Date");
-                headerTable.AddCell(DateTime.Now.ToString("R"));
-                headerTable.AddCell("Lecturer Name");
-                headerTable.AddCell($"{subject.Lecturer.FirstName} {subject.Lecturer.LastName}");
-                headerTable.AddCell("Subject Name");
-                headerTable.AddCell($"{subject.Name}");
-                headerTable.AddCell("Subject Code");
-                headerTable.AddCell($"{subject.Code}");
+                //headerTable.AddCell("Date");
+                //headerTable.AddCell(DateTime.Now.ToString("R"));
+                //headerTable.AddCell("Lecturer Name");
+                //headerTable.AddCell($"{subject.Lecturer.FirstName} {subject.Lecturer.LastName}");
+                //headerTable.AddCell("Subject Name");
+                //headerTable.AddCell($"{subject.Name}");
+                //headerTable.AddCell("Subject Code");
+                //headerTable.AddCell($"{subject.Code}");
 
-                image.ScaleToFit(250f, 250f);
-                //image.Alignment = Image.TEXTWRAP | Image.ALIGN_RIGHT;
-                image.Alignment = Image.TEXTWRAP | Image.ALIGN_LEFT;
-                image.IndentationLeft = 9f;
-                image.SpacingAfter = 9f;
-                image.BorderWidthTop = 36f;
-                image.BorderColorTop = BaseColor.WHITE;
+                //image.ScaleToFit(250f, 250f);
+                ////image.Alignment = Image.TEXTWRAP | Image.ALIGN_RIGHT;
+                //image.Alignment = Image.TEXTWRAP | Image.ALIGN_LEFT;
+                //image.IndentationLeft = 9f;
+                //image.SpacingAfter = 9f;
+                //image.BorderWidthTop = 36f;
+                //image.BorderColorTop = BaseColor.WHITE;
 
-                pdfDoc.Add(image);
-                pdfDoc.Add(headerTable);
-                pdfDoc.Add(spacer);
-
-
-
-                //var columnCount = 4;
-                //var columnWidth = new[] { 0.75f, 1f, 0.75f, 2f };
-                var columnWidth = new[] { 1.75f, 1.75f, 1f, 2f, 1.5f, 1.5f };
-
-                var table = new PdfPTable(columnWidth)
-                {
-                    HorizontalAlignment = 25,
-                    WidthPercentage = 100,
-                    DefaultCell = { MinimumHeight = 22f }
-                };
-
-                var cell = new PdfPCell(new Phrase($"Attendance for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
-                {
-                    Colspan = 6,
-                    HorizontalAlignment = Element.ALIGN_CENTER,
-                    MinimumHeight = 30f
+                //pdfDoc.Add(image);
+                //pdfDoc.Add(headerTable);
+                //pdfDoc.Add(spacer);
 
 
-                    ,
-                    BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204)
-                };
+
+                ////var columnCount = 4;
+                ////var columnWidth = new[] { 0.75f, 1f, 0.75f, 2f };
+                //var columnWidth = new[] { 1.75f, 1.75f, 1f, 2f, 1.5f, 1.5f };
+
+                //var table = new PdfPTable(columnWidth)
+                //{
+                //    HorizontalAlignment = 25,
+                //    WidthPercentage = 100,
+                //    DefaultCell = { MinimumHeight = 22f }
+                //};
+
+                //var cell = new PdfPCell(new Phrase($"Attendance for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
+                //{
+                //    Colspan = 6,
+                //    HorizontalAlignment = Element.ALIGN_CENTER,
+                //    MinimumHeight = 30f
 
 
-                table.AddCell(cell);
-
-                table.AddCell(new PdfPCell(new Phrase("First Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-                table.AddCell(new PdfPCell(new Phrase("Last Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-                table.AddCell(new PdfPCell(new Phrase("Gender")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-                table.AddCell(new PdfPCell(new Phrase("Date of Birth")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-
-                table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-                table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-
-                results.ToList().ForEach(s =>
-                {
-                    table.AddCell(s.FirstName);
-                    table.AddCell(s.LastName);
-                    table.AddCell(s.Gender);
-                    table.AddCell(s.DOB.ToString());
-
-                    table.AddCell(s.ScheduleFrom.ToString()?? "Unspecified");
-                    table.AddCell(s.ScheduleTo.ToString() ?? "Unspecified");
-                });
+                //    ,
+                //    BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204)
+                //};
 
 
-                cell = new PdfPCell(new Phrase($"Total: { results.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
-                {
-                    //Colspan = 4,
-                    //HorizontalAlignment = Element.ALIGN_RIGHT,
-                    //MinimumHeight = 30f
+                //table.AddCell(cell);
 
-                    Colspan = 6,
-                    HorizontalAlignment = Element.ALIGN_RIGHT,
-                    MinimumHeight = 30f
-                };
+                //table.AddCell(new PdfPCell(new Phrase("First Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                //table.AddCell(new PdfPCell(new Phrase("Last Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                //table.AddCell(new PdfPCell(new Phrase("Gender")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                //table.AddCell(new PdfPCell(new Phrase("Date of Birth")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
 
-                //cell = new PdfPCell(new Phrase($"Total: {students.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
+                //table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                //table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+
+                //results.ToList().ForEach(s =>
+                //{
+                //    table.AddCell(s.FirstName);
+                //    table.AddCell(s.LastName);
+                //    table.AddCell(s.Gender);
+                //    table.AddCell(s.DOB.ToString());
+
+                //    table.AddCell(s.ScheduleFrom.ToString()?? "Unspecified");
+                //    table.AddCell(s.ScheduleTo.ToString() ?? "Unspecified");
+                //});
+
+
+                //cell = new PdfPCell(new Phrase($"Total: { results.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
                 //{
                 //    //Colspan = 4,
                 //    //HorizontalAlignment = Element.ALIGN_RIGHT,
                 //    //MinimumHeight = 30f
 
-                //    Colspan = 4,
-                //    HorizontalAlignment = Element.ALIGN_CENTER,
+                //    Colspan = 6,
+                //    HorizontalAlignment = Element.ALIGN_RIGHT,
                 //    MinimumHeight = 30f
                 //};
 
-                table.AddCell(cell);
-                pdfDoc.Add(table);
+                ////cell = new PdfPCell(new Phrase($"Total: {students.Count().ToString()}" /*, new Font(Font.FontFamily.HELVETICA, 15f)*/))
+                ////{
+                ////    //Colspan = 4,
+                ////    //HorizontalAlignment = Element.ALIGN_RIGHT,
+                ////    //MinimumHeight = 30f
+
+                ////    Colspan = 4,
+                ////    HorizontalAlignment = Element.ALIGN_CENTER,
+                ////    MinimumHeight = 30f
+                ////};
+
+                //table.AddCell(cell);
+                //pdfDoc.Add(table);
 
 
-                pdfDoc.Close();
+                //pdfDoc.Close();
 
-                return fileName;
+                //return pdfDoc;
+                //return fileName;
 
             }
             catch (Exception ex)

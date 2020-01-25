@@ -73,29 +73,19 @@
 
                         }
 
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="col-lg-4">
-                                    <div id="testingDonut"></div>
-                                    <div id="continuous-chart"></div>
-                                </div>
-                                <div class="col-lg-8"></div>
-                            </div>
-                        </div>
-
                     }
 
                     @*<a class="col-md-3 m-l-15 m-r-15 module-balls" href="javascript:void(0);" style="border: 2px solid #472493;">
-                            <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">TPG111T</h2>
-                        </a>
+                    <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">TPG111T</h2>
+                </a>
 
-                        <a href="javascript:void(0);" class="col-md-3 m-l-15 m-r-15 module-balls" style="border: 2px solid #4CFF00;">
-                            <h2 class="text-center" style="margin-top: 50% !important; color: #4CFF00; font-weight: 600;">DSO30BT</h2>
-                        </a>
+                <a href="javascript:void(0);" class="col-md-3 m-l-15 m-r-15 module-balls" style="border: 2px solid #4CFF00;">
+                    <h2 class="text-center" style="margin-top: 50% !important; color: #4CFF00; font-weight: 600;">DSO30BT</h2>
+                </a>
 
-                        <a href="javascript:void(0);" class="col-md-3 m-l-15 m-r-15 module-balls" style="border: 2px solid #FFD800;">
-                            <h2 class="text-center" style="margin-top: 50% !important; color: #FFD800; font-weight: 600;">GPM20BT</h2>
-                        </a>*@
+                <a href="javascript:void(0);" class="col-md-3 m-l-15 m-r-15 module-balls" style="border: 2px solid #FFD800;">
+                    <h2 class="text-center" style="margin-top: 50% !important; color: #FFD800; font-weight: 600;">GPM20BT</h2>
+                </a>*@
                 </div>
             </div>
 
@@ -112,6 +102,14 @@
                     </div> <!-- end card -->
                 </div>
             </div>
+
+            <div class="row">
+                <div id="testingDonut"></div>
+                <div class="col-lg-12">
+                    <div id="continuous-chart"></div>
+                </div>
+            </div>
+
 
             <div class="row">
                 <div class="modal fade" id="eventView">
@@ -197,15 +195,15 @@
             <div class="row">
                 <div class="col-md-12">
                     @*<div class="row">
-                            <div class="navbar-collapse collapse">
-                                <ul class="nav navbar-nav">
-                                    <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">Daily</a></li>
-                                    <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">Weekly</a></li>
-                                    <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#monthlyView">Monthly</a></li>
-                                    <li class="hidden"><a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">Semesterly</a></li>
-                                </ul>
-                            </div>
-                        </div>*@
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">Daily</a></li>
+                            <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">Weekly</a></li>
+                            <li><a href="javascript:void(0);" data-toggle="collapse" data-target="#monthlyView">Monthly</a></li>
+                            <li class="hidden"><a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">Semesterly</a></li>
+                        </ul>
+                    </div>
+                </div>*@
 
                     <div class="row">
                         <h2 class="text-center" id="subjTitle"></h2><hr />
@@ -233,28 +231,28 @@
                         </div>
 
                         @*<div class="col-md-12">
-                                <div class="card-box">
-                                    <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
-                                        <h4 class="header-title m-t-0 m-b-30">DAILY</h4>
-                                    </a>
+                        <div class="card-box">
+                            <a href="javascript:void(0);" data-toggle="collapse" data-target="#dailyView">
+                                <h4 class="header-title m-t-0 m-b-30">DAILY</h4>
+                            </a>
 
-                                    <hr />
+                            <hr />
 
-                                    <div class="inbox-widget slimscroll-alt" >
-                                        <div class="row">
-                                            <div class="collapsed" id="dailyView" data-parent="#views">
-                                                <div id="dailyViewChart" style="min-height: 450px;"></div>
-                                            </div>
-                                        </div>
+                            <div class="inbox-widget slimscroll-alt" >
+                                <div class="row">
+                                    <div class="collapsed" id="dailyView" data-parent="#views">
+                                        <div id="dailyViewChart" style="min-height: 450px;"></div>
                                     </div>
-
-                                </div> <!-- end card -->
-                            </div>*@
-                        @*<div class="row">
-                                <div class="collapsed" id="dailyView" data-parent="#views">
-                                    <div id="dailyViewChart" style="min-height: 450px;"></div>
                                 </div>
-                            </div>*@
+                            </div>
+
+                        </div> <!-- end card -->
+                    </div>*@
+                        @*<div class="row">
+                        <div class="collapsed" id="dailyView" data-parent="#views">
+                            <div id="dailyViewChart" style="min-height: 450px;"></div>
+                        </div>
+                    </div>*@
 
                         <div class="col-md-12">
                             <div class="panel">
@@ -274,23 +272,23 @@
 
                             </div>
                             <!--
-                            <div class="card-box">
-                                <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">
-                                    <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
-                                </a>
+                    <div class="card-box">
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyView">
+                            <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
+                        </a>
 
-                                <hr />
+                        <hr />
 
-                                <div class="inbox-widget slimscroll-alt">
-                                    <div class="row">
-                                        <div class="collapsed" id="weeklyView" data-parent="#views">
-                                            <div id="weeklyViewChart" style="min-height: 450px;"></div>
-                                        </div>
-                                    </div>
+                        <div class="inbox-widget slimscroll-alt">
+                            <div class="row">
+                                <div class="collapsed" id="weeklyView" data-parent="#views">
+                                    <div id="weeklyViewChart" style="min-height: 450px;"></div>
                                 </div>
-
                             </div>
-                            -->
+                        </div>
+
+                    </div>
+                    -->
                         </div>
 
                         <div class="col-md-12">
@@ -340,28 +338,28 @@
 
                             </div>
                             @*<div class="card-box">
-                                    <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyChart">
-                                        <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
-                                    </a>
+                            <a href="javascript:void(0);" data-toggle="collapse" data-target="#weeklyChart">
+                                <h4 class="header-title m-t-0 m-b-30">WEEKLY</h4>
+                            </a>
 
-                                    <hr/>
+                            <hr/>
 
-                                    <div class="inbox-widget slimscroll-alt">
-                                        <div class="row">
-                                            <div class="collapsed" id="weeklyChart" data-parent="#views">
-                                                <div id="weeklyChart" style="min-height: 450px;"></div>
-                                            </div>
-                                        </div>
+                            <div class="inbox-widget slimscroll-alt">
+                                <div class="row">
+                                    <div class="collapsed" id="weeklyChart" data-parent="#views">
+                                        <div id="weeklyChart" style="min-height: 450px;"></div>
                                     </div>
+                                </div>
+                            </div>
 
-                                </div>*@
+                        </div>*@
                         </div>
 
                         @*<div class="row">
-                                <div class="collapsed" id="weeklyView" data-parent="#views">
-                                    <div id="weeklyViewChart" style="min-height: 450px;"></div>
-                                </div>
-                            </div>*@
+                        <div class="collapsed" id="weeklyView" data-parent="#views">
+                            <div id="weeklyViewChart" style="min-height: 450px;"></div>
+                        </div>
+                    </div>*@
 
                         <div class="col-md-12">
                             <div class="panel">
@@ -411,21 +409,21 @@
                             </div>
 
                             @*<div class="card-box">
-                                    <a href="#" data-toggle="collapse" data-target="#monthlyView">
-                                        <h4 class="header-title m-t-0 m-b-30">MONTHLY</h4>
-                                    </a>
+                            <a href="#" data-toggle="collapse" data-target="#monthlyView">
+                                <h4 class="header-title m-t-0 m-b-30">MONTHLY</h4>
+                            </a>
 
-                                    <hr/>
+                            <hr/>
 
-                                    <div class="inbox-widget slimscroll-alt">
-                                        <div class="row">
-                                            <div class="collapsed" id="monthlyView" data-parent="#views">
-                                                <div id="monthlyViewChart" style="min-height: 450px;"></div>
-                                            </div>
-                                        </div>
+                            <div class="inbox-widget slimscroll-alt">
+                                <div class="row">
+                                    <div class="collapsed" id="monthlyView" data-parent="#views">
+                                        <div id="monthlyViewChart" style="min-height: 450px;"></div>
                                     </div>
+                                </div>
+                            </div>
 
-                                </div>*@ <!-- end card -->
+                        </div>*@ <!-- end card -->
                         </div>
 
                         <div class="col-md-12">
@@ -476,22 +474,22 @@
 
                             </div>
                             @*<div class="card-box">
-                                    <a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">
-                                        <h4 class="header-title m-t-0 m-b-30">SEMESTERLY</h4>
-                                    </a>
+                            <a href="javascript:void(0);" data-toggle="collapse" data-target="#semesterlyView">
+                                <h4 class="header-title m-t-0 m-b-30">SEMESTERLY</h4>
+                            </a>
 
-                                    <hr/>
+                            <hr/>
 
-                                    <div class="inbox-widget slimscroll-alt">
-                                        <div class="row">
-                                            <div class="collapsed" id="semesterlyView" data-parent="#views">
-                                                <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
-                                                <div id="semesterlyViewChart" style="min-height: 450px;"></div>
-                                            </div>
-                                        </div>
+                            <div class="inbox-widget slimscroll-alt">
+                                <div class="row">
+                                    <div class="collapsed" id="semesterlyView" data-parent="#views">
+                                        <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
+                                        <div id="semesterlyViewChart" style="min-height: 450px;"></div>
                                     </div>
+                                </div>
+                            </div>
 
-                                </div>*@ <!-- end card -->
+                        </div>*@ <!-- end card -->
                         </div>
 
 

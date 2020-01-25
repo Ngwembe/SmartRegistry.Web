@@ -23,8 +23,8 @@
                             //isConfirmed: event.isConfirmed
                             id: event.id,
                             title: `${event.subject.code} AT ${event.lectureRoom}`,
-                            start: event.scheduleFor != null ? moment(event.scheduleFor) : null, // moment(event.scheduleFor),
-                            end: event.scheduleTo != null ? moment(event.scheduleTo) : null,
+                            start: event.scheduleFor !== null ? moment(event.scheduleFor) : null, // moment(event.scheduleFor),
+                            end: event.scheduleTo !== null ? moment(event.scheduleTo) : null,
                             allDay: false,
                             lectureRoom: event.lectureRoom,
                             isConfirmed: event.isConfirmed
@@ -486,14 +486,14 @@
 
                 $('#eventView #eventViewHeader').text(calEvent.title);
                 $('#eventViewVenue')
-                    .text(calEvent.lectureRoom != null ? calEvent.lectureRoom : 'Venue not confirmed');
+                    .text(calEvent.lectureRoom !== null ? calEvent.lectureRoom : 'Venue not confirmed');
 
                 var $description = $('<div/>');
 
                 $description.append($('<p/>')
                     .html(`<b>Start:</b> ${calEvent.start.format('DD-MMM-YYYY HH:mm a')} `));
 
-                if (calEvent.end != null) {
+                if (calEvent.end !== null) {
                     $description.append($('<p/>')
                         .html(`<b>End:</b> ${calEvent.end.format('DD-MMM-YYYY HH:mm a')} `));
                 }
@@ -585,8 +585,8 @@ function pullSchedules(subjectId) {
                     events.push({
                         id: event.id,
                         title: `${event.subject.code} AT ${event.lectureRoom}`,
-                        start: event.scheduleFor != null ? moment(event.scheduleFor) : null, // moment(event.scheduleFor),
-                        end: event.scheduleTo != null ? moment(event.scheduleTo) : null,
+                        start: event.scheduleFor !== null ? moment(event.scheduleFor) : null, // moment(event.scheduleFor),
+                        end: event.scheduleTo !== null ? moment(event.scheduleTo) : null,
                         allDay: false,
                         lectureRoom: event.lectureRoom,
                         isConfirmed: event.isConfirmed
@@ -628,15 +628,38 @@ function populateChart(data) {
     let absent = [];
     
     let dates = [];
+
     for (const schedule of data) {
 
-        //  Creating present dataset
-        present.push(schedule.present);
+        var total = (schedule.present + schedule.absent);
 
-        //  Creating absent dataset
-        absent.push(schedule.absent);
+        let v = total > 0;
 
-        dates.push(new Date(schedule.date).getFullYear() + '-' + (new Date(schedule.date).getMonth() + 1) + '-' + new Date(schedule.date).getUTCDate());
+        if (v) {
+
+            //  Creating present dataset
+            present.push((parseFloat(schedule.present) / parseFloat(total)) * 100.0);
+
+            //  Creating absent dataset
+            absent.push((parseFloat(schedule.absent) / parseFloat(total)) * 100.0);            
+        }
+        else {
+            //  Creating present dataset
+            present.push(schedule.present * 100.0);
+
+            //  Creating absent dataset
+            absent.push(schedule.absent * 100.0);            
+        }  
+
+        ////  Creating present dataset
+        //present.push(schedule.present);
+
+        ////  Creating absent dataset
+        //absent.push(schedule.absent);
+
+        dates.push(new Date(schedule.date).getFullYear() + '-' + (new Date(schedule.date).getMonth() + 1) + '-' + new Date(schedule.date).getUTCDate() +
+            ' ' + (new Date(schedule.date).getHours() < 10 ? '0' + new Date(schedule.date).getHours() : new Date(schedule.date).getHours()) +
+            ':' + (new Date(schedule.date).getMinutes() < 30 ? '0' + new Date(schedule.date).getMinutes() : new Date(schedule.date).getMinutes()));
     }
     
     var chart = new Highcharts.Chart({
@@ -668,6 +691,10 @@ function populateChart(data) {
         }
     });
 
-    chart.addSeries({ name: 'Present', type: 'spline', data: present });
-    chart.addSeries({ name: 'Absent', type: 'spline', data: absent });
+    chart.addSeries({ name: 'Present', type: 'area', data: present });
+    //chart.addSeries({ name: 'Present', type: 'spline', data: present });
+    chart.addSeries({ name: 'Absent', type: 'area', data: absent });
+    //chart.addSeries({ name: 'Absent', type: 'spline', data: absent });
+
+    chart.redraw();
 }

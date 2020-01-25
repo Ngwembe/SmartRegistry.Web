@@ -293,7 +293,10 @@ namespace SmartRegistry.Web.Controllers
             var subjects = await _context.Subject.Include(s => s.Lecturer).Where(s => s.Lecturer.LecturerId == lecturer.LecturerId).ToListAsync();//.AsEnumerable();
            
 
-            ViewData["SubjectId"] = new SelectList(subjects, "Id", "Code");
+            //ViewData["SubjectId"] = new SelectList(subjects, "Id", "Code");
+            ViewBag.SubjectId = new SelectList(subjects.Select(u =>
+                               new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
             return PartialView("_CreateSchedulePartial", schedule);
         }
 
