@@ -1,11 +1,11 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
 @using Microsoft.AspNetCore.Http
-@using Microsoft.AspNetCore.Http.Authentication
+@*@using Microsoft.AspNetCore.Http.Authentication*@
 @using Microsoft.AspNetCore.Identity
 @using SmartRegistry.Web.Models
 @model SmartRegistry.Web.ViewModels.AccountViewModels.LoginViewModel
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
     ViewData["Title"] = "Welcome Back";

@@ -17,9 +17,9 @@ namespace SmartRegistry.Web.Controllers
     public class AttendedsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AttendedsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public AttendedsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;

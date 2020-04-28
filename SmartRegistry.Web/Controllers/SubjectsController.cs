@@ -19,11 +19,11 @@ namespace SmartRegistry.Web.Controllers
     public class SubjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IReportingHandler _reportingHandler;
         private readonly IEmailSender _emailSender;
 
-        public SubjectsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IReportingHandler reportingHandler, IEmailSender emailSender)
+        public SubjectsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IReportingHandler reportingHandler, IEmailSender emailSender)
         {
             _context = context;
             _userManager = userManager;
@@ -140,8 +140,15 @@ namespace SmartRegistry.Web.Controllers
         //[Authorize]
         public IActionResult Create()
         {
-            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code");
-            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName");
+            //ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code");
+            ViewData["CourseId"] = new SelectList(_context.Course.Select(u =>
+                        new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
+
+            //ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName");
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer.Select(u =>
+                        new SelectListItem() { Value = u.LecturerId.ToString(), Text = $"{u.FirstName} {u.LastName}" }), "Value", "Text");
+
             return View();
         }
 
@@ -151,7 +158,7 @@ namespace SmartRegistry.Web.Controllers
         [HttpPost]
         //[Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Code,CourseId,LecturerId")] Subject subject)
+        public async Task<IActionResult> Create([Bind("Id,Name,Code,Description,CourseId,LecturerId")] Subject subject)
         {
             if (ModelState.IsValid)
             {
@@ -164,8 +171,18 @@ namespace SmartRegistry.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
+
+            ViewData["CourseId"] = new SelectList(_context.Course.Select(u =>
+                        new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer.Select(u =>
+                        new SelectListItem() { Value = u.LecturerId.ToString(), Text = $"{u.FirstName} {u.LastName}" }), "Value", "Text");
+
+            //ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
+            //ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
+
+            //ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code");
+            //ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName");
             return View(subject);
         }
 
@@ -182,8 +199,15 @@ namespace SmartRegistry.Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
+
+            ViewData["CourseId"] = new SelectList(_context.Course.Select(u =>
+                        new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer.Select(u =>
+                        new SelectListItem() { Value = u.LecturerId.ToString(), Text = $"{u.FirstName} {u.LastName}" }), "Value", "Text");
+
+            //ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
+            //ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
             return View(subject);
         }
 
@@ -192,7 +216,7 @@ namespace SmartRegistry.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,CourseId,LecturerId")] Subject subject)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Code,Description,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,CourseId,LecturerId")] Subject subject)
         {
             if (id != subject.SubjectId)
             {
@@ -219,8 +243,15 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
-            ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
+
+            ViewData["CourseId"] = new SelectList(_context.Course.Select(u =>
+                        new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
+            ViewData["LecturerId"] = new SelectList(_context.Lecturer.Select(u =>
+                        new SelectListItem() { Value = u.LecturerId.ToString(), Text = $"{u.FirstName} {u.LastName}" }), "Value", "Text");
+
+            //ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Code", subject.CourseId);
+            //ViewData["LecturerId"] = new SelectList(_context.Lecturer, "Id", "FirstName", subject.LecturerId);
             return View(subject);
         }
 

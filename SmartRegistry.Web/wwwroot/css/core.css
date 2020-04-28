@@ -43,10 +43,10 @@ h2,
 h3,
 h4,
 h5,
-h6 {
-  color: #505458;
-  font-family: 'Hind Madurai', sans-serif;
-  margin: 10px 0;
+h6 {    
+    color: #505458;
+    font-family: 'Hind Madurai', sans-serif;
+    margin: 10px 0;
 }
 h5 {
   font-size: 15px;

@@ -1,8 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using SmartRegistry.Web.Models
 
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 @model SmartRegistry.Web.Models.Subject
 
@@ -35,8 +35,13 @@
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
                         <div class="form-group">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control"  readonly="readonly" rows="5" cols="6"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="Course" class="control-label"></label>
-                            <input asp-for="Course" class="form-control" readonly="readonly" />
+                            <input asp-for="Course.Name" class="form-control" readonly="readonly" />
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
                         <div class="form-group">

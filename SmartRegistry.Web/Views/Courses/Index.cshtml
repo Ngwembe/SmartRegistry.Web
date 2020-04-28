@@ -3,9 +3,9 @@
 
 @model IEnumerable<SmartRegistry.Web.Models.Course>
 
-@inject UserManager<ApplicationUser> _UserManager
+@inject UserManager<IdentityUser> _UserManager
 @inject RoleManager<IdentityRole> _RoleManager
-@inject SignInManager<ApplicationUser> _SignInManager
+@inject SignInManager<IdentityUser> _SignInManager
 
 <div class="content-page">
     <!-- Start content -->
@@ -13,7 +13,7 @@
         <div class="container">
 
             <p>
-                <a class="btn btn-primary pull-right" asp-action="Create">Create a course</a>
+                <a class="btn btn-primary pull-right" asp-action="Create"><i class="fa fa-plus"></i>Create a course</a>
             </p>
             <table class="table">
                 <thead>
@@ -37,21 +37,21 @@
 
                             if (user != null && (await _UserManager.IsInRoleAsync(user, "Admin")) || (await _UserManager.IsInRoleAsync(user, "System Admin")))
                             {
-                                @*<th>
-                                @Html.DisplayNameFor(model => model.LastUpdatedBy)
-                            </th>*@
                                 <th>
                                     @Html.DisplayNameFor(model => model.LastUpdatedAt)
+                                </th>
+                                @*<th>
+                                    @Html.DisplayNameFor(model => model.LastUpdatedBy)
                                 </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.IsDeleted)
                                 </th>
-                                @*<th>
-                                @Html.DisplayNameFor(model => model.DeletedBy)
-                            </th>*@
+                                <th>
+                                    @Html.DisplayNameFor(model => model.DeletedBy)
+                                </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.DeletedAt)
-                                </th>
+                                </th>*@
                             }
                         }
 
@@ -98,21 +98,24 @@
 
                                 if (user != null && (await _UserManager.IsInRoleAsync(user, "Admin")) || (await _UserManager.IsInRoleAsync(user, "System Admin")))
                                 {
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LastUpdatedAt)
+                                    </td>
                                     @*<td>
-                                    @Html.DisplayFor(modelItem => item.LastUpdatedBy)
-                                </td>*@
+                                        @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+                                    </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.LastUpdatedAt)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.IsDeleted)
                                     </td>
-                                    @*<td>
-                                    @Html.DisplayFor(modelItem => item.DeletedBy)
-                                </td>*@
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DeletedBy)
+                                    </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.DeletedAt)
-                                    </td>
+                                    </td>*@
                                 }
                             }
                             <td>

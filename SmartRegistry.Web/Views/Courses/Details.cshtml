@@ -2,8 +2,8 @@
 @using SmartRegistry.Web.Models
 @model SmartRegistry.Web.ViewModels.CoursesViewModels.CourseViewModel
 
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 @*
     @{
@@ -225,20 +225,6 @@
                                             <div class="col-md-12">
                                                 <div class="card-box">
                                                     <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
-                                                        <h4 class="header-title m-t-0 m-b-30">Semester Schedule</h4>
-                                                        <hr />
-                                                        <div id="calendar"></div>
-                                                    </div>
-
-                                                </div> <!-- end card -->
-                                            </div>
-
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="card-box">
-                                                    <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
 
                                                         <div class="row">
                                                             <h4 class="header-title m-t-0 m-b-30">Announcements</h4>
@@ -281,6 +267,20 @@
                                             </div>
 
                                         </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card-box">
+                                                    <div>
+                                                        <h4 class="header-title m-t-0 m-b-30">Semester Schedule</h4>
+                                                        <hr />
+                                                        <div id="calendar"></div>
+                                                    </div>
+
+                                                </div> <!-- end card -->
+                                            </div>
+
+                                        </div>
                                     </div>
 
                                     <div class="col-md-4">
@@ -288,7 +288,7 @@
                                             <h4 class="header-title m-t-0 m-b-30">Subjects @Model.Course.Name offers</h4>
                                             <hr />
 
-                                            <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
+                                            <div class="inbox-widget slimscroll-alt" style="height: 180px !important;">
 
                                                 @if (Model.Subjects != null && Model.Subjects.Any())
                                                 {

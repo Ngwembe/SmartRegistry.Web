@@ -18,9 +18,9 @@ namespace SmartRegistry.Web.Controllers
     public class SchedulesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public SchedulesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public SchedulesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -217,6 +217,51 @@ namespace SmartRegistry.Web.Controllers
             //}
 
             //return new JsonResult(details);
+        }
+
+        public async Task<JsonResult> RetrieveMonthly(int subjectId)
+        {
+            var schedules = await _context.Schedule.Include(s => s.Subject)
+                                                   .Where(s => s.SubjectId == subjectId)                                                   
+                                                   .OrderBy(s => s.ScheduleFor.Month)
+                                                   .GroupBy(s => s.ScheduleFor.Month)
+                                                   .ToListAsync();
+            //var schedules = await _context.Schedule.Include(s => s.Subject).Where(s => s.SubjectId == subjectId).ToListAsync();
+
+            if (schedules == null || !schedules.Any()) return new JsonResult(null);
+
+            var totalEnrollments = await _context.EnrolledSubject.CountAsync(e => e.SubjectId == schedules[0].FirstOrDefault().Subject.SubjectId);
+            //var totalEnrollments = await _context.EnrolledSubject.CountAsync(e => e.SubjectId == schedules.FirstOrDefault().Subject.SubjectId);
+
+            float present = 0f, absent = 0f;
+
+            var scheduleData = new List<ScheduleViewModel>();
+
+            for(int x = 0; x < schedules.Count(); x++)
+            {
+                present = 0f; absent = 0f;
+
+                var sets = schedules[x].ToList();
+
+                sets.ForEach(async s =>
+                {
+                    present += Math.Abs(_context.Attendee.Count(a => a.ScheduleId == s.ScheduleId));
+                    absent += Math.Abs(totalEnrollments - present);
+                });
+
+                scheduleData.Add(new ScheduleViewModel { Absent = absent, Present = present, Date = sets.FirstOrDefault().ScheduleFor.Date });
+            }
+
+
+            //schedules.ForEach(async s => {
+
+            //    present = _context.Attendee.Count(a => a.ScheduleId == s.ScheduleId);
+            //    absent = totalEnrollments - present;
+
+            //    scheduleData.Add(new ScheduleViewModel { ScheduleId = s.ScheduleId, Absent = absent, Present = present, Date = s.ScheduleFor });
+            //});
+
+            return new JsonResult(scheduleData);            
         }
 
         public string ConfirmSchedule(int scheduleId)

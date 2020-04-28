@@ -15,9 +15,9 @@ namespace SmartRegistry.Web.Controllers
     public class FacultiesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public FacultiesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public FacultiesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;

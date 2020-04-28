@@ -15,9 +15,9 @@ namespace SmartRegistry.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AdminsController(ApplicationDbContext context,RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public AdminsController(ApplicationDbContext context,RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _roleManager = roleManager;

@@ -125,16 +125,22 @@ namespace SmartRegistry.Web.Controllers
             }
         }
 
-        
-
         public async Task<string> MarkRegister(int studentId)
         {
             var student = _context.Student.FirstOrDefault(s => s.StudentId == studentId);
             if(student == null) return JsonConvert.SerializeObject(new { success = false });
 
+            var currentDateTime = DateTime.UtcNow;
+
             //  Determine which schedule to mark as to have been attended, thus getting which Subject has been attended
-            var schedule = _context.Schedule.FirstOrDefault(s => s.IsConfirmed && s.ScheduleFor.AddHours(2.0) <= DateTime.UtcNow.AddHours(2.0) && s.ScheduleTo.AddHours(2.0) >= DateTime.UtcNow.AddHours(2.0));
-            if (schedule == null) return JsonConvert.SerializeObject(new { success = false });
+            var schedule = _context.Schedule.FirstOrDefault(s => s.IsConfirmed && s.ScheduleFor//.AddHours(2.0) 
+                                                              <= currentDateTime.AddHours(2.0) 
+                                                              &&
+                                                            s.ScheduleTo//.AddHours(2.0) 
+                                                            >= currentDateTime.AddHours(2.0).AddMinutes(30) //currentDateTime.AddHours(2.0)
+                                                            );
+            if (schedule == null) 
+                return JsonConvert.SerializeObject(new { success = false });
 
             var attendee = new Attended
             {
@@ -147,7 +153,9 @@ namespace SmartRegistry.Web.Controllers
                 StudentId = student.StudentId
             };
 
+            _context.Add(attendee);
             await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
 
             return JsonConvert.SerializeObject(new { success = true });
         }

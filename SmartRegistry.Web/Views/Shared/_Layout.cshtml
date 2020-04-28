@@ -49,6 +49,9 @@
         <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
         <link href="~/css/FullCalendar/fullcalendar.min.css" rel='stylesheet' />
         <link href="~/css/FullCalendar/fullcalendar.print.min.css" rel='stylesheet' media='print' />
+
+
+        <script src="~/lib/signalr/signalr.min.js"></script>
     </environment>
 </head>
 <body class="fixed-left">
@@ -229,9 +232,9 @@
                         <li class="has_sub">
                             @*<a asp-controller="Home" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>*@
                             <a asp-controller="Dashboard" asp-action="Index" class="waves-effect"><i class="fas fa-chart-line"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>
-                            <ul class="list-unstyled">
-                                <li><a href="dashboard.html">Dashboard </a></li>
-                            </ul>
+                            @*<ul class="list-unstyled">
+                <li><a href="dashboard.html">Dashboard </a></li>
+            </ul>*@
                         </li>
 
                         <li class="has_sub">
@@ -243,10 +246,26 @@
                         </li>
 
                         <li class="has_sub">
-                            <a asp-controller="Departments" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Departments </span> </a>
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Departments </span> </a>
                             <ul class="list-unstyled">
-                                <li><a href="dashboard.html">Add Department </a></li>
-                                <li><a href="dashboard.html">Manage Departments </a></li>
+                                <li><a asp-controller="Departments" asp-action="Create">Add Department </a></li>
+                                <li><a asp-controller="Departments" asp-action="Index">Manage Departments </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Courses </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Courses" asp-action="Create">Add Course </a></li>
+                                <li><a asp-controller="Courses" asp-action="Index">Manage Courses </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Subjects </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Subjects" asp-action="Create">Add Subject </a></li>
+                                <li><a asp-controller="Subjects" asp-action="Index">Manage Subjects </a></li>
                             </ul>
                         </li>
 
@@ -257,22 +276,22 @@
                                 <li><a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Manage Student </span> </a></li>
                             </ul>
                         </li>
-                        
-                        @*<li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user-graduate"></i><span> Lecturers</span> <span class="menu-arrow"></span></a>
-                            <ul class="list-unstyled">
-                                <li><a asp-controller="Lecturers" asp-action="Create" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Add Student </span> </a></li>
-                                <li><a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Manage Student </span> </a></li>
-                            </ul>
-                        </li>*@
 
                         @*<li class="has_sub">
-                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-account"></i><span> Lecturers</span> <span class="menu-arrow"></span></a>
-                            <ul class="list-unstyled">
-                                <li><a href="person.html">Add Lecturer</a></li>
-                                <li><a href="dashboard.html">Manage Lecturers </a></li>
-                            </ul>
-                        </li>*@
+            <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user-graduate"></i><span> Lecturers</span> <span class="menu-arrow"></span></a>
+            <ul class="list-unstyled">
+                <li><a asp-controller="Lecturers" asp-action="Create" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Add Student </span> </a></li>
+                <li><a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Manage Student </span> </a></li>
+            </ul>
+        </li>*@
+
+                        @*<li class="has_sub">
+            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-account"></i><span> Lecturers</span> <span class="menu-arrow"></span></a>
+            <ul class="list-unstyled">
+                <li><a href="person.html">Add Lecturer</a></li>
+                <li><a href="dashboard.html">Manage Lecturers </a></li>
+            </ul>
+        </li>*@
 
                         <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-heart-outline"></i><span> Admins</span> <span class="menu-arrow active"></span></a>
@@ -430,12 +449,13 @@
 
         <!-- Modal-Effect -->
         @*<script src="../plugins/custombox/js/custombox.min.js"></script>
-            <script src="../plugins/custombox/js/legacy.min.js"></script>*@
+        <script src="../plugins/custombox/js/legacy.min.js"></script>*@
 
         <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
         <script src='https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.js'></script>
 
         <script src="~/js/site.js" asp-append-version="true"></script>
+        @*<script src="~/lib/signalr/signalr.min.js"></script>*@
 
     </environment>
     <environment exclude="Development">
@@ -454,7 +474,7 @@
 
         <script src="~/js/site.js" asp-append-version="true"></script>
         @*<script src="~/js/jquery.core.js" asp-append-version="true"></script>
-            <script src="~/js/jquery.app.js" asp-append-version="true"></script>*@
+        <script src="~/js/jquery.app.js" asp-append-version="true"></script>*@
         @*<script src="~/js/add-patient.js"></script>*@
 
         <script src="~/js/detect.js" asp-append-version="true"></script>
@@ -478,7 +498,7 @@
         <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js' asp-append-version="true"></script>
         <script src='https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.js' asp-append-version="true"></script>
 
-
+        @*<script src="~/lib/signalr/signalr.min.js"></script>*@
     </environment>
 
     <environment>

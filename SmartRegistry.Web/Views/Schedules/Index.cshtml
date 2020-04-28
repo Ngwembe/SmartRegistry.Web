@@ -42,8 +42,8 @@
                                                 @Html.DisplayNameFor(model => model.IsConfirmed)
                                             </th>
                                             @*<th>
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </th>*@
+                                                    @Html.DisplayNameFor(model => model.CreatedBy)
+                                                </th>*@
                                             <th>
                                                 @Html.DisplayNameFor(model => model.ScheduleFor)
                                             </th>
@@ -61,38 +61,38 @@
                                         {
                                             @foreach (var item in Model)
                                             {
-                                        <tr>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.LectureRoom)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IsConfirmed)
-                                            </td>
-                                            @*<td>
-            @Html.DisplayFor(modelItem => item.CreatedBy)
-        </td>*@
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.ScheduleFor)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.ScheduleTo)
-                                            </td>
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.LectureRoom)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.IsConfirmed)
+                                                    </td>
+                                                    @*<td>
+                                                            @Html.DisplayFor(modelItem => item.CreatedBy)
+                                                        </td>*@
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.ScheduleFor)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.ScheduleTo)
+                                                    </td>
 
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Subject.Code)
-                                            </td>
-                                            <td>
-                                                <a asp-action="Edit" asp-route-id="@item.ScheduleId" class="btn btn-secondary">Edit</a> |
-                                                <a asp-action="Details" asp-route-id="@item.ScheduleId" class="btn btn-info">Details</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.ScheduleId" class="btn btn-danger">Delete</a>
-                                                
-                                                @if (!item.IsConfirmed)
-                                                {
-                                                    <a asp-action="ConfirmSchedule" asp-route-id="@item.ScheduleId" class="btn btn-primary">Confirm</a>
-                                                }
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Subject.Code)
+                                                    </td>
+                                                    <td>
+                                                        <a asp-action="Edit" asp-route-id="@item.ScheduleId" class="btn btn-secondary">Edit</a> |
+                                                        <a asp-action="Details" asp-route-id="@item.ScheduleId" class="btn btn-info">Details</a> |
+                                                        <a asp-action="Delete" asp-route-id="@item.ScheduleId" class="btn btn-danger">Delete</a>
 
-                                            </td>
-                                        </tr>
+                                                        @if (!item.IsConfirmed)
+                                                        {
+                                                            <a asp-action="ConfirmSchedule" asp-route-id="@item.ScheduleId" class="btn btn-primary">Confirm</a>
+                                                        }
+
+                                                    </td>
+                                                </tr>
                                             }
                                         }
                                         else
@@ -163,7 +163,7 @@
                                 </div>
                                 <div class="modal-body">
                                     @*<h2 class="text-center" id="eventViewVenue"></h2>*@
-                                    <p >The schedule has been updated successfully!</p>
+                                    <p>The schedule has been updated successfully!</p>
                                 </div>
                                 <div class="modal-footer">
                                     <a href="#" class="btn btn-primary pull-right" data-dismiss="modal">OK</a>
@@ -175,7 +175,7 @@
 
                 <div id="createModal"></div>
             </div>
-            
+
             <div class="row">
                 <div class="modal fade" id="createSuccessModal">
                     <div class="fade in" role="dialog">
@@ -260,7 +260,7 @@
                 $.ajax({
                     type: "GET",
                     url: "/Schedules/GetSchedules",
-                    success: function (data) {                        
+                    success: function (data) {
 
                         $.each(data,
                             function (i, event) {
@@ -286,7 +286,7 @@
                             });
 
                         generateCalendar(events);
-                        
+
                     },
                     error: function (err) {
                         alert(err);
@@ -462,7 +462,7 @@
                                 //    }
                                 //});
 
-                                $('#saveSchedule').on('click', function(e) {
+                                $('#saveSchedule').on('click', function (e) {
                                     e.preventDefault();
 
                                     $('#createEventViewModal').modal('hide');
@@ -482,7 +482,7 @@
 
                                             $('#createEventViewModal').modal('hide');
                                             $('#createSuccessModal').modal('show');
-                                            
+
                                             getSchedules();
                                         }
                                     });
@@ -497,7 +497,7 @@
 
                     },
                     eventLimit: true,
-                    eventColor: '#378006',                    
+                    eventColor: '#378006',
                     eventClick: function (calEvent, jsEvent, view) {
                         $selectedSchedule = calEvent;
 
@@ -550,24 +550,73 @@
             }
 
             $('#btnConfirmLecture').on('click', function (e) {
-                    e.preventDefault();
+                e.preventDefault();
 
-                    if (confirm("Are you sure you want to confirm the schedule?")) {
-                        $.ajax({
-                            type: "GET",
-                            url: "/Schedules/ConfirmSchedule",
-                            data: { scheduleId: $selectedSchedule.id },
-                            success: function (data) {
-                                //TODO: Show confirmation success
-                                $('#eventView').modal('hide');
-                                getSchedules();
-                            },
-                            error: function (err) {
-                                alert(err);
-                            }
-                        });
-                    }
-                });
+                if (confirm("Are you sure you want to confirm the schedule?")) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Schedules/ConfirmSchedule",
+                        data: { scheduleId: $selectedSchedule.id },
+                        success: function (data) {
+                            //TODO: Show confirmation success
+                            $('#eventView').modal('hide');
+                            getSchedules();
+
+                            let scheduleId = $selectedSchedule.id;
+
+                            //  ALERT Listeners of the confirmation
+                            connection.invoke("SendConfirmationMessageToAll", scheduleId).catch(function (err) {
+                                return console.error(err.toString());
+                            });
+
+                        },
+                        error: function (err) {
+                            alert(err);
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script type="text/javascript">
+        "use strict";
+
+        let connection = new signalR.HubConnectionBuilder()
+            .withUrl("/messages")
+            .build();
+
+        connection.on("ReceiveMessage", function (message) {
+
+            if (message != null && typeof (message) != 'undefined') {
+                let msg = message.replace(/b/g, "&amp;").replace(/</g, "&alt;")
+                    .replace(/>/g, "&gt;");
+
+                let div = document.createElement("div");
+                div.innerHTML = msg + "<hr/>";
+
+                document.getElementById("messages").appendChild(div);
+            }
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById("sendButton").addEventListener("click", (event) => {
+
+            console.log(document.getElementById("message"));
+            console.log(document.getElementById("message").value);
+
+            let message = document.getElementById("message").value;
+
+            connection.invoke("SendMessageToAll", message).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            event.preventDefault();
         });
 
     </script>

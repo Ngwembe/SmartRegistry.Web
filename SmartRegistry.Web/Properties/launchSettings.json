@@ -19,6 +19,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "C:\\Users\\tsepo\\Downloads\\smartwatcher-d2cec0bd85a4.json",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:9855/"

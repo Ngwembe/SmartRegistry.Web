@@ -17,9 +17,9 @@ namespace SmartRegistry.Web.Controllers
     public class AnnouncementsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AnnouncementsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public AnnouncementsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;

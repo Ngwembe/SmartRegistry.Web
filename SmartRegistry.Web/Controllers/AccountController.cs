@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SmartRegistry.Web.Data;
 using SmartRegistry.Web.Data.Service;
 using SmartRegistry.Web.Extensions;
 using SmartRegistry.Web.Interfaces;
@@ -18,19 +20,22 @@ namespace SmartRegistry.Web.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly IAttendanceService _attendanceService;
         private readonly ILogger _logger;
 
-        public AccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+        private readonly ApplicationDbContext _context;
+        
+        public AccountController(ApplicationDbContext context,
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
             IEmailSender emailSender,
             IAttendanceService attendanceService,
             ILogger<AccountController> logger)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -90,6 +95,46 @@ namespace SmartRegistry.Web.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Authenticate([FromBody]LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    var userId = _userManager.GetUserId(HttpContext.User);
+                    var lecturer = await _context.Lecturer.FirstOrDefaultAsync(a => a.AccountId == userId);
+
+                    if (lecturer != null)
+                        return new OkObjectResult(lecturer);
+
+                    var student = await _context.Student.FirstOrDefaultAsync(a => a.AccountId == userId);
+
+                    if (student != null)
+                        return new OkObjectResult(student);
+
+                    
+                }
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToAction(nameof(LoginWith2fa), new { returnUrl = "/Home", model.RememberMe });
+                }
+                if (result.IsLockedOut)
+                {
+                    return RedirectToAction(nameof(Lockout));
+                }
+                else
+                {
+                    return new BadRequestObjectResult(model);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return new BadRequestObjectResult(model);
         }
 
         [HttpGet]

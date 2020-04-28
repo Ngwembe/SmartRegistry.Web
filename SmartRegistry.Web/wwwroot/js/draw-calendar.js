@@ -601,6 +601,27 @@ function pullSchedules(subjectId) {
     });
 
     retrieveSubjectSchedules(subjectId);
+
+    pullMonthlySubjectAttendance(subjectId);
+}
+
+function pullMonthlySubjectAttendance(subjectId) {
+    $.ajax({
+        type: "GET",
+        url: "/Schedules/RetrieveMonthly",
+        data: { subjectId: subjectId },
+        success: function (data) {
+            console.log("Monthly Data");
+            
+
+            drawSemesterlyChart(data);
+        },
+        error: function (err) {
+            alert(err);
+        }
+    });
+
+    return;
 }
 
 function retrieveSubjectSchedules(subjectId) {
@@ -620,7 +641,7 @@ function retrieveSubjectSchedules(subjectId) {
         }
     });
 
-};
+}
 
 function populateChart(data) {
 
@@ -697,4 +718,73 @@ function populateChart(data) {
     //chart.addSeries({ name: 'Absent', type: 'spline', data: absent });
 
     chart.redraw();
+}
+
+function drawSemesterlyChart(data) {
+
+    //****************     SEMESTERLY     *****************
+
+    var chart;
+    //var pointStart = Date.UTC(2018, 0, 1);
+
+    chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'semesterlyViewChart',
+            type: 'area'
+        },
+        title: {},
+        subtitle: {},
+        legend: { enabled: true },
+        tooltip: {},
+        plotOptions: {
+            series: {
+                //pointStart: pointStart,
+                pointInterval: 24 * 3600 * 1000 * 30
+            }
+        },
+        xAxis: {
+            //min: Date.UTC(2018, 0, 0),
+            //max: Date.UTC(2018, 5, 1),
+            //allowDecimals: false,
+            type: 'datetime',
+            tickInterval: 24 * 3600 * 1000 * 30, //one day
+            labels: {
+                rotation: 0
+            }
+
+        },
+        yAxis: {}
+    });
+    //chart = $('#semesterlyViewChart').highcharts();
+
+    var jsonString = '[ { "date": "2018-1-01", "in": "30", "out": "21" }, { "date": "2018-1-02", "in": "35", "out": "32" }, { "date": "2018-1-03", "in": "23", "out": "34" }, { "date": "2018-1-04", "in": "20", "out": "15" }, { "date": "2018-1-05", "in": "34", "out": "20" }, { "date": "2018-2-06", "in": "22", "out": "34" }, { "date": "2018-2-07", "in": "15", "out": "18" } ]';
+
+    var myData = JSON.parse(jsonString);
+    var dataArray = [];
+    var dataAbsentArray = [];
+
+    $.each(data, function (i, obj) {
+
+        console.log(obj);
+
+        var d = new Date(obj.date);
+        dataArray.push([Date.parse(d), parseInt(obj.present)]);
+        dataAbsentArray.push([Date.parse(d), parseInt(obj.absent)]);
+    });
+
+    //$.each(myData, function (i, obj) {
+    //    var d = new Date(obj.date);
+    //    dataArray.push([Date.parse(d), parseInt(obj.in)]);
+    //    dataAbsentArray.push([Date.parse(d), parseInt(obj.out)]);
+    //});
+
+    chart.addSeries({
+        data: dataArray, name: "Present"
+    });
+
+    chart.addSeries({
+        data: dataAbsentArray, name: "Absent"
+    });
+
+    //console.log('data is ' + dataArray);
 }

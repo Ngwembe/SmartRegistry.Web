@@ -5,7 +5,7 @@ using SmartRegistry.Web.Models;
 
 namespace SmartRegistry.Web.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext//<ApplicationUser>
     {
         private readonly IConfiguration _configuration;
 

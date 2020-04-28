@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SmartRegistry.Web.Models
+
+@model IEnumerable<SmartRegistry.Web.Models.Course>
+
+<div class="content-page">
+
+    <div class="content">
+        <div class="container">
+            <textarea name="message" id="message" class="col col-md-12"></textarea>
+            <input type="button" id="sendButton" class="col col-md-12" value="Send Message" />
+            <div id="messages"></div>
+        </div>
+    </div>
+
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script type="text/javascript">
+        "use strict";
+
+        let connection = new signalR.HubConnectionBuilder()
+            .withUrl("/messages")
+            .build();
+
+        connection.on("ReceiveMessage", function (message) {
+
+            if (message != null && typeof (message) != 'undefined') {
+                let msg = message.replace(/b/g, "&amp;").replace(/</g, "&alt;")
+                    .replace(/>/g, "&gt;");
+
+                let div = document.createElement("div");
+                div.innerHTML = msg + "<hr/>";
+
+                document.getElementById("messages").appendChild(div);
+            }
+        });
+
+        connection.on("ReceiveConfirmationMessage", function (message) {
+            if (message != null && typeof (message) != 'undefined') {
+                console.log(JSON.parse(message));
+            }
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById("sendButton").addEventListener("click", (event) => {
+
+            console.log(document.getElementById("message"));
+            console.log(document.getElementById("message").value);
+
+            let message = document.getElementById("message").value;
+
+            connection.invoke("SendMessageToAll", message).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            event.preventDefault();
+        });
+
+    </script>
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+    </footer>
+
+</div>

@@ -19,11 +19,11 @@ namespace SmartRegistry.Web.Controllers
     public class StudentsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public StudentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IHostingEnvironment hostingEnvironment, SignInManager<ApplicationUser> signInManager)
+        public StudentsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IHostingEnvironment hostingEnvironment, SignInManager<IdentityUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
@@ -74,7 +74,7 @@ namespace SmartRegistry.Web.Controllers
         // GET: Student/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new Student());
         }
 
         // POST: Student/Create
@@ -322,6 +322,29 @@ namespace SmartRegistry.Web.Controllers
             {
 
             }
+        }
+
+
+        //  RESTFUL API ENDPOINTS
+
+        [HttpGet]
+        public async Task<IActionResult> Get(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var student = await _context.Student.SingleOrDefaultAsync(m => m.StudentId == id);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            return new OkObjectResult(new { StudentId = student.StudentId, StudentNumber = student.StudentNumber, FirstName = student.FirstName, LastName = student.LastName,
+                AccountId = student.AccountId, SensorId = student.SensorId, DOB = student.DOB, Gender = student.Gender
+            });
         }
     }
 }

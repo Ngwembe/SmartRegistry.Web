@@ -15,6 +15,8 @@ using SmartRegistry.Web.Integration;
 using SmartRegistry.Web.Interfaces;
 using SmartRegistry.Web.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
+using SmartRegistry.Web.Hubs;
 
 namespace SmartRegistry.Web
 {
@@ -34,17 +36,23 @@ namespace SmartRegistry.Web
                 //options.UseMySql(Configuration.GetConnectionString("MySQLConnectionLocal")));
             //.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
+
             // Automatically perform database migration
-            
+
             // Important line of code to be uncommented after DEVELOPMENT
             //services.BuildServiceProvider().GetService<ApplicationDbContext>().Database.Migrate();
 
             //********************************************
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            //services.AddIdentityCore<IdentityUser>()
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("AzureConnection")));
@@ -59,31 +67,63 @@ namespace SmartRegistry.Web
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddScoped<IAttendanceService, AttendanceService>();
-
             services.AddScoped<IPatientHandler, PatientHandler>();
             services.AddScoped<IApiAccessor, ApiAccessor>();
             services.AddScoped<IReportingHandler, ReportingHandler>();
 
-            services.AddMvc();
+            services.AddSignalR();
+
+            services.AddMvc().AddMvcOptions(opt => {
+                opt.EnableEndpointRouting = false;
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            //services.AddMvc();
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            //services.AddMvc().AddRazorPagesOptions(options => {                
+            //    options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "");
+            //}).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //    app.UseBrowserLink();
+            //    app.UseDatabaseErrorPage();
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //}
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
-                app.UseDatabaseErrorPage();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=Account}/{action=Login}/{id?}");
+            //    //template: "{controller=Dashboard}/{action=Index}/{id?}");
+            //});
+
+            app.UseSignalR(config => {
+                config.MapHub<MessageHub>("/messages");
+            });
 
             app.UseMvc(routes =>
             {

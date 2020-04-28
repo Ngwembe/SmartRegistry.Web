@@ -16,9 +16,9 @@ namespace SmartRegistry.Web.Controllers
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public CoursesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public CoursesController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -66,7 +66,10 @@ namespace SmartRegistry.Web.Controllers
         // GET: Course/Create
         public IActionResult Create()
         {
-            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code");
+            //ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code");
+            ViewData["DepartmentId"] = new SelectList(_context.Department.Select(u =>
+                        new SelectListItem() { Value = u.DepartmentId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
             return View();
         }
 
@@ -92,7 +95,10 @@ namespace SmartRegistry.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code", course.DepartmentId);
+            //ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code");
+            ViewData["DepartmentId"] = new SelectList(_context.Department.Select(u =>
+                        new SelectListItem() { Value = u.DepartmentId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
             return View(course);
         }
 
@@ -109,7 +115,10 @@ namespace SmartRegistry.Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code", course.DepartmentId);
+            //ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code");
+            ViewData["DepartmentId"] = new SelectList(_context.Department.Select(u =>
+                        new SelectListItem() { Value = u.DepartmentId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text"); 
+            
             return View(course);
         }
 
@@ -145,7 +154,10 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code", course.DepartmentId);
+            //ViewData["DepartmentId"] = new SelectList(_context.Department, "Id", "Code");
+            ViewData["DepartmentId"] = new SelectList(_context.Department.Select(u =>
+                        new SelectListItem() { Value = u.DepartmentId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
             return View(course);
         }
 
