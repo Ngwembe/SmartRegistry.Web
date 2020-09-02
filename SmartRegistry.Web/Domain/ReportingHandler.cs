@@ -167,27 +167,6 @@ namespace SmartRegistry.Web.Domain
                     
                     pdfDoc.Close();
 
-
-                    ////  Sending document to the Cloud
-                    //PutObjectResponse response = null;
-
-                    //var request = new PutObjectRequest
-                    //{
-                    //    BucketName = "elasticbeanstalk-eu-west-2-925426318079",
-                    //    Key = fileName,
-                    //    InputStream = new MemoryStream(ms.ToArray()),
-                    //    //InputStream = new MemoryStream(ms.ToArray()),
-                    //    ContentType = "application/pdf",
-                    //    CannedACL = S3CannedACL.PublicRead
-                    //};
-
-                    //request.Metadata.Add("report", fileName);
-
-                    //// connecting to the client
-                    //var client = new AmazonS3Client("AKIAJMKBT2AZBA24LFYA", "DOnaWvOF6RAHLfcaqB3N3q41OmsJeyRxZP+uoNv+", Amazon.RegionEndpoint.USEast2);
-
-                    //response = await client.PutObjectAsync(request);
-
                     return ms.ToArray();
                 }
             }
