@@ -80,7 +80,7 @@ function drawMonthlyChart(subjectName, respData) {
         },
         yAxis: {
             title: {
-                text: 'Overall Attendance Statistics'
+                text: 'Overall Attendance Statistics (%)'
             },
             labels: {
                 formatter: function () {

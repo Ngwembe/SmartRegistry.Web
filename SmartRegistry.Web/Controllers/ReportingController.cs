@@ -32,7 +32,8 @@ namespace SmartRegistry.Web.Controllers
 
                 if (attachment != null)
                 {
-                    await _emailSender.SendReportAsync(attachment);
+                    _emailSender.SendReportAsync(attachment).Wait();
+                    //await _emailSender.SendReportAsync(attachment);
                 }
 
                 return RedirectToAction("GetAllEnrolled", "Subjects", new { id = id });
@@ -82,9 +83,6 @@ namespace SmartRegistry.Web.Controllers
                 throw;
             }
 
-
-
-
             //return RedirectToAction("GetAllEnrolled", "Subjects", new { id = id });
 
             //return File(path, "application/pdf");
@@ -96,7 +94,8 @@ namespace SmartRegistry.Web.Controllers
 
             if (attachment != null)
             {
-                await _emailSender.SendReportAsync(attachment);
+                _emailSender.SendReportAsync(attachment).Wait();
+                //await _emailSender.SendReportAsync(attachment);
             }
 
             //if (!string.IsNullOrWhiteSpace(attachment))
@@ -109,27 +108,30 @@ namespace SmartRegistry.Web.Controllers
                 _hostingEnvironment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             }
 
-            var path = $"{_hostingEnvironment.WebRootPath}\\Reports\\{attachment}";
+            MemoryStream ms = new System.IO.MemoryStream(attachment, 0, attachment.Length);
+            //ms.Write(attachment, 0, attachment.Length);
+            ms.Position = 0;
+            var memStreamLength = ms.Length;
             
+            return new FileStreamResult(ms, "application/pdf");
 
-            using (FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-            {
-                MemoryStream ms = new System.IO.MemoryStream();
-                await fs.CopyToAsync(ms);
+            //var path = $"{_hostingEnvironment.WebRootPath}\\Reports\\{attachment}";
 
-
-                //MemoryStream ms = new System.IO.MemoryStream();
-
-                byte[] byteInfo = ms.ToArray();
-                ms.Write(byteInfo, 0, byteInfo.Length);
-                ms.Position = 0;
-
-                //return new FileStreamResult(fs, "application/pdf");
-                return new FileStreamResult(ms, "application/pdf");
-            }
+            //using (FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            //{
+            //    MemoryStream ms = new System.IO.MemoryStream();
+            //    await fs.CopyToAsync(ms);
 
 
+            //    //MemoryStream ms = new System.IO.MemoryStream();
 
+            //    byte[] byteInfo = ms.ToArray();
+            //    ms.Write(byteInfo, 0, byteInfo.Length);
+            //    ms.Position = 0;
+
+            //    //return new FileStreamResult(fs, "application/pdf");
+            //    return new FileStreamResult(ms, "application/pdf");
+            //}
 
             //return RedirectToAction("GetAllEnrolled","Subjects", new { id = id });
 

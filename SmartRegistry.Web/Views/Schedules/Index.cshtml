@@ -31,7 +31,7 @@
                             <div Class="col-md-12">
 
 
-                                <a class="btn btn-primary pull-right hide" asp-action="Create" style="margin: 10px 1px;">Add Schedule</a>
+                                <a class="btn btn-primary pull-right hide" asp-action="Create" style="margin: 10px 1px; margin-bottom: 1%;">Add Schedule</a>
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -119,7 +119,7 @@
                         @*<h4 class="header-title m-t-0 m-b-30">Messages</h4>*@
                         <h2 class="text-center"><b>Subject Calendar Schedules</b></h2>
 
-                        <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
+                        <div class="inbox-widget slimscroll-alt" style="min-height: 460px;">
                             <div id="calendar"></div>
                         </div>
 
@@ -383,12 +383,9 @@
                     selectable: true,
                     selectHelper: true,
                     select: function (start, end, allDay) {
-
                         //var add = prompt("Set a new schedule?");
-
                         //if (add) {
                         //var lectureRoom = prompt("Enter Lecture Room");
-
                         //if (lectureRoom) {
 
                         var selectedDate = {
@@ -404,97 +401,104 @@
 
                         //startDate = `${startDate.getDate()}/${startDate.getMonth()}/${startDate.getFullYear()}`;
                         //endDate = `${endDate.getDate()}/${endDate.getMonth()}/${endDate.getFullYear()}`;
-
-                        //console.log('Start: ' + startDate);
-                        //console.log('End: ' + endDate);
-
-                        //console.log("Getting partial view...");
                         //return;
+                        var check = moment(start, 'DD-MMM-YYYY, hh:mm A').format('DD-MMM-YYYY hh:mm A');
+                        //var check = $.fullCalendar.formatDate(start, 'yyyy-MM-dd');
+                        console.log({ check });
+                        var today = moment(new Date(), 'DD-MMM-YYYY, hh:mm A').format('DD-MMM-YYYY hh:mm A');
+                        //var today = $.fullCalendar.formatDate(new Date(), 'yyyy-MM-dd');
+                        console.log({today});
 
-                        return $.ajax({
-                            type: "POST",
-                            url: "/Schedules/GetCreateModalPartialView",
-                            data: {
-                                scheduleFor: new Date(start).toJSON(),
-                                scheduleTo: new Date(end).toJSON()
-                                //,title: add,
-                                //lectureRoom: lectureRoom
-                            },
+                        if (check >= today) {
+                            console.log("Previous day selected ...");
 
-                            //JSON.stringify(selectedDate),//{startDate: selectedDate.startDate, endDate: selectedDate.endDate}, // //.serialize(),
-                            success: function (data) {
-                                $('#createModal').empty().html(data);
+                            return $.ajax({
+                                type: "POST",
+                                url: "/Schedules/GetCreateModalPartialView",
+                                data: {
+                                    scheduleFor: new Date(start).toJSON(),
+                                    scheduleTo: new Date(end).toJSON()
+                                    //,title: add,
+                                    //lectureRoom: lectureRoom
+                                },
 
-                                $('.date').datepicker({
-                                    beforeShowDay: $.datepicker.noWeekends,
-                                    dateFormat: "dd/MM/yyyy HH:mm"
-                                    //dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
-                                });
+                                //JSON.stringify(selectedDate),//{startDate: selectedDate.startDate, endDate: selectedDate.endDate}, // //.serialize(),
+                                success: function(data) {
+                                    $('#createModal').empty().html(data);
 
-                                $('#createEventViewModal').modal('show');
+                                    $('.date').datepicker({
+                                        beforeShowDay: $.datepicker.noWeekends,
+                                        dateFormat: "dd/MM/yyyy HH:mm"
+                                        //dateFormat: "dd/MM/yyyy HH:mm:ss.fff"
+                                    });
 
-                                $('.select2').select2();
-                                //$('.select2.subjects').select2({
-                                //    ajax: {
-                                //        url: '/Subjects/GetMatchingSubjects',
-                                //        async: true,
-                                //        data: function (params) {
-                                //            var query = {
-                                //                searchKey: params.term,
-                                //                type: 'public'
-                                //            }
-                                //            // Query parameters will be ?searchKey=[term]&type=public
-                                //            return query;
-                                //        },
-                                //        processResults: function (data) {
-                                //            // Tranforms the top-level key of the response object from 'items' to 'results'
+                                    $('#createEventViewModal').modal('show');
 
-                                //            var subjects = JSON.parse(data);
-                                //            console.log(subjects);
+                                    $('.select2').select2();
+                                    //$('.select2.subjects').select2({
+                                    //    ajax: {
+                                    //        url: '/Subjects/GetMatchingSubjects',
+                                    //        async: true,
+                                    //        data: function (params) {
+                                    //            var query = {
+                                    //                searchKey: params.term,
+                                    //                type: 'public'
+                                    //            }
+                                    //            // Query parameters will be ?searchKey=[term]&type=public
+                                    //            return query;
+                                    //        },
+                                    //        processResults: function (data) {
+                                    //            // Tranforms the top-level key of the response object from 'items' to 'results'
 
-                                //            return {
-                                //                //results: data.items
-                                //                //results: JSON.parse(data)
-                                //                //results: data
-                                //                results: JSON.stringify(data)
-                                //            };
-                                //        }
-                                //    }
-                                //});
+                                    //            var subjects = JSON.parse(data);
+                                    //            console.log(subjects);
 
-                                $('#saveSchedule').on('click', function (e) {
-                                    e.preventDefault();
+                                    //            return {
+                                    //                //results: data.items
+                                    //                //results: JSON.parse(data)
+                                    //                //results: data
+                                    //                results: JSON.stringify(data)
+                                    //            };
+                                    //        }
+                                    //    }
+                                    //});
 
-                                    $('#createEventViewModal').modal('hide');
-
-                                    var scheduleForm = $('#add-patient').serializeArray();
-
-                                    console.log(scheduleForm);
-
-                                    $.ajax({
-                                        type: "POST",
-                                        url: '/Schedules/Create',
-                                        dataType: 'json',
-                                        contentType: 'application/json',
-                                        data: JSON.stringify(scheduleForm),
-                                        success: (e) => {
+                                    $('#saveSchedule').on('click',
+                                        function(e) {
                                             e.preventDefault();
 
                                             $('#createEventViewModal').modal('hide');
-                                            $('#createSuccessModal').modal('show');
 
-                                            getSchedules();
-                                        }
-                                    });
-                                });
-                            },
-                            error: function (err) {
-                                console.log(err);
-                            }
-                        });
+                                            var scheduleForm = $('#add-patient').serializeArray();
+
+                                            console.log(scheduleForm);
+
+                                            $.ajax({
+                                                type: "POST",
+                                                url: '/Schedules/Create',
+                                                dataType: 'json',
+                                                contentType: 'application/json',
+                                                data: JSON.stringify(scheduleForm),
+                                                success: (e) => {
+                                                    e.preventDefault();
+
+                                                    $('#createEventViewModal').modal('hide');
+                                                    $('#createSuccessModal').modal('show');
+
+                                                    getSchedules();
+                                                }
+                                            });
+                                        });
+                                },
+                                error: function(err) {
+                                    console.log(err);
+                                }
+                            });
+                        } else {
+                            console.log("Previous day selected ...");
+                        }
                         //}
                         //}
-
                     },
                     eventLimit: true,
                     eventColor: '#378006',

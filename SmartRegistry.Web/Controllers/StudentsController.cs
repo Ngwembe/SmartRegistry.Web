@@ -323,8 +323,7 @@ namespace SmartRegistry.Web.Controllers
 
             }
         }
-
-
+        
         //  RESTFUL API ENDPOINTS
 
         [HttpGet]

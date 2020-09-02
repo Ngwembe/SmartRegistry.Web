@@ -12,6 +12,13 @@ namespace SmartRegistry.Web.Hubs
 {
     public class MessageHub : Hub
     {
+        private class MessageExchange
+        {
+            public string Message { get; set; }
+            public string ReceivedAt { get; set; }
+            public string Sender { get; set; }
+        }
+
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
@@ -21,9 +28,16 @@ namespace SmartRegistry.Web.Hubs
             _userManager = userManager;
         }
 
-        public Task SendMessageToAll(string message)
+        public Task SendMessageToAll(string message, string sender)
         {
-            return Clients.All.SendAsync("ReceiveMessage", message);
+            MessageExchange broadcast = new MessageExchange()
+            {
+                Message = message,
+                ReceivedAt = DateTime.Now.ToString("g"),
+                Sender = sender
+            };
+
+            return Clients.All.SendAsync("ReceiveMessage", JsonConvert.SerializeObject(broadcast));
         }
 
         public Task SendConfirmationMessageToAll(int scheduleId)

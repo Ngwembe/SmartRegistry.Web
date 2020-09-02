@@ -36,6 +36,7 @@
                                             //var admins = await _UserManager.GetUsersInRoleAsync("System Admin");
                                             var admins = (await _UserManager.GetUsersInRoleAsync("System Admin")).ToList();
                                             admins.AddRange((await _UserManager.GetUsersInRoleAsync("Admin")).ToList());
+                                            admins.AddRange((await _UserManager.GetUsersInRoleAsync("Lecturer")).ToList());
 
                                             foreach (var admin in admins)
                                             {
@@ -78,6 +79,17 @@
                                                         <td>SYSTEM ADMIN</td>
                                                         <td></td>
                                                     }
+                                                    else if (await _UserManager.IsInRoleAsync(admin, "Lecturer"))
+                                                    {
+                                                        <td>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="col-md-6">LECTURER</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td></td>
+                                                    }
                                                 </tr>
                                             }
                                         }
@@ -90,7 +102,7 @@
                     </div> <!-- end card -->
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="card-box">

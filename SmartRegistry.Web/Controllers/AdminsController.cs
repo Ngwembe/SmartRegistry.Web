@@ -117,7 +117,7 @@ namespace SmartRegistry.Web.Controllers
         // POST: Admins/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("Id,AccountId")] Lecturer lecturer)
+        public async Task<ActionResult> Create([Bind("Id,AccountId,LecturerId")] Lecturer lecturer)
         {
             try
             {

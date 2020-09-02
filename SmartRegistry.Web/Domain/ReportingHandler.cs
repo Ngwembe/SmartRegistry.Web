@@ -385,7 +385,7 @@ namespace SmartRegistry.Web.Domain
                 headerTable.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
 
                 headerTable.AddCell("Date");
-                headerTable.AddCell(DateTime.Now.ToString("R"));
+                headerTable.AddCell(DateTime.Now.ToString("G"));
                 headerTable.AddCell("Lecturer Name");
                 headerTable.AddCell($"{subject.Lecturer.FirstName} {subject.Lecturer.LastName}");
                 headerTable.AddCell("Subject Name");
@@ -538,7 +538,7 @@ namespace SmartRegistry.Web.Domain
 
                     doc.Open();
 
-                    var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
+                    //var pdfDoc = new iTextSharp.text.Document(PageSize.LETTER, 40f, 40f, 60f, 60f);
 
                     if (string.IsNullOrWhiteSpace(_hostingEnvironment.WebRootPath))
                     {
@@ -558,7 +558,9 @@ namespace SmartRegistry.Web.Domain
                         SpacingAfter = 10f
                     };
 
-                    pdfDoc.Add(spacer);
+                    //pdfDoc.Open();
+                    //pdfDoc.Add(spacer);
+                    doc.Add(spacer);
 
                     var headerTable = new PdfPTable(new[] { .75f, 2.25f })
                     {
@@ -569,7 +571,7 @@ namespace SmartRegistry.Web.Domain
                     headerTable.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
 
                     headerTable.AddCell("Date");
-                    headerTable.AddCell(DateTime.Now.ToString("R"));
+                    headerTable.AddCell(DateTime.Now.ToString("G"));
                     headerTable.AddCell("Lecturer Name");
                     headerTable.AddCell($"{subject.Lecturer.FirstName} {subject.Lecturer.LastName}");
                     headerTable.AddCell("Subject Name");
@@ -585,11 +587,12 @@ namespace SmartRegistry.Web.Domain
                     image.BorderWidthTop = 36f;
                     image.BorderColorTop = BaseColor.WHITE;
 
-                    pdfDoc.Add(image);
-                    pdfDoc.Add(headerTable);
-                    pdfDoc.Add(spacer);
-
-
+                    doc.Add(image);
+                    doc.Add(headerTable);
+                    doc.Add(spacer);
+                    //pdfDoc.Add(image);
+                    //pdfDoc.Add(headerTable);
+                    //pdfDoc.Add(spacer);
 
                     //var columnCount = 4;
                     //var columnWidth = new[] { 0.75f, 1f, 0.75f, 2f };
@@ -602,37 +605,37 @@ namespace SmartRegistry.Web.Domain
                         DefaultCell = { MinimumHeight = 22f }
                     };
 
-                    var cell = new PdfPCell(new Phrase($"Attendance for {subject.Name} ({subject.Code}) (Second Semester)", new Font(Font.FontFamily.HELVETICA, 15f)))
+                    string semester = DateTime.Today.Month < 7 ? "(First Semester)" : "(Second Semester)";
+
+                    var cell = new PdfPCell(new Phrase($"Attendance for {subject.Name} ({subject.Code}) {semester}", new Font(Font.FontFamily.HELVETICA, 15f)))
                     {
                         Colspan = 6,
                         HorizontalAlignment = Element.ALIGN_CENTER,
-                        MinimumHeight = 30f
-
-
-                        ,
+                        MinimumHeight = 30f,
                         BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204)
                     };
-
-
+                    
                     table.AddCell(cell);
 
+                    table.AddCell(new PdfPCell(new Phrase("Student Number")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
                     table.AddCell(new PdfPCell(new Phrase("First Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
                     table.AddCell(new PdfPCell(new Phrase("Last Name")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
                     table.AddCell(new PdfPCell(new Phrase("Gender")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-                    table.AddCell(new PdfPCell(new Phrase("Date of Birth")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                    //table.AddCell(new PdfPCell(new Phrase("Date of Birth")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
 
-                    table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
-                    table.AddCell(new PdfPCell(new Phrase("START DATE/TIME")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                    table.AddCell(new PdfPCell(new Phrase("Start Date/Time")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
+                    table.AddCell(new PdfPCell(new Phrase("End Date/Time")) { MinimumHeight = 30f, BackgroundColor = new iTextSharp.text.BaseColor(255, 204, 204) });
 
                     results.ToList().ForEach(s =>
                     {
+                        table.AddCell(s.StudentNumber.ToString());
                         table.AddCell(s.FirstName);
                         table.AddCell(s.LastName);
                         table.AddCell(s.Gender);
-                        table.AddCell(s.DOB.ToString());
+                        //table.AddCell(s.DOB.ToString("d"));
 
-                        table.AddCell(s.ScheduleFrom.ToString() ?? "Unspecified");
-                        table.AddCell(s.ScheduleTo.ToString() ?? "Unspecified");
+                        table.AddCell(s.ScheduleFrom.ToString("g") ?? "Unspecified");
+                        table.AddCell(s.ScheduleTo.ToString("g") ?? "Unspecified");
                     });
 
 
@@ -659,13 +662,12 @@ namespace SmartRegistry.Web.Domain
                     //};
 
                     table.AddCell(cell);
-                    pdfDoc.Add(table);
-
-
-                    pdfDoc.Close();
+                    doc.Add(table);
+                    //pdfDoc.Add(table);
                     
                     doc.Close();
-
+                    //pdfDoc.Close();
+                    
                     return ms.ToArray();
                 };
 

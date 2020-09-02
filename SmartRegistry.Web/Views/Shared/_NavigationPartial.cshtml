@@ -1,0 +1,277 @@
+@using Microsoft.AspNetCore.Identity
+@using SmartRegistry.Web.Models
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    @*<form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown user-box">
+                    <a href="" class="dropdown-toggle waves-effect user-link" data-toggle="dropdown" aria-expanded="true">
+                        <img src="~/images/users/avatar-1.jpg" alt="user-img" class="img-circle user-img">
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-right arrow-dropdown-menu arrow-menu-right user-list notify-list">
+                        <li>
+                            <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)"><i class="ti-user m-r-5"></i> Profile</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)"><i class="ti-settings m-r-5"></i> Settings</a>
+                        </li>
+                        <li>
+                            <button type="submit" class="btn btn-default navbar-btn btn-block"><i class="ti-power-off m-r-5 pull-left"></i>Log out</button>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </form>*@
+
+
+    <!--- Sidemenu -->
+    <div id="sidebar-menu">
+        <ul>
+            <li class="menu-title">Navigation</li>
+
+            <li class="has_sub">
+                @*<a asp-controller="Home" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>*@
+                <a asp-controller="Dashboard" asp-action="Index" class="waves-effect"><i class="fas fa-chart-line"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>
+                @*<ul class="list-unstyled">
+                        <li><a href="dashboard.html">Dashboard </a></li>
+                    </ul>*@
+            </li>
+
+            @*<li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user-graduate"></i><span> Lecturers</span> <span class="menu-arrow"></span></a>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Lecturers" asp-action="Create" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Add Student </span> </a></li>
+                        <li><a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Manage Student </span> </a></li>
+                    </ul>
+                </li>*@
+
+            @*<li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-account"></i><span> Lecturers</span> <span class="menu-arrow"></span></a>
+                    <ul class="list-unstyled">
+                        <li><a href="person.html">Add Lecturer</a></li>
+                        <li><a href="dashboard.html">Manage Lecturers </a></li>
+                    </ul>
+                </li>*@
+
+
+            @{
+                bool isUserAdmin = User.IsInRole("System Admin");
+                bool isUserStaff = User.IsInRole("System Admin") || User.IsInRole("Admin") || User.IsInRole("Lecturer");
+
+                if (isUserStaff)
+                {
+                    if (isUserAdmin)
+                    {
+                        <li class="has_sub">
+                            <a href="javascipt:void(0)" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="menu-arrow"></span> <span> Faculties </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Faculties" asp-action="Create" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Add Faculty </span> </a></li>
+                                <li><a asp-controller="Faculties" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Manage Faculty </span> </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="menu-arrow"></span> <span> Departments </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Departments" asp-action="Create">Add Department </a></li>
+                                <li><a asp-controller="Departments" asp-action="Index">Manage Departments </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="menu-arrow"></span> <span> Courses </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Courses" asp-action="Create">Add Course </a></li>
+                                <li><a asp-controller="Courses" asp-action="Index">Manage Courses </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="menu-arrow"></span> <span> Subjects </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Subjects" asp-action="Create">Add Subject </a></li>
+                                <li><a asp-controller="Subjects" asp-action="Index">Manage Subjects </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-heart-outline"></i><span> Admins</span> <span class="menu-arrow"></span></a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Admins" asp-action="Create">Add Admin</a></li>
+                                <li><a asp-controller="Admins" asp-action="Index">Manage Admins</a></li>
+
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user-graduate"></i><span> Students</span> <span class="menu-arrow"></span></a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Students" asp-action="Create" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Add Student </span> </a></li>
+                                <li><a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Manage Students </span> </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-calendar"></i><span> Schedules</span> <span class="menu-arrow"></span></a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Schedules" asp-action="Create">Add Schedule</a></li>
+                                <li><a asp-controller="Schedules" asp-action="Index">Manage Schedules</a></li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="has_sub">
+                            <a href="javascipt:void(0)" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Faculties </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Faculties" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> View Faculties </span> </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Departments </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Departments" asp-action="Index">View Departments</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Courses </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Courses" asp-action="Index">View Courses</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Subjects </span> </a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Subjects" asp-action="Index">View Subjects </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user-graduate"></i><span> Students</span> <span class="menu-arrow"></span></a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Students" asp-action="Create" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Add Student </span> </a></li>
+                                <li><a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Manage Students </span> </a></li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-calendar"></i><span> Schedules</span> <span class="menu-arrow"></span></a>
+                            <ul class="list-unstyled">
+                                <li><a asp-controller="Schedules" asp-action="Create">Add Schedule</a></li>
+                                <li><a asp-controller="Schedules" asp-action="Index">Manage Schedules</a></li>
+                            </ul>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="has_sub">
+                        <a href="javascipt:void(0)" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Faculties </span> </a>
+                        <ul class="list-unstyled">
+                            <li><a asp-controller="Faculties" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> View Faculties </span> </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Departments </span> </a>
+                        <ul class="list-unstyled">
+                            <li><a asp-controller="Departments" asp-action="Index">View Departments</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Courses </span> </a>
+                        <ul class="list-unstyled">
+                            <li><a asp-controller="Courses" asp-action="Index">View Courses</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Subjects </span> </a>
+                        <ul class="list-unstyled">
+                            <li><a asp-controller="Subjects" asp-action="Index">View Subjects </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-calendar"></i><span> Schedules</span> <span class="menu-arrow active"></span></a>
+                        <ul class="list-unstyled">
+                            <li><a asp-controller="Schedules" asp-action="Index">View Schedules</a></li>
+                        </ul>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+    <!-- Sidebar -->
+
+
+}
+else
+{
+    <!--- Sidemenu -->
+    <div id="sidebar-menu">
+        <ul>
+            <li class="menu-title">Navigation</li>
+
+            <li class="has_sub">
+                <a asp-controller="Dashboard" asp-action="Index" class="waves-effect"><i class="fas fa-chart-line"></i><span class="label label-success pull-right"></span> <span> Dashboard </span> </a>
+            </li>
+
+            <li class="has_sub">
+                <a href="javascipt:void(0)" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Faculties </span> </a>
+                <ul class="list-unstyled">
+                    <li><a asp-controller="Faculties" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> View Faculties </span> </a></li>
+                </ul>
+            </li>
+
+            <li class="has_sub">
+                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Departments </span> </a>
+                <ul class="list-unstyled">
+                    <li><a asp-controller="Departments" asp-action="Index">View Departments</a></li>
+                </ul>
+            </li>
+
+            <li class="has_sub">
+                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Courses </span> </a>
+                <ul class="list-unstyled">
+                    <li><a asp-controller="Courses" asp-action="Index">View Courses</a></li>
+                </ul>
+            </li>
+
+            <li class="has_sub">
+                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> Subjects </span> </a>
+                <ul class="list-unstyled">
+                    <li><a asp-controller="Subjects" asp-action="Index">View Subjects </a></li>
+                </ul>
+            </li>
+
+            <li class="has_sub">
+                <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-user-graduate"></i><span> Students</span> <span class="menu-arrow"></span></a>
+                <ul class="list-unstyled">
+                    <li><a asp-controller="Students" asp-action="Index" class="waves-effect"><i class="mdi mdi-view-dashboard"></i><span class="label label-success pull-right"></span> <span> View Students </span> </a></li>
+                </ul>
+            </li>
+
+            <li class="has_sub">
+                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-calendar"></i><span> Schedules</span> <span class="menu-arrow active"></span></a>
+                <ul class="list-unstyled">
+                    <li><a asp-controller="Schedules" asp-action="Index">View Schedules</a></li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+    <!-- Sidebar -->
+}

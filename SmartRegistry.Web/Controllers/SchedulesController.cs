@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -45,6 +46,26 @@ namespace SmartRegistry.Web.Controllers
             ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code");
             return View(schedules);
         }
+
+        //public IActionResult Index(string userId)
+        //{
+        //    var user = _userManager.FindByIdAsync(userId);
+
+        //    if (user == null)
+        //        return StatusCode((int) HttpStatusCode.Forbidden, "Oops! You have to login first!");
+
+        //    List<Schedule> schedules = null;
+
+        //    if (!string.IsNullOrWhiteSpace(userId))
+        //    {
+        //        schedules = _context.Schedule.Include(s => s.Subject).Where(s => s.CreatedBy == userId && !s.IsDeleted).ToList();
+        //        return View(schedules.ToList());
+        //    }
+
+        //    schedules = _context.Schedule.Include(s => s.Subject).Where(s => !s.IsDeleted).ToList();
+
+        //    return new OkObjectResult(JsonConvert.SerializeObject(schedules));
+        //}
 
         // GET: Schedule/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -200,7 +221,7 @@ namespace SmartRegistry.Web.Controllers
                 scheduleData.Add(new ScheduleViewModel { ScheduleId = s.ScheduleId, Absent = absent, Present = present, Date = s.ScheduleFor });
             });
 
-            return new JsonResult(scheduleData);
+            return new JsonResult(new { scheduleData = scheduleData.OrderBy(s => s.Date), subject = schedules.FirstOrDefault()?.Subject});
 
             //var details = MapperHelper.Map(new ScheduleDetailsViewModel(), schedules);
             //bool v = totalEnrollments > 0;
@@ -318,31 +339,55 @@ namespace SmartRegistry.Web.Controllers
 
             //IFormatProvider culture = new CultureInfo("en-ZA", true); //culture = new CultureInfo("en-US", true);
             //var format = "dd/MM/yyyy"; //format = "dd/MM/yyyy HH:mm:ss.fff";
-
-
+            
             //var dateToBeCreated = new Schedule()
             //{
-
             //    ScheduleFor = DateTime.ParseExact(startDate, format, culture),// (startDate),
             //    ScheduleTo = DateTime.ParseExact(endDate, format, culture)// Convert.ToDateTime(endDate)
             //};
 
             //return View(schedule);
             //return View("Create", dateToBeCreated);
-            var userId = _userManager.GetUserId(HttpContext.User);
-            var lecturer = _context.Lecturer.FirstOrDefault(l => l.AccountId == userId);
+            
+            var user = await _userManager.GetUserAsync(this.User);
 
-            if (lecturer == null)
-                return View(nameof(Index));
+            if (user == null) return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Index", "Dashboard", new { subjectId = schedule.SubjectId })});
 
-            var subjects = await _context.Subject.Include(s => s.Lecturer).Where(s => s.Lecturer.LecturerId == lecturer.LecturerId).ToListAsync();//.AsEnumerable();
-           
+            var userId = await _userManager.GetUserIdAsync(user);
 
-            //ViewData["SubjectId"] = new SelectList(subjects, "Id", "Code");
-            ViewBag.SubjectId = new SelectList(subjects.Select(u =>
-                               new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+            if (userId == null) return Create();
 
-            return PartialView("_CreateSchedulePartial", schedule);
+            var userIdentity = await _userManager.FindByIdAsync(userId);
+
+            if (await _userManager.IsInRoleAsync(userIdentity, "System Admin") || await _userManager.IsInRoleAsync(userIdentity, "Admin"))
+            {
+                var subjects = await _context.Subject.Include(s => s.Lecturer).ToListAsync();//.AsEnumerable();
+
+                //ViewData["SubjectId"] = new SelectList(subjects, "Id", "Code");
+                ViewBag.SubjectId = new SelectList(subjects.Select(u =>
+                    new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
+                return PartialView("_CreateSchedulePartial", schedule);
+            }
+            else //if (await _userManager.IsInRoleAsync(userIdentity, "Lecturer"))
+            {
+                var lecturer = _context.Lecturer.FirstOrDefault(l => l.AccountId == userId);
+
+                if (lecturer == null)
+                    return View(nameof(Index));
+
+                var subjects = await _context.Subject.Include(s => s.Lecturer).Where(s => s.Lecturer.LecturerId == lecturer.LecturerId).ToListAsync();//.AsEnumerable();
+                
+                //ViewData["SubjectId"] = new SelectList(subjects, "Id", "Code");
+                ViewBag.SubjectId = new SelectList(subjects.Select(u =>
+                    new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text");
+
+                return PartialView("_CreateSchedulePartial", schedule);
+            }
+            //else
+            //{
+            //    return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Index", "Dashboard", new { subjectId = schedule.SubjectId }) });
+            //}
         }
 
         // POST: Schedule/Create
@@ -385,7 +430,11 @@ namespace SmartRegistry.Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code", schedule.SubjectId);
+
+            //ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code", schedule.SubjectId);
+            ViewBag.SubjectId = new SelectList(_context.Subject.Select(u =>
+                new SelectListItem() { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }), "Value", "Text", schedule.SubjectId);
+
             return View(schedule);
         }
 
@@ -395,15 +444,15 @@ namespace SmartRegistry.Web.Controllers
         [HttpPost]
         //[ValidateAntiForgeryToken]
         //public async Task<IActionResult> Edit(int id, [Bind("Id,LectureRoom,IsConfirmed,CreatedBy,CreatedAt,LastUpdatedBy,LastUpdatedAt,IsDeleted,DeletedBy,DeletedAt,SubjectId")] Schedule schedule)
-        public async Task<IActionResult> Edit(int id, [Bind("Id,LectureRoom,IsConfirmed,ScheduleFor, ScheduleTo,SubjectId")] Schedule schedule)
+        public async Task<IActionResult> Edit(int scheduleId, [Bind("Id,LectureRoom,IsConfirmed,ScheduleFor, ScheduleTo,SubjectId, ScheduleId")] Schedule schedule)
         {
-            if (id != schedule.ScheduleId)
-            {
-                return NotFound();
-            }
-
-            var result = _context.Schedule.FirstOrDefault(s => s.ScheduleId == id);
-            if(result == null) return NotFound();
+            //if (scheduleId != schedule.ScheduleId)
+            //{
+            //    return NotFound();
+            //}
+            var result = _context.Schedule.FirstOrDefault(s => s.ScheduleId == schedule.ScheduleId);
+            //var result = _context.Schedule.FirstOrDefault(s => s.ScheduleId == scheduleId);
+            if (result == null) return NotFound();
 
             result.LectureRoom = schedule.LectureRoom;
             result.ScheduleFor = schedule.ScheduleFor;
@@ -434,8 +483,8 @@ namespace SmartRegistry.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             //}
-            ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code", schedule.SubjectId);
-            return View(schedule);
+            //ViewData["SubjectId"] = new SelectList(_context.Subject, "Id", "Code", schedule.SubjectId);
+            //return View(schedule);
         }
 
         // GET: Schedule/Delete/5

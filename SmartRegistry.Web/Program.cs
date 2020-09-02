@@ -18,11 +18,17 @@ namespace SmartRegistry.Web
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
+            //.UseKestrel()
+            //.UseContentRoot(Directory.GetCurrentDirectory()) //Like this
+            //.UseIISIntegration()
             WebHost.CreateDefaultBuilder(args)
-                //.UseKestrel()
-                //.UseContentRoot(Directory.GetCurrentDirectory()) //Like this
-                //.UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
+            //.UseUrls("http://192.168.4.3")
+            .UseUrls("http://*")
+            //.UseUrls("http://192.168.4.2")
+            //.UseUrls("http://192.168.8.108")
+            //.UseUrls("http://192.168.8.4")
+            //.UseUrls("http://*:8970")
+            .UseStartup<Startup>()
+            .Build();
     }
 }

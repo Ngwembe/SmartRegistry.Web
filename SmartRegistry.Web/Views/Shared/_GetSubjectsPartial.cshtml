@@ -1,0 +1,68 @@
+﻿@model SmartRegistry.Web.ViewModels.HomeViewModels.HomePageViewModel
+
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="row">
+                    <h2 class="well text-center"> @ViewData["Institution"] </h2>
+                    <p class="text-center">Select subject to be updated here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6">
+                    <div class="card-box">
+                        <h4 class="header-title m-t-0 m-b-30">Faculties @ViewData["InstitutionAbbrev"] offers</h4>
+                        <hr />
+
+                        <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
+
+                            @if (Model.Faculties != null && Model.Faculties.Any())
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var faculty in Model.Faculties.OrderBy(f => f.Name))
+                                    {
+                                        @*<a href="Faculty/Details/@faculty.Id">*@
+                                        <p class="inbox-item-text">
+                                            <a href="@ViewData["HostName"]/Faculties/Details/@faculty.FacultyId">
+                                                <div class="inbox-item">
+                                                    @faculty.Name (@faculty.Code)
+                                                </div>
+                                            </a>
+                                        </p>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="text-center">There are no courses available. Continue visiting @ViewData["Institution"]'s platform to get updates.</h6>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    </div> <!-- end card -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer text-right">
+        @{
+            <i>@($"{DateTime.Now.Year} © SmartRegistry")</i>
+        }
+    </footer>
+</div>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SmartRegistry.Web.Models.Subject>
+﻿@model SmartRegistry.Web.Controllers.DashboardModel
 
 <link href="~/lib/morris/morris-0.5.1/css/morris.css" rel="stylesheet" />
 <link href="~/lib/highcharts/css/highcharts.css" rel="stylesheet" />
@@ -13,8 +13,8 @@
 
 <style>
     .module-balls {
-        width: 11%;
-        height: 130px !important;
+        width: 120px !important;
+        height: 120px !important;
         border-radius: 50%;
         text-decoration: none;
     }
@@ -37,40 +37,38 @@
         background-color: #f3eaea;
         /*background-color: #dcdcdc;*/
     }
+
+    .filter-flex-container {
+        display: flex;
+        flex-wrap: nowrap;
+        /*background-color: #451234;*/
+    }
+
+        .filter-flex-container > div {
+            /*background-color: #f1f1f1;*/
+            width: 35%;
+            margin: 1%;
+            text-align: center;
+            line-height: 75px;
+            font-size: 30px;
+        }
 </style>
 
 <div class="content-page">
     <div class="content">
-
-        <div class="row">
-            <h2 class="text-center"><b>Subject(s)</b></h2>
-            <div class="col-md-12 m-b-30">
-
-                @if (Model != null && Model.Any())
-                {
-                    if (Model.Count() > 4)
-                    {
-                        foreach (var subject in Model)
-                        {
-                            <a class="col-md-3 m-l-15 m-r-15 module-balls" href="javascript:void(0);" onclick="pullSubjectSchedules('@subject.SubjectId');" style="border: 2px solid #472493;">
-                                <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">@subject.Code</h2>
-                            </a>
-                        }
-                    }
-                    else
-                    {
-                        <div class="col-md-6 m-b-30">
-                            @foreach (var subject in Model)
-                            {
-                                <a class="col-md-3 m-l-15 m-r-15 module-balls-few pull-right" href="javascript:void(0);" onclick="pullSubjectSchedules('@subject.SubjectId');" style="border: 2px solid #472493;">
-                                    <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">@subject.Code</h2>
-                                </a>
-                            }
-                        </div>
-                    }
-                }
+        @if (Model?.Subject != null)
+        {
+            <div class="row">
+                @*<h2 class="text-center"><b>Subject(s)</b></h2>*@
+                <div class="col-md-12 m-b-30">
+                    <div class="col-md-6 m-b-30">
+                        <a class="col-md-3 m-l-15 m-r-15 module-balls-few pull-right" href="javascript:void(0);" onclick="pullSubjectSchedules('@Model.Subject.SubjectId');" style="border: 2px solid #472493;">
+                            <h2 class="text-center" style="margin-top: 50% !important; color: #472493; font-weight: 600;">@Model.Subject.Code</h2>
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
+        }
 
         <div class="row">
             <div class="col-md-12">
@@ -81,21 +79,44 @@
             </div>
         </div>
 
-        <div class="row">
-            <div id="testingDonut"></div>
-            <div class="col-lg-12">
-                <div id="continuous-chart"></div>
+        @if (Model != null)
+        {
+            <div class="row">
+                <div class="filter-flex-container">
+                    <div class="form-group">
+                        <label asp-for="FilterFromDate" class="control-label"></label>
+                        <input asp-for="FilterFromDate" class="form-control" />
+                        <span asp-validation-for="FilterFromDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FilterToDate" class="control-label"></label>
+                        <input asp-for="FilterToDate" class="form-control" />
+                        <span asp-validation-for="FilterToDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" onclick="filterSchedulesChart('@Model.Subject.SubjectId');" style=" margin-top: 13%;" value="Filter" class="btn btn-primary" />
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-12">
-                <div id="dailyViewChart" style="min-height: 100px;"></div>
+            
+            <div class="row">
+                <div id="testingDonut"></div>
+                <div class="col-lg-12">
+                    <div id="continuous-chart"></div>
+                </div>
+                <div class="col-lg-12">
+                    <div id="dailyViewChart" style="min-height: 100px;"></div>
+                </div>
             </div>
 
-            <div class="col-lg-12">
-                <h2 class="text-center">Semesterly Attendance Summary for {Subject Name here}</h2>
-                <div id="semesterlyViewChart" style="min-height: 450px;"></div>
-            </div>
-        </div>
-
+            @*<div class="row">
+                <div class="col-lg-12">
+                    <h2 class="text-center">Semesterly Attendance Summary for @Model.Subject?.Name (@Model.Subject?.Code)</h2>
+                    <div id="semesterlyViewChart" style="min-height: 450px;"></div>
+                </div>
+            </div>*@
+        }
+        
         <div class="row">
             <div class="modal fade" id="eventView">
                 <div class="fade in" role="dialog">
@@ -176,9 +197,6 @@
 
             <div id="createModal"></div>
         </div>
-
-
-
     </div>
 </div>
 <footer class="footer text-right">
@@ -203,10 +221,6 @@
     <script src="https://code.highcharts.com/modules/drilldown.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
-    @*<script src="~/lib/highcharts/js/highcharts.js"></script>*@
-
-    <script src="~/js/dashboard-charts.js"></script>
-
     <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/jquery.min.js"></script>
     <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/moment.min.js"></script>
     <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/fullcalendar.min.js"></script>
@@ -214,10 +228,8 @@
     <script src="~/lib/fullcalendar.io/js/fullcalendar-3.5.0/scheduler.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 
+    <script src="~/js/dashboard-charts.js"></script>
     <script src="~/lib/jquery-ui-1.12.1.custom/js/jquery-ui.js"></script>
-
-    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>*@
-
     <script src="~/js/draw-calendar.js"></script>
 
     <script type="text/javascript">
@@ -227,176 +239,7 @@
         }
 
         $(function () {
-
             var subjectName = "<Subject Name>";
-
-            //****************     DAILY     *****************
-            //$.ajax({
-            //    type: "GET",
-            //    url: "/Dashboard/GetDailyStats",
-            //    async: true,
-            //    data: { scheduleId: 8 },
-            //    success: function (response) {
-            //        console.log("DAILY STATS RETURNED:");
-
-            //        var stats = JSON.parse(response);
-            //        console.log(stats);
-
-            //        subjectName = stats.subjectName;
-
-            //        let chart = Highcharts.chart('dailyViewChart', {
-            //            legend: {
-            //                layout: 'vertical',
-            //                align: 'right',
-            //                verticalAlign: 'middle',
-            //                labelFormatter: function () {
-            //                    return this.y + '<br>' + this.name;
-            //                }
-            //            },
-            //            series: [{
-            //                type: 'pie',
-            //                size: '80%',
-            //                innerSize: '60%',
-            //                showInLegend: true,
-            //                dataLabels: {
-            //                    //enabled: true,
-            //                    formatter: function () {
-            //                        return this.point.name;
-            //                    }
-            //                },
-            //                data: [{
-            //                    name: stats.attended.label,
-            //                    y: stats.attended.value
-            //                    //,color: '#71f442'
-            //                }, {
-            //                    name: stats.unattended.label,
-            //                    y: stats.unattended.value
-            //                    //,color: '#429b9e'
-            //                }]
-            //            }]
-            //        });
-
-            //        chart.setTitle({ text: `<b>Daily Attendance Summary for ${subjectName}</b>` });
-
-            //        $('#subjTitle').text(`Dashboard for ${subjectName}`);
-            //    }
-            //});
-
-            //Morris.Donut({
-            //    element: 'dailyViewChart',
-            //    data: [
-            //        { value: 70, label: 'foo' },
-            //        { value: 15, label: 'bar' },
-            //        { value: 10, label: 'baz' },
-            //        { value: 05, label: 'A really really long label' }
-            //    ],
-            //    xKey: "value",
-            //    yKeys: ['label'],
-            //    labels: ['label']
-            //    //formatter: function (x) { return x + "%"}
-            //});
-
-            //Morris.Donut({
-            //    element: 'dailyViewChart',
-            //    data: [
-            //        {value: 70, label: 'foo'},
-            //        {value: 15, label: 'bar'},
-            //        {value: 10, label: 'baz'},
-            //        {value: 5, label: 'A really really long label'}
-            //    ]
-            //    ,xKey: "value",
-            //    yKeys: ['label'],
-            //    labels: ['label']
-            //    //formatter: function (x) { return x + "%"}
-            //});
-
-            //****************      WEEKLY      **********************
-            //Highcharts.chart('weeklyViewChart', {
-            //    chart: {
-            //        type: 'area'
-            //    },
-            //    title: {
-            //        text: `<b>Weekly Attendance Summary for ${subjectName}</b>`
-            //    },
-            //    subtitle: {
-            //        text: 'Week # of semester # summary'
-            //    },
-            //    xAxis: {
-            //        min: Date.UTC(2019, 0, 1),
-            //        max: Date.UTC(2019, 12, 30),
-            //        type: 'datetime',
-            //        allowDecimals: false,
-            //        tickInterval: 24 * 3600 * 1000 * 30,
-            //        labels: {
-            //            rotation: 0
-            //        }
-            //    },
-            //    yAxis: {
-            //        title: {
-            //            text: 'Overall Attendance Statistics'
-            //        },
-            //        labels: {
-            //            formatter: function () {
-            //                //return this.value / 1000 + 'k';
-            //                return Math.round((this.value / 70) * 100) + '%';
-            //            }
-            //        }
-            //    },
-            //    tooltip: {
-            //        pointFormat: '{series.name} had attended <b>{point.y:,.0f}</b><br/> in {point.x}'
-            //    },
-            //    plotOptions: {
-            //        area: {
-            //            pointInterval: 24 * 3600 * 1000 * 30,
-            //            pointStart: Date.UTC(2019, 0, 1),//2018,
-            //            marker: {
-            //                enabled: false,
-            //                symbol: 'circle',
-            //                radius: 2,
-            //                states: {
-            //                    hover: {
-            //                        enabled: true
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    },
-            //    series: [{
-            //        name: 'Attended',
-            //        data: [ 36, 43, 50, 46, 39, 42, 56, 30, 35, 62, 57, 59 ]
-            //    }, {
-            //        name: 'Missed',
-            //        data: [ (70 - 36), (70 - 43), (70 - 50), (70 - 46), (70 - 39), (70 - 42), (70 - 56), (70 - 30), (70 - 35), (70 - 62), (70 - 57), (70 - 59) ]
-            //    }]
-            //});
-
-            //****************      MONTHLY      **********************
-
-            //drawMonthlyChart("IDC30BT", [{
-            //    name: 'Attended',
-            //    data: [
-            //        25000, 27362, 12937, 40200, 13959, 4935, 8659, 32365, 3567, 23452,
-            //        369, 640, 34358, 1436, 2063, 3057, 4618, 6444, 9822, 15468,
-            //        20434, 24126, 27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342,
-            //        26662, 26956, 27912, 28999, 12849, 27826, 25579, 25722, 24826, 24605,
-            //        24304, 23464, 23708, 24099, 14357, 14237, 24401, 24344, 23586, 22380,
-            //        21004, 17287, 14747, 13076, 7555, 9144, 11009, 10950, 10871, 10824,
-            //        10577, 10527, 10475, 10421, 17358, 13295, 10104, 9914, 9620, 9326,
-            //        5113, 5113, 4954, 4804, 4761, 7717, 4368, 4018
-            //    ]
-            //}, {
-            //    name: 'Missed',
-            //    data: [12534, 7375, 14925, 18349, 11946, 21429, 23195, 8459, 14183, 36543,
-            //        34926, 25693, 21580, 12693, 15702, 22560, 42986, 6698, 37159, 10760,
-            //        8605, 4471, 7322, 6238, 7221, 9129, 9089, 7339, 9399, 10538,
-            //        11643, 13092, 14478, 15915, 17385, 19055, 21205, 23044, 25393, 27935,
-            //        30062, 32049, 33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000,
-            //        37000, 35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
-            //        21000, 20000, 19000, 18000, 18000, 17000, 16000, 15537, 14162, 12787,
-            //        12600, 11400, 5500, 4512, 4502, 4502, 4500, 4500
-            //    ]
-            //}]);
-
 
             drawWeeklyChart("IDC30BT",
                 [{
@@ -426,79 +269,8 @@
                 });
 
                 $(".highcharts-menu .highcharts-menu-item").click();
-
-                //window.print();
             });
-
         });
-
-        //$(function () {
-
-        //    //****************     SEMESTERLY     *****************
-
-        //    var chart;
-        //    var pointStart = Date.UTC(2018, 0, 1);
-
-        //    chart = new Highcharts.Chart({
-        //        chart: {
-        //            renderTo: 'semesterlyViewChart',
-        //            type: 'area'
-        //        },
-        //        title: {},
-        //        subtitle: {},
-        //        legend: { enabled: true },
-        //        tooltip: {},
-        //        plotOptions: {
-        //            series: {
-        //                pointStart: pointStart,
-        //                pointInterval: 24 * 3600 * 1000 * 30
-        //            }
-        //        },
-        //        xAxis: {
-        //            min: Date.UTC(2018, 0, 0),
-        //            max: Date.UTC(2018, 5, 1),
-        //            //allowDecimals: false,
-        //            type: 'datetime',
-        //            tickInterval: 24 * 3600 * 1000 * 30, //one day
-        //            labels: {
-        //                rotation: 0
-        //            }
-
-        //        },
-        //        yAxis: {}
-        //    });
-        //    //chart = $('#semesterlyViewChart').highcharts();
-
-        //    var jsonString = '[ { "date": "2018-1-01", "in": "30", "out": "21" }, { "date": "2018-1-02", "in": "35", "out": "32" }, { "date": "2018-1-03", "in": "23", "out": "34" }, { "date": "2018-1-04", "in": "20", "out": "15" }, { "date": "2018-1-05", "in": "34", "out": "20" }, { "date": "2018-2-06", "in": "22", "out": "34" }, { "date": "2018-2-07", "in": "15", "out": "18" } ]';
-
-        //    var myData = JSON.parse(jsonString);
-        //    var dataArray = [];
-        //    var dataAbsentArray = [];
-
-        //    $.each(myData, function (i, obj) {
-        //         var d = new Date(obj.date);
-        //         dataArray.push([Date.parse(d), parseInt(obj.in)]);
-        //         dataAbsentArray.push([Date.parse(d), parseInt(obj.out)]);
-        //    });
-
-        //    chart.addSeries({
-        //        data: dataArray
-        //    });
-
-        //    chart.addSeries({
-        //        data: dataAbsentArray
-        //    });
-
-        //    //console.log('data is ' + dataArray);
-        //});
-
-            //var renderDonut = function (data) {
-            //    var beta = JSON.parse(data);
-            //    console.log(beta);
-
-            //    return;
-            //}
-
     </script>
 
 }

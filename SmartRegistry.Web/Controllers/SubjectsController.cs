@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -35,6 +36,8 @@ namespace SmartRegistry.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
+            ViewData["IsStudent"] = false;
+
             var user = await _userManager.GetUserAsync(this.User);
 
             if (user == null) return Create();
@@ -43,13 +46,31 @@ namespace SmartRegistry.Web.Controllers
 
             if (userId == null) return Create();
 
-            var lecturer = await _context.Lecturer.FirstOrDefaultAsync(l => l.AccountId == userId);
+            var userIdentity = await _userManager.FindByIdAsync(userId);
 
-            var applicationDbContext = _context.Subject
-                                               .Include(s => s.Course)
-                                               .Include(s => s.Lecturer)
-                                               .Where(s => s.LecturerId == lecturer.LecturerId);
-            return View(await applicationDbContext.ToListAsync());
+            if (await _userManager.IsInRoleAsync(userIdentity, "System Admin") || await _userManager.IsInRoleAsync(userIdentity, "Admin"))
+            {
+                var subjects = _context.Subject
+                    .Include(s => s.Course)
+                    .Include(s => s.Lecturer);
+
+                return View(await subjects.ToListAsync());
+            }
+            else if (await _userManager.IsInRoleAsync(userIdentity, "Lecturer"))
+            {
+                //var lecturer = await _context.Lecturer.FirstOrDefaultAsync(l => l.AccountId == userId);
+                var subjects = _context.Subject
+                                                   .Include(s => s.Course)
+                                                   .Include(s => s.Lecturer)
+                                                   .Where(s => s.Lecturer.AccountId == userId);
+                return View(await subjects.ToListAsync());
+            }
+            else
+            {
+                ViewData["IsStudent"] = true;
+
+                return View(await _context.Subject.ToListAsync());
+            }
         }
 
         public async Task<IActionResult> GetAllEnrolled(int id) //subjectId
@@ -91,10 +112,12 @@ namespace SmartRegistry.Web.Controllers
                 .Include(s => s.Course)
                 .Include(s => s.Lecturer)
                 .SingleOrDefaultAsync(m => m.SubjectId == id);
-            if (subject == null)
-            {
+            
+            if(subject == null)
                 return NotFound();
-            }
+
+            if(subject.Lecturer != null)
+                subject.Lecturer.FirstName = $"{subject.Lecturer?.FirstName} {subject.Lecturer?.LastName}";
             
             var user = await _userManager.GetUserAsync(this.User);
 
@@ -311,6 +334,16 @@ namespace SmartRegistry.Web.Controllers
                 text = $"{s.Name} ({s.Code})"
             }).ToList();
             return JsonConvert.SerializeObject(filtered);
-        }       
+        }
+
+        [EnableCors("AllowAllHeaders")]
+        public string GetAllSubjects()
+        {
+            SelectList subjects = new SelectList(_context.Subject.Select(u => new SelectListItem() 
+                                                { Value = u.CourseId.ToString(), Text = $"{u.Name} ({u.Code})" }),
+                                                "Value", "Text");
+
+            return JsonConvert.SerializeObject(subjects);
+        }
     }    
 }

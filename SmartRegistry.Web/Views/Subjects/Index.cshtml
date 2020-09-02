@@ -20,7 +20,7 @@
             <h2>Index</h2>
 
             <p>
-                <a asp-action="Create" class="btn btn-primary">Create New</a>
+                <a asp-action="Create" class="btn btn-primary" style="margin-bottom: 1%;">Create New</a>
             </p>
             <table class="table">
                 <thead>
@@ -40,9 +40,9 @@
                         <th>
                                 @Html.DisplayNameFor(model => model.LastUpdatedBy)
                             </th>*@
-                        <th>
+                        @*<th>
                             @Html.DisplayNameFor(model => model.LastUpdatedAt)
-                        </th>
+                        </th>*@
                         @*<th>
                                 @Html.DisplayNameFor(model => model.IsDeleted)
                             </th>
@@ -80,9 +80,9 @@
                             <td>
                                     @Html.DisplayFor(modelItem => item.LastUpdatedBy)
                                 </td>*@
-                            <td>
+                            @*<td>
                                 @Html.DisplayFor(modelItem => item.LastUpdatedAt)
-                            </td>
+                            </td>*@
                             @*<td>
                                     @Html.DisplayFor(modelItem => item.IsDeleted)
                                 </td>
@@ -102,9 +102,12 @@
                                 <a asp-action="Edit" asp-route-id="@item.SubjectId" class="btn btn-secondary">Edit</a> |
                                 <a asp-action="Details" asp-route-id="@item.SubjectId" class="btn btn-info">Details</a> |
                                 <a asp-action="Delete" asp-route-id="@item.SubjectId" class="btn btn-danger">Delete</a> |
-                                <a asp-controller="Dashboard" asp-action="Index" asp-route-id="@item.SubjectId" class="btn btn-primary">Go to Dashboard</a> |
-                                <a asp-controller="Subjects" asp-action="GetAllEnrolled" asp-route-id="@item.SubjectId" class="btn btn-primary">View students enrolled</a>
+                                <a asp-controller="Dashboard" asp-action="Index" asp-route-subjectId="@item.SubjectId" class="btn btn-primary">Go to Dashboard</a> |
                                 
+                                @if(!ViewBag.IsStudent)
+                                {
+                                    <a asp-controller="Subjects" asp-action="GetAllEnrolled" asp-route-id="@item.SubjectId" class="btn btn-primary">View students enrolled</a>
+                                }
                                 @*<a asp-action="Create" asp-controller="" class="btn btn-primary">Enroll</a>*@
                             </td>
                         </tr>

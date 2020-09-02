@@ -960,7 +960,8 @@ font-size: 10px;
 .btn-orange,
 .btn-brown,
 .btn-teal {
-  color: #ffffff !important;
+    color: #ffffff !important;
+    border-radius: 20px !important;
 }
 .btn-custom {
   background-color: #7fc1fc;

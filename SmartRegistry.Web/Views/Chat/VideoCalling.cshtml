@@ -1,0 +1,163 @@
+﻿@*<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Video Chat App</title>
+        <style>
+            #video-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, 300px);
+                grid-auto-rows: 300px;
+            }
+
+            video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        </style>
+
+        <link rel="stylesheet" type="text/css" href="css/jquery-comments.css">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <div style="display:grid;align-items: center;">Participants:</div>
+        <div id="video-grid"></div>
+
+        <script src="~/lib/jquery-v1.9.1/jquery.js"></script>
+        <script src="~/lib/socketio/socket.io.js"></script>
+        <script src="~/lib/peerjs/peerjs.js"></script>
+        <script src="~/js/videoStreamer.js"></script>
+    </body>
+    </html>*@
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="css/jquery-comments.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<style>
+    #video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 300px);
+        grid-auto-rows: 300px;
+    }
+
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+
+<div class="content-page">
+
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div style="display:grid;align-items: center;">Participants:</div>
+                    <div id="video-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous"></script>*@
+    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>*@
+    @*<script src="~/lib/jquery-comments/js/jquery-comments.js"></script>*@
+    @*<script defer src="https://unpkg.com/peerjs@1.2.0/dist/peerjs.min.js"></script>*@
+
+    <script src="~/lib/jquery-v1.9.1/jquery.js"></script>
+    <script src="~/lib/socketio/socket.io.js"></script>
+    <script src="~/lib/peerjs/peerjs.js"></script>
+    @*<script src="~/js/videoStreamer.js"></script>*@
+
+    <script type="text/javascript">
+        "use strict";
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            //var socket = io('/')
+            var serverUrl = "http://localhost:3000/";
+            var socket = io.connect(serverUrl);
+            //var socket = new WebSocket("ws://localhost:3000/socket.io/?EIO=2&transport=websocket");
+
+            var videoGrid = document.getElementById('video-grid');
+            var myPeer = new Peer(undefined,
+                {
+                    host: '/',
+                    port: '3001'
+                });
+
+            var myVideo = document.createElement('video');
+            myVideo.muted = true;
+
+            var peers = {};
+
+            navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            })
+            .then(stream => {
+                addVideoStream(myVideo, stream);
+
+                myPeer.on('call',
+                    call => {
+                        call.answer(stream);
+                        var video = document.createElement('video');
+                        call.on('stream',
+                            userVideoStream => {
+                                addVideoStream(video, userVideoStream);
+                            });
+                    });
+
+                socket.on('user-connected',
+                    userId => {
+                        connectToNewUser(userId, stream);
+                    });
+            });
+
+            socket.on('user-disconnected',
+                userId => {
+                    if (peers[userId]) peers[userId].close();
+                });
+
+            var ROOM_ID = "";
+
+            myPeer.on('open',
+                id => {
+                    socket.emit('join-room', ROOM_ID, id);
+                });
+
+            function connectToNewUser(userId, stream) {
+                var call = myPeer.call(userId, stream);
+                var video = document.createElement('video');
+                call.on('stream', userVideoStream => {
+                    addVideoStream(video, userVideoStream);
+                });
+                call.on('close', () => {
+                    video.remove();
+                });
+
+                peers[userId] = call;
+            }
+
+            function addVideoStream(video, stream) {
+                video.srcObject = stream;
+                video.addEventListener('loadedmetadata', () => {
+                    video.play();
+                });
+                videoGrid.append(video);
+            }
+
+        });
+
+    </script>
+
+}

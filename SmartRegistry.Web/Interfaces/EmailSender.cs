@@ -121,8 +121,8 @@ namespace SmartRegistry.Web.Interfaces
                 using (var client = new SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 587, false);
-                    await client.AuthenticateAsync("tsepo@mgibagroup.com", "Jabulile@009");
-                    //await client.AuthenticateAsync("smartattendance45@gmail.com", "Coder@18");
+                    await client.AuthenticateAsync("smartattendance45@gmail.com", "Jabulile@09");
+                    //await client.AuthenticateAsync("tsepo@mgibagroup.com", "Jabulile@009");
 
                     await client.SendAsync(message);
                     await client.DisconnectAsync(true);

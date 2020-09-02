@@ -9,7 +9,7 @@
     <!-- Start content -->
     <div class="content">
         <div class="container">
-            
+
             <div class="row">
                 <div class="panel-group">
                     <div class="col-md-12">
@@ -38,7 +38,7 @@
 
                                         <div class="col-md-12">
                                             <div class="card-box">
-                                                <h4 class="header-title m-t-0 m-b-30">Announcements</h4>
+                                                <h4 class="header-title m-t-0 m-b-30" style="margin-left: 2%;">Announcements</h4>
                                                 <hr />
 
                                                 <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
@@ -65,21 +65,21 @@
 
 
                                                                 @*<li class="list-group-item">
-                                                        <div>
-                                                            <h4>
-                                                                @announcement.Title<span class="pull-right">
-                                                                    @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
-                                                                    {
-                                                                        var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
-                                                                        <i>@user</i>
-                                                                    }
+                                                                        <div>
+                                                                            <h4>
+                                                                                @announcement.Title<span class="pull-right">
+                                                                                    @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                                                                                    {
+                                                                                        var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
+                                                                                        <i>@user</i>
+                                                                                    }
 
-                                                                </span>
-                                                            </h4>
-                                                            <p class="col-md-12">@announcement.Message</p>
-                                                            <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
-                                                        </div>
-                                                    </li>*@
+                                                                                </span>
+                                                                            </h4>
+                                                                            <p class="col-md-12">@announcement.Message</p>
+                                                                            <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
+                                                                        </div>
+                                                                    </li>*@
                                                             }
                                                         </ul>
                                                     }
@@ -112,24 +112,18 @@
 
                                             @if (Model.Departments != null && Model.Departments.Any())
                                             {
-                                            <ul class="list-group list-group-flush">
-                                                @foreach (var department in Model.Departments.OrderBy(f => f.Name))
-                                                {
-                                                <div class="inbox-item">
-                                                    <p class="inbox-item-text">
-                                                        <a href="/Departments/Details/@department.DepartmentId">
-                                                            @department.Name (@department.Code)
-                                                        </a>
-                                                    </p>
-                                                </div>
-                                                   
-                                                    @*<a asp-controller="Department" asp-action="Details" asp-route="@department.Id" >
+                                                <ul class="list-group list-group-flush">
+                                                    @foreach (var department in Model.Departments.OrderBy(f => f.Name))
+                                                    {
+                                                    <li>
                                                         <div class="inbox-item">
-                                                            <p class="inbox-item-text">@department.Name (@department.Code)</p>
+                                                            <p class="inbox-item-text">
+                                                                <a href="/Departments/Details/@department.DepartmentId">@department.Name (@department.Code)</a>
+                                                            </p>
                                                         </div>
-                                                    </a>*@
-                                                }
-                                            </ul>
+                                                    </li>
+                                                    }
+                                                </ul>
                                             }
                                             else
                                             {
@@ -142,94 +136,94 @@
                                         </div>
 
                                     </div> <!-- end card -->
-                                </div>                               
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     @*<div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="panel-primary">
-                                    <div class="panel-heading">
-                                        <h2 class="text-center">Announcement</h2>
-                                    </div>
-                                    <div class="panel-body">
-                                        <div class="row">
-                                            @if (Model.Announcement != null && Model.Announcement.Any())
-                                            {
-                                                <ul class="list-group list-group-flush">
-                                                    @foreach (var announcement in Model.Announcement.OrderBy(a => a.CreatedAt.TimeOfDay))
-                                                    {
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="panel-primary">
+                                        <div class="panel-heading">
+                                            <h2 class="text-center">Announcement</h2>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                @if (Model.Announcement != null && Model.Announcement.Any())
+                                                {
+                                                    <ul class="list-group list-group-flush">
+                                                        @foreach (var announcement in Model.Announcement.OrderBy(a => a.CreatedAt.TimeOfDay))
+                                                        {
 
-                                                        <li class="list-group-item">
-                                                            <div>
-                                                                <h4>
-                                                                    @announcement.Title<span class="pull-right">
-                                                                        @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
-                                                                        {
-                                                                            var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
-                                                                            <i>@user</i>
-                                                                        }
+                                                            <li class="list-group-item">
+                                                                <div>
+                                                                    <h4>
+                                                                        @announcement.Title<span class="pull-right">
+                                                                            @if (SignInManager != null && SignInManager.IsSignedIn(this.User))
+                                                                            {
+                                                                                var user = await SignInManager.UserManager.FindByIdAsync(announcement.CreatedBy);
+                                                                                <i>@user</i>
+                                                                            }
 
-                                                                    </span>
-                                                                </h4>
-                                                                <p class="col-md-12">@announcement.Message</p>
-                                                                <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
-                                                            </div>
-                                                        </li>
-                                                    }
-                                                </ul>
-                                            }
-                                            else
-                                            {
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h4 class="text-center">There are no announcements available at the moment. Welcome to the @Model?.Faculty.Name's.</h4>
+                                                                        </span>
+                                                                    </h4>
+                                                                    <p class="col-md-12">@announcement.Message</p>
+                                                                    <a href="#" class="btn btn-primary">Read more</a> <i class="pull-right">@announcement.CreatedAt.ToShortDateString()</i>
+                                                                </div>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <h4 class="text-center">There are no announcements available at the moment. Welcome to the @Model?.Faculty.Name's.</h4>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="panel-primary">
+                                        <div class="panel-heading">
+                                            <h2 class="text-center">List of Department @Model?.Faculty.Name consists of</h2>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="row">
+
+                                                @if (Model.Department != null && Model.Department.Any())
+                                                {
+                                                    <ul class="list-group list-group-flush">
+                                                        @foreach (var dept in Model.Department.OrderBy(d => d.Name))
+                                                        {
+                                                            <li class="list-group-item">
+                                                                <a href="/Department/Details/@dept.Id">@dept.Name</a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <h4 class="text-center">There are no departments available. Continue visiting @ViewData["Institution"]'s platform to get updates.</h4>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-md-4">
-                                <div class="panel-primary">
-                                    <div class="panel-heading">
-                                        <h2 class="text-center">List of Department @Model?.Faculty.Name consists of</h2>
-                                    </div>
-                                    <div class="panel-body">
-                                        <div class="row">
-
-                                            @if (Model.Department != null && Model.Department.Any())
-                                            {
-                                                <ul class="list-group list-group-flush">
-                                                    @foreach (var dept in Model.Department.OrderBy(d => d.Name))
-                                                    {
-                                                        <li class="list-group-item">
-                                                            <a href="/Department/Details/@dept.Id">@dept.Name</a>
-                                                        </li>
-                                                    }
-                                                </ul>
-                                            }
-                                            else
-                                            {
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h4 class="text-center">There are no departments available. Continue visiting @ViewData["Institution"]'s platform to get updates.</h4>
-                                                    </div>
-                                                </div>
-                                            }
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>*@
+                        </div>*@
                 </div>
-                
+
             </div>
 
         </div>

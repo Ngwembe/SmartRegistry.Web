@@ -2,7 +2,6 @@
 @using iTextSharp.text.pdf.qrcode
 @model IEnumerable<SmartRegistry.Web.ViewModels.SubjectViewModels.EnrolledStudentViewModel>
 
-
 <div class="content-page">
     <!-- Start content -->
     <div class="content">
@@ -21,15 +20,25 @@
                             </div>
 
                             <div class="inbox-widget slimscroll-alt" style="min-height: 302px;">
+                                
                                 <div class="row">
-                                    @*<a asp-action="PrintEnrolledStudentList" asp-route="@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary">Print out list</a>*@
+                                    <div class="col col-md-12">
+                                        <input type="hidden" value="1" id="subjectId">
+                                        <buttom id="printEnrollmentReport" class="col col-md-offset-2 col-sm-4 col-md-4 col-lg-4 btn btn-primary btn-md waves-effect waves-light m-b-30">Print Enrollment list</buttom>
+                                        <a asp-controller="Reporting" asp-action="PrintAttendedStudentList" asp-route-id="@Model.FirstOrDefault().SubjectId" class="col col-md-offset-1 col-sm-4 col-md-4 col-lg-4 btn btn-primary btn-md waves-effect waves-light m-b-30">Print Attendance list</a>
+
+                                    </div>
+                                </div>
+                                @*<div class="row">
                                     <input type="hidden" value="@Model.FirstOrDefault().SubjectId" id="subjectId" />
-                                    @*<a href="/Subjects/PrintEnrolledStudentList/@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print out list</a>*@
                                     <buttom id="printEnrollmentReport" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print Enrollment list</buttom>
-                                </div>
-                                <div class="row">
-                                    <buttom id="printAttendanceReport" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print Attendance list</buttom>
-                                </div>
+                                </div>*@
+                                    @*<a asp-action="PrintEnrolledStudentList" asp-route="@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary">Print out list</a>*@
+                                    @*<a href="/Subjects/PrintEnrolledStudentList/@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print out list</a>*@
+                                @*<div class="row">
+                                    <a asp-controller="Reporting" asp-action="PrintAttendedStudentList" asp-route-id="@Model.FirstOrDefault().SubjectId" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print Attendance list</a>
+                                </div>*@
+                                    @*<buttom id="printAttendanceReport" class="btn btn-block btn-primary  btn-rounded btn-md waves-effect waves-light m-b-30">Print Attendance list</buttom>*@
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -138,7 +147,9 @@
                 });
             });
 
-            $("#printAttendanceReport").on('click', function () {
+            $("#printAttendanceReport").on('click', function (event) {
+
+                event.preventDefault();
 
                 var subjectId = $('#subjectId').val();
 
@@ -150,10 +161,9 @@
                     data: { id: subjectId },
                     success: function (file) {
 
-                        console.log(file);
-
-                        window.location.href = "/Subjects/GetAllEnrolled?id=" + subjectId;
-                        window.focus();
+                        //console.log(file);
+                        //window.location.href = "/Subjects/GetAllEnrolled?id=" + subjectId;
+                        //window.focus();
                     }
                 });
             });

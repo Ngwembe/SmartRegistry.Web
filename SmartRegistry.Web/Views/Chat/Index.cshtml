@@ -1,19 +1,59 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using SmartRegistry.Web.Models
 
-@model IEnumerable<SmartRegistry.Web.Models.Course>
+@model IEnumerable<SmartRegistry.Web.Models.Subject>
+
+<link rel="stylesheet" type="text/css" href="css/jquery-comments.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
 <div class="content-page">
 
     <div class="content">
         <div class="container">
-            <textarea name="message" id="message" class="col col-md-12"></textarea>
-            <input type="button" id="sendButton" class="col col-md-12" value="Send Message" />
-            <div id="messages"></div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" id="SenderName" name="SenderName" placeholder="Enter your username ..." class="form-control" />
+                </div>
+                <div class="col-md-8">
+                    <textarea name="message" id="message" class="col-md-12" cols="12" row="6" placeholder="Type your message here ..."></textarea>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-2">
+                    <input type="button" id="sendButton" class="btn btn-primary" value="Send Message" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="header-title m-t-0 m-b-30">Messages</h4>
+
+                        <div id="messages" class="inbox-widget slimscroll-alt" style="min-height: 302px;"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="header-title m-t-0 m-b-30">Students Attendance</h4>
+
+                        <div id="attendanceMessages" class="inbox-widget slimscroll-alt" style="min-height: 302px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            @*<div id="messages"></div>*@
         </div>
     </div>
 
+
     <script src="~/lib/signalr/signalr.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="~/lib/jquery-comments/js/jquery-comments.js"></script>
+
     <script type="text/javascript">
         "use strict";
 
@@ -21,21 +61,74 @@
             .withUrl("/messages")
             .build();
 
-        connection.on("ReceiveMessage", function (message) {
+        connection.on("ReceiveMessage", function (broadcast) {
 
-            if (message != null && typeof (message) != 'undefined') {
+            if (broadcast == null)
+                return;
+
+            let data = JSON.parse(broadcast);
+            let message = data.Message;
+
+            if (message != null) {
                 let msg = message.replace(/b/g, "&amp;").replace(/</g, "&alt;")
                     .replace(/>/g, "&gt;");
 
                 let div = document.createElement("div");
-                div.innerHTML = msg + "<hr/>";
+
+                div.innerHTML =
+                    `<a href="#">
+                                                <div class="inbox-item">
+                                                <div class="inbox-item-img">
+                                                    <img src="/images/demo/users/demo_asset-5.jpg" alt="user" class="thumb-sm img-circle" />
+                                                </div>
+                                                <p class="inbox-item-author" style="font-weight: bold;">${data.Sender}</p>
+                                                <p class="inbox-item-text">${data.Message}</p>
+                                                <p class="inbox-item-date">${data.ReceivedAt}</p>
+                                                </div>
+                                            </a>`;
+
+                //div.innerHTML = msg + "<hr/>";
 
                 document.getElementById("messages").appendChild(div);
             }
         });
 
+        connection.on("OnlineUserMessage", function (broadcast) {
+
+            if (broadcast == null)
+                return;
+
+            let data = JSON.parse(broadcast);
+            let message = data.Message;
+
+            if (message != null) {
+                let msg = message.replace(/b/g, "&amp;").replace(/</g, "&alt;")
+                    .replace(/>/g, "&gt;");
+
+                let div = document.createElement("div");
+
+                div.innerHTML =
+                    `<a href="#">
+                                                <div class="inbox-item">
+                                                <div class="inbox-item-img">
+                                                    <img src="/images/demo/users/demo_asset-5.jpg" alt="user" class="thumb-sm img-circle" />
+                                                </div>
+                                                <p class="inbox-item-author" style="font-weight: bold;">${data.Sender}</p>
+                                                <p class="inbox-item-text">${data.Message}</p>
+                                                <p class="inbox-item-date">${data.ReceivedAt}</p>
+                                                </div>
+                                            </a>`;
+
+                //div.innerHTML = msg + "<hr/>";
+
+                document.getElementById("attendanceMessages").appendChild(div);
+            }
+        });
+
+
         connection.on("ReceiveConfirmationMessage", function (message) {
-            if (message != null && typeof (message) != 'undefined') {
+
+            if (message != null) {
                 console.log(JSON.parse(message));
             }
         });
@@ -46,17 +139,57 @@
 
         document.getElementById("sendButton").addEventListener("click", (event) => {
 
-            console.log(document.getElementById("message"));
-            console.log(document.getElementById("message").value);
-
             let message = document.getElementById("message").value;
 
-            connection.invoke("SendMessageToAll", message).catch(function (err) {
+            if (message == null) {
+                alert("Oops! You need to type your message!");
+                return;
+            }
+
+            let sender = document.getElementById("SenderName").value;
+
+            if (sender == null) {
+                alert("Oops! You forgot to enter your username!");
+                return;
+            }
+
+            connection.invoke("SendMessageToAll", message, sender).catch(function (err) {
+                document.getElementById("message").value = "";
                 return console.error(err.toString());
             });
 
             event.preventDefault();
         });
+
+
+        /*
+                 var commentsArray = [
+            {
+                "
+                              "parent": null,
+                "created": "2015-01
+                            "modified": "2015-01-01",
+                "content": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed posuere interdum sem. Quisque ligula eros ullamcorper quis, lacinia quis facilisis sed sapien. Mauris varius diam vitae arcu.",
+                "pings": [],
+                "creator": 6,
+                "fullname": "Simon Powell",
+                "profile_picture_url": "https://app.viima.com/static/media/user_profiles/user-icon.png",
+                "created_by_admin": false,
+                "created_by_current_user": false,
+                "upvote_count": 3,
+                "user_has_upvoted": false,
+                "is_new": false
+            }
+        ];
+
+        $('#comments-container').comments({
+            profilePictureURL: 'https://viima-app.s3.amazonaws.com/media/public/defaults/user-icon.png',
+            getComments: function (success, error) {
+                success(commentsArray);
+            }
+        });
+
+        */
 
     </script>
 

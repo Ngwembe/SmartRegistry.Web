@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,8 +9,6 @@ using SmartRegistry.Web.Data.Service;
 using SmartRegistry.Web.Domain;
 using SmartRegistry.Web.Integration;
 using SmartRegistry.Web.Interfaces;
-using SmartRegistry.Web.Models;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using SmartRegistry.Web.Hubs;
 
@@ -33,9 +27,11 @@ namespace SmartRegistry.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                //options.UseMySql(Configuration.GetConnectionString("MySQLConnectionLocal")));
-            //.UseMySql(Configuration.GetConnectionString("MySQLConnection")));
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                //options.UseSqlite("Data Source=SmartWatcherDBLite.db")
+            //options.UseMySql(Configuration.GetConnectionString("MySQLConnectionLocal")));
+            //.UseMySql(Configuration.GetConnectionString("MySQLConnection"))
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            );
 
             // Automatically perform database migration
 
@@ -73,9 +69,29 @@ namespace SmartRegistry.Web
 
             services.AddSignalR();
 
-            services.AddMvc().AddMvcOptions(opt => {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllHeaders",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                        //.WithOrigins("http://192.168.4.1")
+                        //.SetPreflightMaxAge(TimeSpan.FromSeconds(2520));
+                        //.AllowCredentials()
+
+                    });
+            });
+
+            //services.AddSingleton(NotificationHub);
+            //services.AddSingleton<IhubContext, NotificationHub>();
+
+            services.AddMvc().AddMvcOptions(opt =>
+            {
                 opt.EnableEndpointRouting = false;
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddApplicationInsightsTelemetry();
 
             //services.AddMvc();
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
@@ -111,6 +127,7 @@ namespace SmartRegistry.Web
 
             app.UseStaticFiles();
 
+            app.UseCors("AllowAllHeaders");
             app.UseAuthentication();
 
             //app.UseMvc(routes =>
@@ -121,7 +138,8 @@ namespace SmartRegistry.Web
             //    //template: "{controller=Dashboard}/{action=Index}/{id?}");
             //});
 
-            app.UseSignalR(config => {
+            app.UseSignalR(config =>
+            {
                 config.MapHub<MessageHub>("/messages");
             });
 

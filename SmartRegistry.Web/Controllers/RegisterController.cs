@@ -2,11 +2,15 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SmartRegistry.Web.Data;
 using SmartRegistry.Web.Models;
+using SmartRegistry.Web.Hubs;
+using SmartRegistry.Web.ViewModels.HomeViewModels;
 
 namespace SmartRegistry.Web.Controllers
 {
@@ -14,16 +18,19 @@ namespace SmartRegistry.Web.Controllers
     {
 
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public RegisterController(ApplicationDbContext context)
+        ///<summary></summary>
+        public RegisterController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
         // GET: Register
-        //public ActionResult Index()
-        //{
-        //    return View();
-        //}
+        public ActionResult Index()
+        {
+           return View();
+        }
 
         // GET: Register/Details/5
         //public ActionResult Details(int id)
@@ -53,23 +60,44 @@ namespace SmartRegistry.Web.Controllers
             return JsonConvert.SerializeObject(new {success = true});
         }
 
-        [HttpGet]
-        public async Task<IActionResult> RegisterUser(int sensorId = 0)
+        public IActionResult GetSubjects()
         {
+            var faculties = _context.Faculty.ToList();
+            var announcements = _context.Announcement.Where(a => a.AnnouncementTypeId == 1).ToList();
 
+            var homepageVM = new HomePageViewModel()
+            {
+                Announcements = announcements,
+                Faculties = faculties,
+                Description = "This is institution's brief description... () To be pulled from the DB"
+            };
+
+            ViewData["HostName"] = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
+
+            return PartialView("_GetSubjectsPartial", homepageVM);
+        }
+
+        //[EnableCors("AllowAllHeaders")]
+        [HttpPost]
+        public async Task<IActionResult> RegisterUser([FromBody]AuthParams authParams)
+        {
             try
             {
-                if (sensorId <= 0)
+                if (authParams.SensorId <= 0)
                     return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
                     {
                         success = false,
                         message = "Sensor ID must be greater than 0"
                     }));
 
+                if (authParams.ScheduleId <= 0)
+                    return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
+                    {
+                        success = false,
+                        message = "Schedule ID must be greater than 0"
+                    }));
 
-                //  Log the possible error as hardware shouldn't have done the REQUEST
-
-                var student = await _context.Student.FirstOrDefaultAsync(s => s.SensorId == sensorId);
+                var student = await _context.Student.FirstOrDefaultAsync(s => s.SensorId == authParams.SensorId);
                 if (student == null)
                     return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
                     {
@@ -78,7 +106,7 @@ namespace SmartRegistry.Web.Controllers
                     }));
 
                 var currentDate = DateTime.UtcNow;
-                var schedule = await _context.Schedule.FirstOrDefaultAsync(s => s.ScheduleFor.AddHours(2.0) <= currentDate && s.ScheduleTo.AddHours(2.0) >= currentDate);
+                var schedule = await _context.Schedule.FirstOrDefaultAsync(s => s.ScheduleId == authParams.ScheduleId);
 
                 if (schedule == null)
                     return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
@@ -98,7 +126,6 @@ namespace SmartRegistry.Web.Controllers
                         message = "Not Enrolled for Subject"
                     }));
 
-
                 var attendee = new Attended
                 {
                     CreatedAt = DateTime.UtcNow,
@@ -110,6 +137,16 @@ namespace SmartRegistry.Web.Controllers
                 _context.Attendee.Add(attendee);
                 _context.SaveChanges();
 
+                MessageExchange broadcast = new MessageExchange()
+                {
+                    Message = $"{student?.FirstName} {student?.LastName} has been registered successfully ...",
+                    ReceivedAt = DateTime.Now.ToString("g"),
+                    Sender = "SmartWatcher"
+                };
+
+                //await _hubContext.Clients.All.SendAsync("SendMessageToAll", JsonConvert.SerializeObject(broadcast));
+                //Console.WriteLine("Suppose to notify all users");
+
                 return StatusCode((int)HttpStatusCode.OK, JsonConvert.SerializeObject(new
                 {
                     success = true,
@@ -120,10 +157,101 @@ namespace SmartRegistry.Web.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("Error: Attendee", ex.Message);
-
                 return StatusCode((int)HttpStatusCode.InternalServerError, ModelState);
             }
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> RegisterUser(int sensorId = 0)
+        //{
+        //    try
+        //    {
+        //        if (sensorId <= 0)
+        //            return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
+        //            {
+        //                success = false,
+        //                message = "Sensor ID must be greater than 0"
+        //            }));
+
+        //        MessageExchange broadcast = new MessageExchange()
+        //        {
+        //            Message = "Tsepo has been registered successfully ...",
+        //            ReceivedAt = DateTime.Now.ToString("g"),
+        //            Sender = "System"
+        //        };
+
+        //        await _hubContext.Clients.All.SendAsync("OnlineReceiveMessage", JsonConvert.SerializeObject(broadcast));
+        //        Console.WriteLine("Suppose to notify all users");
+
+        //        // if(sensorId == 1) {                    
+        //            // MessageExchange broadcast = new MessageExchange()
+        //            // {
+        //                // Message = "Tsepo has been registered successfully ...",
+        //                // ReceivedAt = DateTime.Now.ToString("g"),
+        //                // Sender = "System"
+        //            // };
+
+        //            // await _hubContext.Clients.All.SendAsync("ReceiveMessage", JsonConvert.SerializeObject(broadcast));
+        //            // Console.WriteLine("Suppose to notify all users");
+        //        // }
+
+        //        //  Log the possible error as hardware shouldn't have done the REQUEST
+
+        //        var student = await _context.Student.FirstOrDefaultAsync(s => s.SensorId == sensorId);
+        //        if (student == null)
+        //            return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
+        //            {
+        //                success = false,
+        //                message = "No matching student found with sensor ID"
+        //            }));
+
+        //        var currentDate = DateTime.UtcNow;
+        //        var schedule = await _context.Schedule.FirstOrDefaultAsync(s => s.ScheduleFor.AddHours(2.0) <= currentDate && s.ScheduleTo.AddHours(2.0) >= currentDate);
+
+        //        if (schedule == null)
+        //            return StatusCode((int)HttpStatusCode.NotFound, JsonConvert.SerializeObject(new
+        //            {
+        //                success = false,
+        //                message = "No ongoing lecture session found"
+        //            }));
+
+        //        var isEnrolled = await _context.EnrolledSubject.FirstOrDefaultAsync(es => es.SubjectId == schedule.SubjectId && es.StudentId == student.StudentId);
+
+        //        if (isEnrolled == null)
+        //            return StatusCode((int)HttpStatusCode.OK, JsonConvert.SerializeObject(new
+        //            {
+        //                success = false,
+        //                fullName = $"{student.FirstName} {student.LastName}",
+        //                studentNumber = $"{student.StudentNumber.ToString()}",
+        //                message = "Not Enrolled for Subject"
+        //            }));
+
+
+        //        var attendee = new Attended
+        //        {
+        //            CreatedAt = DateTime.UtcNow,
+        //            StudentId = student.StudentId,
+        //            ScheduleId = schedule.ScheduleId,
+        //            HasAttended = true
+        //        };
+
+        //        _context.Attendee.Add(attendee);
+        //        _context.SaveChanges();
+
+        //        return StatusCode((int)HttpStatusCode.OK, JsonConvert.SerializeObject(new
+        //        {
+        //            success = true,
+        //            fullName = $"{student.FirstName} {student.LastName}",
+        //            studentNumber = $"{student.StudentNumber.ToString()}"
+        //        }));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ModelState.AddModelError("Error: Attendee", ex.Message);
+
+        //        return StatusCode((int)HttpStatusCode.InternalServerError, ModelState);
+        //    }
+        //}
 
         public async Task<string> MarkRegister(int studentId)
         {
@@ -256,5 +384,11 @@ namespace SmartRegistry.Web.Controllers
 
         //    return JsonConvert.SerializeObject(new { success = false });
         //}
+    }
+
+    public class AuthParams
+    {
+        public int SensorId { get; set; }
+        public int ScheduleId { get; set; }
     }
 }

@@ -1,0 +1,152 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SmartRegistry.Web.Models
+
+@model IEnumerable<SmartRegistry.Web.Models.Subject>
+
+<link rel="stylesheet" type="text/css" href="css/jquery-comments.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+<div class="content-page">
+
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" id="SenderName" name="SenderName" placeholder="Enter your username ..." class="form-control" />
+                </div>
+                <div class="col-md-8">
+                    <textarea name="message" id="message" class="col-md-12" cols="12" row="6" placeholder="Type your message here ..."></textarea>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-2">
+                    <input type="button" id="sendButton" class="btn btn-primary" value="Send Message" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="card-box">
+                        <h4 class="header-title m-t-0 m-b-30">Messages</h4>
+
+                        <div id="messages" class="inbox-widget slimscroll-alt" style="min-height: 302px;"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    @if (Model != null && Model.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var subject in Model)
+                            {
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="col-md-9">@string.Concat($"{subject.Name}", $" ({subject.Code})")</div>
+                                            <div class="col-md-2">
+                                                <a asp-controller="Chat" asp-for="Reporting" asp-route-subjectId="@subject.SubjectId" href="javascript:void(0);" class="btn btn-primary"><i class="fa fa-eye"></i> View Attendance</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+
+            @*<div id="messages"></div>*@
+        </div>
+    </div>
+
+
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="~/lib/jquery-comments/js/jquery-comments.js"></script>
+
+    <script type="text/javascript">
+        "use strict";
+
+        let connection = new signalR.HubConnectionBuilder()
+            .withUrl("/messages")
+            .build();
+
+        connection.on("OnlineReceiveMessage", function (broadcast) {
+
+            if (broadcast == null)
+                return;
+
+            let data = JSON.parse(broadcast);
+            let message = data.Message;
+
+            if (message != null) {
+                let msg = message.replace(/b/g, "&amp;").replace(/</g, "&alt;")
+                    .replace(/>/g, "&gt;");
+
+                let div = document.createElement("div");
+
+                div.innerHTML =
+                    `<a href="#">
+                                                <div class="inbox-item">
+                                                <div class="inbox-item-img">
+                                                    <img src="/images/demo/users/demo_asset-5.jpg" alt="user" class="thumb-sm img-circle" />
+                                                </div>
+                                                <p class="inbox-item-author" style="font-weight: bold;">${data.Sender}</p>
+                                                <p class="inbox-item-text">${data.Message}</p>
+                                                <p class="inbox-item-date">${data.ReceivedAt}</p>
+                                                </div>
+                                            </a>`;
+
+                //div.innerHTML = msg + "<hr/>";
+
+                document.getElementById("messages").appendChild(div);
+            }
+        });
+
+        connection.on("ReceiveConfirmationMessage", function (message) {
+
+            if (message != null) {
+                console.log(JSON.parse(message));
+            }
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById("sendButton").addEventListener("click", (event) => {
+
+            let message = document.getElementById("message").value;
+
+            if (message == null) {
+                alert("Oops! You need to type your message!");
+                return;
+            }
+
+            let sender = document.getElementById("SenderName").value;
+
+            if (sender == null) {
+                alert("Oops! You forgot to enter your username!");
+                return;
+            }
+
+            connection.invoke("SendMessageToAll", message, sender).catch(function (err) {
+                document.getElementById("message").value = "";
+                return console.error(err.toString());
+            });
+
+            event.preventDefault();
+        });
+
+    </script>
+
+    <footer class="footer text-right">
+        @{
+            <i>@string.Format("{0} © SmartRegistry", DateTime.Now.Year)</i>
+        }
+    </footer>
+
+</div>

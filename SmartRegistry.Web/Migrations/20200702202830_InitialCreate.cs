@@ -1,10 +1,9 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SmartRegistry.Web.Migrations
 {
-    public partial class InitialCreateDB : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +11,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "Address",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AddressId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Residential = table.Column<string>(nullable: false),
                     Postal = table.Column<string>(nullable: false),
                     PostalCode = table.Column<string>(nullable: false),
@@ -28,7 +27,7 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Address", x => x.Id);
+                    table.PrimaryKey("PK_Address", x => x.AddressId);
                 });
 
             migrationBuilder.CreateTable(
@@ -36,7 +35,7 @@ namespace SmartRegistry.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Text = table.Column<string>(nullable: true),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
@@ -94,8 +93,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "Contact",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ContactId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     CellPhone = table.Column<string>(nullable: false),
                     TelePhone = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: false),
@@ -110,17 +109,33 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Contact", x => x.Id);
+                    table.PrimaryKey("PK_Contact", x => x.ContactId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(maxLength: 450, nullable: true),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Events", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Faculty",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    FacultyId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: false),
                     Code = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     LastUpdatedBy = table.Column<string>(nullable: true),
@@ -131,15 +146,15 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Faculty", x => x.Id);
+                    table.PrimaryKey("PK_Faculty", x => x.FacultyId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Lecturer",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    LecturerId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<string>(nullable: true),
                     Gender = table.Column<string>(maxLength: 6, nullable: false),
                     FirstName = table.Column<string>(nullable: false),
@@ -156,15 +171,15 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lecturer", x => x.Id);
+                    table.PrimaryKey("PK_Lecturer", x => x.LecturerId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Sensor",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SensorId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     IsAssigned = table.Column<bool>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
@@ -173,7 +188,7 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sensor", x => x.Id);
+                    table.PrimaryKey("PK_Sensor", x => x.SensorId);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,7 +196,7 @@ namespace SmartRegistry.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -202,7 +217,7 @@ namespace SmartRegistry.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -286,10 +301,11 @@ namespace SmartRegistry.Web.Migrations
                 name: "Department",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    DepartmentId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: false),
                     Code = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     LastUpdatedBy = table.Column<string>(nullable: true),
@@ -301,12 +317,12 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Department", x => x.Id);
+                    table.PrimaryKey("PK_Department", x => x.DepartmentId);
                     table.ForeignKey(
                         name: "FK_Department_Faculty_FacultyId",
                         column: x => x.FacultyId,
                         principalTable: "Faculty",
-                        principalColumn: "Id",
+                        principalColumn: "FacultyId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -314,8 +330,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "Announcement",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AnnouncementId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(nullable: true),
                     LecturerId = table.Column<int>(nullable: false),
                     Message = table.Column<string>(nullable: false),
@@ -331,12 +347,12 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Announcement", x => x.Id);
+                    table.PrimaryKey("PK_Announcement", x => x.AnnouncementId);
                     table.ForeignKey(
                         name: "FK_Announcement_Lecturer_LecturerId",
                         column: x => x.LecturerId,
                         principalTable: "Lecturer",
-                        principalColumn: "Id",
+                        principalColumn: "LecturerId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -344,8 +360,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "Student",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    StudentId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     StudentNumber = table.Column<long>(nullable: false),
                     SensorId = table.Column<int>(nullable: false),
                     AccountId = table.Column<string>(nullable: true),
@@ -365,12 +381,12 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Student", x => x.Id);
+                    table.PrimaryKey("PK_Student", x => x.StudentId);
                     table.ForeignKey(
                         name: "FK_Student_Sensor_SensorId",
                         column: x => x.SensorId,
                         principalTable: "Sensor",
-                        principalColumn: "Id",
+                        principalColumn: "SensorId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -378,10 +394,11 @@ namespace SmartRegistry.Web.Migrations
                 name: "Course",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CourseId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: false),
                     Code = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     LastUpdatedBy = table.Column<string>(nullable: true),
@@ -393,12 +410,12 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Course", x => x.Id);
+                    table.PrimaryKey("PK_Course", x => x.CourseId);
                     table.ForeignKey(
                         name: "FK_Course_Department_DepartmentId",
                         column: x => x.DepartmentId,
                         principalTable: "Department",
-                        principalColumn: "Id",
+                        principalColumn: "DepartmentId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -406,10 +423,11 @@ namespace SmartRegistry.Web.Migrations
                 name: "Subject",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SubjectId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: false),
                     Code = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     LastUpdatedBy = table.Column<string>(nullable: true),
@@ -422,18 +440,18 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subject", x => x.Id);
+                    table.PrimaryKey("PK_Subject", x => x.SubjectId);
                     table.ForeignKey(
                         name: "FK_Subject_Course_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Course",
-                        principalColumn: "Id",
+                        principalColumn: "CourseId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Subject_Lecturer_LecturerId",
                         column: x => x.LecturerId,
                         principalTable: "Lecturer",
-                        principalColumn: "Id",
+                        principalColumn: "LecturerId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -441,8 +459,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "EnrolledSubject",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    EnrolledSubjectId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SubjectId = table.Column<int>(nullable: false),
                     StudentId = table.Column<int>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
@@ -455,18 +473,18 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EnrolledSubject", x => x.Id);
+                    table.PrimaryKey("PK_EnrolledSubject", x => x.EnrolledSubjectId);
                     table.ForeignKey(
                         name: "FK_EnrolledSubject_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "Id",
+                        principalColumn: "StudentId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EnrolledSubject_Subject_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subject",
-                        principalColumn: "Id",
+                        principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -474,12 +492,13 @@ namespace SmartRegistry.Web.Migrations
                 name: "Schedule",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ScheduleId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     LectureRoom = table.Column<string>(nullable: false),
                     IsConfirmed = table.Column<bool>(nullable: false),
                     ScheduleFor = table.Column<DateTime>(nullable: false),
                     ScheduleTo = table.Column<DateTime>(nullable: false),
+                    ColorTheme = table.Column<string>(nullable: true),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     LastUpdatedBy = table.Column<string>(nullable: true),
@@ -491,12 +510,12 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Schedule", x => x.Id);
+                    table.PrimaryKey("PK_Schedule", x => x.ScheduleId);
                     table.ForeignKey(
                         name: "FK_Schedule_Subject_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subject",
-                        principalColumn: "Id",
+                        principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -504,8 +523,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "Attendee",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AttendedId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     HasAttended = table.Column<bool>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
@@ -519,18 +538,18 @@ namespace SmartRegistry.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Attendee", x => x.Id);
+                    table.PrimaryKey("PK_Attendee", x => x.AttendedId);
                     table.ForeignKey(
                         name: "FK_Attendee_Schedule_ScheduleId",
                         column: x => x.ScheduleId,
                         principalTable: "Schedule",
-                        principalColumn: "Id",
+                        principalColumn: "ScheduleId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Attendee_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "Id",
+                        principalColumn: "StudentId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -548,7 +567,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -574,7 +594,8 @@ namespace SmartRegistry.Web.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attendee_ScheduleId",
@@ -661,6 +682,9 @@ namespace SmartRegistry.Web.Migrations
 
             migrationBuilder.DropTable(
                 name: "EnrolledSubject");
+
+            migrationBuilder.DropTable(
+                name: "Events");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

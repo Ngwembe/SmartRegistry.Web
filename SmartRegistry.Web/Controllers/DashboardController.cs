@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -24,23 +26,65 @@ namespace SmartRegistry.Web.Controllers
             _userManager = userManager;
         }
         // GET: Dashboard
-        public async Task<IActionResult> Index() //  To be used by Admins
+        public async Task<IActionResult> Index(int subjectId) //  To be used by Admins
         {
-            var userId = _userManager.GetUserId(HttpContext.User);
+            var user = await _userManager.GetUserAsync(this.User);
 
-            var lecturer = await _context.Lecturer.FirstOrDefaultAsync(a => a.AccountId == userId);
-            if (lecturer == null) return View();
+            if (user == null) return RedirectToAction("Login", "Account", new { returnUrl  = "Home"});
 
-            var subjects = await _context.Subject.Include(s => s.Lecturer).Where(c => c.LecturerId == lecturer.LecturerId).ToListAsync();
-            if (subjects == null) return View();
+            var userId = await _userManager.GetUserIdAsync(user);
 
-            var result = subjects.Select(s => new
+            if (userId == null) return RedirectToAction("Login", "Account", new { returnUrl = "Home" });
+
+            var userIdentity = await _userManager.FindByIdAsync(userId);
+
+            if (await _userManager.IsInRoleAsync(userIdentity, "System Admin") || await _userManager.IsInRoleAsync(userIdentity, "Admin"))
             {
-                subject = s.Name,
-                value  = 1
-            }).ToList();
+                var subjects = await _context.Subject.Include(s => s.Lecturer).Where(c => c.SubjectId == subjectId).ToListAsync();
 
-            return View(subjects);
+                var startDate = DateTime.Now - DateTime.Now.Subtract(DateTime.Now.AddDays(-30));
+                var endDate = DateTime.Now.AddDays(30);
+
+                if (subjects == null) return View(new DashboardModel());
+
+                return View(new DashboardModel() { Subject = subjects.FirstOrDefault(), FilterFromDate = startDate, FilterToDate = endDate });
+
+                //if (lecturer == null) return View(new DashboardModel());
+                //if (subjects == null) return View(new List<Student>() as IEnumerable<Subject>);
+
+                //var result = subjects.Select(s => new
+                //{
+                //    subject = s.Name,
+                //    value = 1
+                //}).ToList();
+
+                //return View(subjects);
+            }
+            else
+            {
+                var lecturer = await _context.Lecturer.FirstOrDefaultAsync(a => a.AccountId == userId);
+                if (lecturer == null) return View();
+
+                var subjects = await _context.Subject.Include(s => s.Lecturer).Where(c => c.SubjectId == subjectId && c.LecturerId == lecturer.LecturerId).ToListAsync();
+
+                var startDate = DateTime.Now - DateTime.Now.Subtract(DateTime.Now.AddDays(-30));
+                var endDate = DateTime.Now + DateTime.Now.Subtract(DateTime.Now.AddDays(30));
+
+                if (subjects == null) return View(new DashboardModel());
+
+                return View(new DashboardModel() { Subject = subjects.FirstOrDefault(), FilterFromDate = startDate, FilterToDate = endDate });
+
+                //var subjects = await _context.Subject.Include(s => s.Lecturer).Where(c => c.SubjectId == subjectId && c.LecturerId == lecturer.LecturerId).ToListAsync();
+                //if (subjects == null) return View(subjects);
+
+                //var result = subjects.Select(s => new
+                //{
+                //    subject = s.Name,
+                //    value = 1
+                //}).ToList();
+
+                //return View(subjects);
+            }
         }
 
         public async Task<IActionResult> Statistics()
@@ -49,8 +93,15 @@ namespace SmartRegistry.Web.Controllers
         }
 
         //GET: Dashboard/Details/5
-        public ActionResult Details(int subjectId, int studentId) //  When viewing a student's record
+        public IActionResult Details(int subjectId, int studentId) //  When viewing a student's record
         {
+            var a = _context.Attendee.ToList();
+            var attendance =(from attendee in _context.Attendee
+                                        join schedule in _context.Schedule
+                                        on attendee.ScheduleId equals schedule.ScheduleId
+                                        where attendee.Schedule.SubjectId == subjectId
+                                        select attendee).ToList();
+            
             //var enrolledSubject = _context.EnrolledSubject.FirstOrDefault(s => s.StudentId == studentId && s.SubjectId == subjectId);
             //if (enrolledSubject == null)
             //{
@@ -58,17 +109,22 @@ namespace SmartRegistry.Web.Controllers
             //    return View(ModelState);
             //}
 
-            var attendance = _context.Attendee.Include(a => a.Student)
-                                                .Include(a => a.Schedule)
-                                                .ThenInclude(a => a.Subject)
-                                                .Where(a => a.StudentId == studentId).ToList();
+            //var attendance = _context.Attendee
+            //                                    .Include(a => a.Student)
+            //                                    .Include(a => a.Schedule)
+            //                                    .ThenInclude(a => a.Subject)
+            //                                    .Where(a => a.Schedule.SubjectId == subjectId)
+            //                                    //.Where(a => a.StudentId == studentId)
+            //                                    .ToList();
+
             if (!attendance.Any())
             {
                 ModelState.AddModelError("Subject_Error", "Student not enrolled on the specified subject");
                 return View(ModelState);
             }
 
-            var respnose = attendance.GroupBy(a => a.HasAttended).ToList();
+            var response = attendance.GroupBy(a => a.HasAttended)
+                                                   .ToList();
 
             return View();
         }
@@ -216,5 +272,15 @@ namespace SmartRegistry.Web.Controllers
         //        return View();
         //    }
         //}
+    }
+
+    public class DashboardModel
+    {
+        public Subject Subject { get; set; }
+        
+        [DisplayName("Filter From Date")]
+        public DateTime FilterFromDate { get; set; }
+        [DisplayName("Filter To Date")]
+        public DateTime FilterToDate { get; set; }
     }
 }
